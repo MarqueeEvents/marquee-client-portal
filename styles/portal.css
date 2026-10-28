@@ -1,0 +1,23 @@
+/* Marquee client portal brand tokens. Applied only when the gate adds .mq-portal to <html>. */
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@1,500;1,600&display=swap');
+
+.mq-portal {
+  --mq-pink: #ff2e88;
+  --mq-pink-soft: #ff6fae;
+  --mq-ink: #f4f5f7;
+  --mq-body: #c9c9d2;
+  --mq-muted: #9c9ca8;
+  --mq-dark: #08080a;
+  --mq-panel: #111115;
+  --mq-line: #2a2a31;
+  --mq-ok: #5fe3a8;
+  --mq-head: 'Inter Tight', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --mq-text: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --mq-serif: 'Lora', Georgia, serif;
+}
+
+.mq-portal body {
+  background: radial-gradient(900px 520px at 85% -10%, rgba(255,46,136,.20), rgba(255,46,136,0) 70%), var(--mq-dark) !important;
+  color: var(--mq-ink);
+  font-family: var(--mq-text);
+}
