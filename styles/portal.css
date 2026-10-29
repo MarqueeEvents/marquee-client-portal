@@ -103,6 +103,8 @@ html.mq-portal, .mq-portal body {
 @media (max-width: 1180px) { .mq-skin #djep-content { margin-left: 24px !important; margin-right: 24px !important; } }
 @media (max-width: 720px) { .mq-skin #djep-content { margin-left: 16px !important; margin-right: 16px !important; } }
 .mq-skin #djep-content .sq-card-wrapper { max-width: 560px; margin: 0 auto 8px !important; }
+/* Square draws dark text inside its secure card frame, so the frame needs a light background. */
+.mq-skin #djep-content .sq-card-iframe-container { background: #fff !important; border-radius: 8px !important; }
 .mq-skin #djep-content .input-group-addon { background: #1c1c22 !important; color: var(--mq-body) !important; border: 1px solid var(--mq-edge) !important; border-right: 0 !important; border-radius: 12px 0 0 12px !important; padding: 0 12px !important; }
 .mq-skin #djep-content .input-group-addon + input { border-radius: 0 12px 12px 0 !important; }
 @media (min-width: 768px) { .mq-skin #djep-content .col-sm-6 { box-sizing: border-box; width: 50% !important; float: left; padding-right: 28px !important; } .mq-skin #djep-content .col-sm-6 + .col-sm-6 { padding-right: 0 !important; padding-left: 28px !important; border-left: 1px solid var(--mq-line-2); } }
