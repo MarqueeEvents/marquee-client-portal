@@ -24,8 +24,6 @@ MQ.config = {
   // 'live' = sends the request to Bob through DJEP's Request Changes form. Nothing is ever added to an event automatically.
   REQUEST_MODE: 'test',
 
-  // Anyone can preview by visiting a portal page once with ?mqpreview=on (and ?mqpreview=off to stop).
-  PREVIEW_PARAM: 'mqpreview',
 
   // Payment schedule: 25% at booking, 25% at 9 months, 25% at 6 months, balance 90 days out.
   PAYMENT_PLAN: [

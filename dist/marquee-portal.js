@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T13:31Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T15:19Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -27,8 +27,6 @@ MQ.config = {
   // 'live' = sends the request to Bob through DJEP's Request Changes form. Nothing is ever added to an event automatically.
   REQUEST_MODE: 'test',
 
-  // Anyone can preview by visiting a portal page once with ?mqpreview=on (and ?mqpreview=off to stop).
-  PREVIEW_PARAM: 'mqpreview',
 
   // Payment schedule: 25% at booking, 25% at 9 months, 25% at 6 months, balance 90 days out.
   PAYMENT_PLAN: [
@@ -105,18 +103,9 @@ MQ.config = {
 window.MQ = window.MQ || {};
 
 MQ.gate = (function () {
-  var KEY = 'mq-portal-preview';
-
-  function readPreviewParam() {
-    try {
-      var p = new URLSearchParams(window.location.search).get(MQ.config.PREVIEW_PARAM);
-      if (p === 'on') localStorage.setItem(KEY, 'on');
-      if (p === 'off') localStorage.removeItem(KEY);
-      return localStorage.getItem(KEY) === 'on';
-    } catch (e) {
-      return false;
-    }
-  }
+  /* No URL back door: only test clients (or LIVE_FOR_EVERYONE) see the new design.
+   * Clears the old preview flag from earlier testing builds. */
+  try { localStorage.removeItem('mq-portal-preview'); } catch (e) {}
 
   /* Test client check. Most pages carry DJEP's client ID (#clientIDspan); Event Details carries the names;
    * Make a Payment carries neither, so a confirmed test client is remembered for this browser tab only.
@@ -143,7 +132,7 @@ MQ.gate = (function () {
     shouldRun: function () {
       if (!isClientPortal()) return false;
       if (MQ.config.LIVE_FOR_EVERYONE) return true;
-      return readPreviewParam() || isTestClient();
+      return isTestClient();
     }
   };
 })();

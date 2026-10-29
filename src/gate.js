@@ -4,18 +4,9 @@
 window.MQ = window.MQ || {};
 
 MQ.gate = (function () {
-  var KEY = 'mq-portal-preview';
-
-  function readPreviewParam() {
-    try {
-      var p = new URLSearchParams(window.location.search).get(MQ.config.PREVIEW_PARAM);
-      if (p === 'on') localStorage.setItem(KEY, 'on');
-      if (p === 'off') localStorage.removeItem(KEY);
-      return localStorage.getItem(KEY) === 'on';
-    } catch (e) {
-      return false;
-    }
-  }
+  /* No URL back door: only test clients (or LIVE_FOR_EVERYONE) see the new design.
+   * Clears the old preview flag from earlier testing builds. */
+  try { localStorage.removeItem('mq-portal-preview'); } catch (e) {}
 
   /* Test client check. Most pages carry DJEP's client ID (#clientIDspan); Event Details carries the names;
    * Make a Payment carries neither, so a confirmed test client is remembered for this browser tab only.
@@ -42,7 +33,7 @@ MQ.gate = (function () {
     shouldRun: function () {
       if (!isClientPortal()) return false;
       if (MQ.config.LIVE_FOR_EVERYONE) return true;
-      return readPreviewParam() || isTestClient();
+      return isTestClient();
     }
   };
 })();

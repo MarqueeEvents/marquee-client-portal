@@ -2,7 +2,7 @@
 
 ## Phase 1: Foundation (in progress)
 - [x] Project structure, brand tokens, configuration
-- [x] Safety gate (test clients and ?mqpreview=on only)
+- [x] Safety gate (test clients by DJEP client ID or full name only)
 - [x] Reader for DJEP home/events blocks and Event Details
 - [ ] Confirm the reader against Teddi & Kevin and Tony & Liana
 - [ ] Install the loader on DJEP (test clients only)
