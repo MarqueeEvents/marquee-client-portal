@@ -53,12 +53,12 @@ MQ.config = {
       calendly: { creative: '', final: '' }
     },
     'BRADON_ID': {
-      key: 'bradon', cardTier: 'Executive Headliner', cardLogoH: 46, cardPhotoFile: 'bradon-card-2.jpg', cardPos: 'center 0%', photoFile: 'bradon-photo.jpg', logoFile: 'bradon-logo.png', logoH: 64, name: 'Bradon Smith', first: 'Bradon', tier: 'Executive Headliner', role: 'Lead DJ & MC', price: 2700,
+      key: 'bradon', cardTier: 'Executive Headliner', cardLogoH: 46, cardPhotoFile: 'bradon-card-3.jpg', cardPos: 'center 0%', photoFile: 'bradon-photo.jpg', logoFile: 'bradon-logo.png', logoH: 64, name: 'Bradon Smith', first: 'Bradon', tier: 'Executive Headliner', role: 'Lead DJ & MC', price: 2700,
       phone: '330.432.4143', email: 'bradon@marqueeohio.com', instagram: 'dj_bradon',
       calendly: { creative: '', final: '' }
     },
     'DAN_ID': {
-      key: 'dan', cardTier: 'Headliner', cardLogoH: 56, cardPhotoFile: 'dan-card-3.jpg', cardPos: 'center 0%', photoFile: 'dan-photo-2.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
+      key: 'dan', cardTier: 'Headliner', cardLogoH: 56, cardPhotoFile: 'dan-card-4.jpg', cardPos: 'center 0%', photoFile: 'dan-photo-2.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
