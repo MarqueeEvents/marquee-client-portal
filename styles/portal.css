@@ -63,44 +63,48 @@ html.mq-portal, .mq-portal body {
 
 /* Skin for DJEP pages that keep their own forms (payments, request changes, profile, contact).
  * MQ.skin moves #djep-content into .mq-skin-main; everything inside is restyled here. */
-.mq-skin #djep-page > #djep-content { display: none !important; }
-.mq-skin-main #djep-content { display: block !important; width: auto !important; max-width: none !important; margin: 0 !important; padding: clamp(22px, 3vw, 34px) !important;
+.mq-skin-top .mq-main { padding-bottom: 28px; }
+.mq-skin #djep-content { display: block !important; box-sizing: border-box; width: auto !important; max-width: 1132px !important; margin: 0 auto 56px !important; padding: clamp(22px, 3vw, 34px) !important;
   float: none !important; background: rgba(17,17,21,.92) !important; border: 1px solid var(--mq-line) !important; border-radius: 24px !important; box-shadow: none !important;
   color: var(--mq-body) !important; font-family: var(--mq-text) !important; font-size: 15px !important; line-height: 1.55 !important; }
-.mq-skin-main #djep-content *:not(svg):not(path):not(circle):not(rect) { font-family: var(--mq-text) !important; text-shadow: none !important; background-image: none !important; letter-spacing: normal; }
-.mq-skin-main #djep-content div, .mq-skin-main #djep-content p, .mq-skin-main #djep-content span, .mq-skin-main #djep-content td,
-.mq-skin-main #djep-content th, .mq-skin-main #djep-content label, .mq-skin-main #djep-content li, .mq-skin-main #djep-content b,
-.mq-skin-main #djep-content strong, .mq-skin-main #djep-content font { color: inherit; background-color: transparent !important; font-size: inherit; }
-.mq-skin-main #djep-content [class*="box"], .mq-skin-main #djep-content [id*="box"] { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; margin: 0 0 22px !important; width: auto !important; }
-.mq-skin-main #djep-content .djep-h2 { display: none !important; }
-.mq-skin-main #djep-content .djep-titlebar, .mq-skin-main #djep-content .djep-titlebarsmall, .mq-skin-main #djep-content h3, .mq-skin-main #djep-content h4,
-.mq-skin-main #djep-content legend { display: block; margin: 0 0 14px !important; padding: 0 !important; border: 0 !important; height: auto !important; background: transparent !important;
+.mq-skin #djep-content *:not(svg):not(path):not(circle):not(rect) { font-family: var(--mq-text) !important; text-shadow: none !important; background-image: none !important; letter-spacing: normal; }
+.mq-skin #djep-content div, .mq-skin #djep-content p, .mq-skin #djep-content span, .mq-skin #djep-content td,
+.mq-skin #djep-content th, .mq-skin #djep-content label, .mq-skin #djep-content li, .mq-skin #djep-content b,
+.mq-skin #djep-content strong, .mq-skin #djep-content font { color: inherit; background-color: transparent !important; font-size: inherit; }
+.mq-skin #djep-content [class*="box"], .mq-skin #djep-content [id*="box"] { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; margin: 0 0 22px !important; width: auto !important; }
+.mq-skin #djep-content .djep-h2 { display: none !important; }
+.mq-skin #djep-content .djep-titlebar, .mq-skin #djep-content .djep-titlebarsmall, .mq-skin #djep-content h3, .mq-skin #djep-content h4,
+.mq-skin #djep-content legend { display: block; margin: 0 0 14px !important; padding: 0 !important; border: 0 !important; height: auto !important; background: transparent !important;
   color: var(--mq-pink) !important; font-size: 11px !important; font-weight: 800 !important; letter-spacing: .28em !important; text-transform: uppercase; line-height: 1.4 !important; }
-.mq-skin-main #djep-content .djep-titlebar span, .mq-skin-main #djep-content .djep-titlebarsmall span { color: inherit !important; }
-.mq-skin-main #djep-content h3.djep-h3 { color: var(--mq-ink) !important; font-family: var(--mq-head) !important; font-size: 22px !important; letter-spacing: 0 !important; font-weight: 900 !important; }
-.mq-skin-main #djep-content a { color: var(--mq-pink-soft) !important; }
-.mq-skin-main #djep-content table { width: 100% !important; border-collapse: collapse; background: transparent !important; }
-.mq-skin-main #djep-content td, .mq-skin-main #djep-content th { padding: 10px 8px !important; border: 0 !important; border-bottom: 1px solid var(--mq-line-2) !important; vertical-align: middle; color: var(--mq-ink) !important; font-size: 14px !important; height: auto !important; }
-.mq-skin-main #djep-content td:first-child { color: var(--mq-muted) !important; font-size: 11px !important; font-weight: 800 !important; letter-spacing: .16em !important; text-transform: uppercase; }
-.mq-skin-main #djep-content input[type=text], .mq-skin-main #djep-content input[type=email], .mq-skin-main #djep-content input[type=tel],
-.mq-skin-main #djep-content input[type=number], .mq-skin-main #djep-content input[type=password], .mq-skin-main #djep-content input[type=date],
-.mq-skin-main #djep-content input:not([type]), .mq-skin-main #djep-content select, .mq-skin-main #djep-content textarea {
+.mq-skin #djep-content .djep-titlebar span, .mq-skin #djep-content .djep-titlebarsmall span { color: inherit !important; }
+.mq-skin #djep-content h3.djep-h3 { color: var(--mq-ink) !important; font-family: var(--mq-head) !important; font-size: 22px !important; letter-spacing: 0 !important; font-weight: 900 !important; }
+.mq-skin #djep-content a { color: var(--mq-pink-soft) !important; }
+.mq-skin #djep-content table { width: 100% !important; border-collapse: collapse; background: transparent !important; }
+.mq-skin #djep-content td, .mq-skin #djep-content th { padding: 10px 8px !important; border: 0 !important; border-bottom: 1px solid var(--mq-line-2) !important; vertical-align: middle; color: var(--mq-ink) !important; font-size: 14px !important; height: auto !important; }
+.mq-skin #djep-content td:first-child { color: var(--mq-muted) !important; font-size: 11px !important; font-weight: 800 !important; letter-spacing: .16em !important; text-transform: uppercase; }
+.mq-skin #djep-content input[type=text], .mq-skin #djep-content input[type=email], .mq-skin #djep-content input[type=tel],
+.mq-skin #djep-content input[type=number], .mq-skin #djep-content input[type=password], .mq-skin #djep-content input[type=date],
+.mq-skin #djep-content input:not([type]), .mq-skin #djep-content select, .mq-skin #djep-content textarea {
   width: 100% !important; max-width: 520px; min-height: 46px; box-sizing: border-box; background: var(--mq-deep) !important; color: var(--mq-ink) !important;
   border: 1px solid var(--mq-edge) !important; border-radius: 12px !important; padding: 10px 14px !important; font-size: 15px !important; box-shadow: none !important; }
-.mq-skin-main #djep-content textarea { min-height: 140px; }
-.mq-skin-main #djep-content input:focus, .mq-skin-main #djep-content select:focus, .mq-skin-main #djep-content textarea:focus { outline: none; border-color: var(--mq-pink) !important; box-shadow: 0 0 0 3px rgba(255,46,136,.2) !important; }
-.mq-skin-main #djep-content input[type=submit], .mq-skin-main #djep-content input[type=button], .mq-skin-main #djep-content button,
-.mq-skin-main #djep-content a.djep-actionbutton, .mq-skin-main #djep-content a.djep-changebutton, .mq-skin-main #djep-content .djep-widgetaction {
+.mq-skin #djep-content textarea { min-height: 140px; }
+.mq-skin #djep-content input:focus, .mq-skin #djep-content select:focus, .mq-skin #djep-content textarea:focus { outline: none; border-color: var(--mq-pink) !important; box-shadow: 0 0 0 3px rgba(255,46,136,.2) !important; }
+.mq-skin #djep-content input[type=submit], .mq-skin #djep-content input[type=button], .mq-skin #djep-content button,
+.mq-skin #djep-content a.djep-actionbutton, .mq-skin #djep-content a.djep-changebutton, .mq-skin #djep-content .djep-widgetaction {
   display: inline-flex !important; align-items: center; justify-content: center; width: auto !important; min-height: 50px; height: auto !important; padding: 0 24px !important;
   background: var(--mq-pink) !important; color: #fff !important; border: 0 !important; border-radius: 12px !important; font-size: 12px !important; font-weight: 800 !important;
   letter-spacing: .18em !important; text-transform: uppercase; text-decoration: none !important; cursor: pointer; box-shadow: 0 8px 30px rgba(255,46,136,.3) !important; line-height: 1.2 !important; }
-.mq-skin-main #djep-content input[type=button][value="Back" i], .mq-skin-main #djep-content input[value="Cancel" i] { background: transparent !important; border: 1px solid var(--mq-edge) !important; box-shadow: none !important; }
-.mq-skin-main #djep-content input[type=radio], .mq-skin-main #djep-content input[type=checkbox] { accent-color: var(--mq-pink); width: 18px; height: 18px; }
-.mq-skin-main #djep-content img[src*="spacer"] { display: none; }
-.mq-skin-main #djep-content .djep-cleared, .mq-skin-main #djep-content #footer, .mq-skin-main #djep-content #backbuttonstate { display: none !important; }
-.mq-skin-main #djep-content [class*="col-"] { padding-left: 0 !important; padding-right: 0 !important; }
-@media (min-width: 768px) { .mq-skin-main #djep-content .col-sm-6 { width: 50% !important; float: left; padding-right: 24px !important; } }
-.mq-skin-main #djep-content::after { content: ''; display: block; clear: both; }
+.mq-skin #djep-content input[type=button][value="Back" i], .mq-skin #djep-content input[value="Cancel" i] { background: transparent !important; border: 1px solid var(--mq-edge) !important; box-shadow: none !important; }
+.mq-skin #djep-content input[type=radio], .mq-skin #djep-content input[type=checkbox] { accent-color: var(--mq-pink); width: 18px; height: 18px; }
+.mq-skin #djep-content img[src*="spacer"] { display: none; }
+.mq-skin #djep-content .djep-cleared, .mq-skin #djep-content #footer, .mq-skin #djep-content #backbuttonstate { display: none !important; }
+.mq-skin #djep-content [class*="col-"] { padding-left: 0 !important; padding-right: 0 !important; }
+@media (max-width: 1180px) { .mq-skin #djep-content { margin-left: 24px !important; margin-right: 24px !important; } }
+@media (max-width: 720px) { .mq-skin #djep-content { margin-left: 16px !important; margin-right: 16px !important; } }
+.mq-skin #djep-content .sq-card-wrapper { background: #fff !important; border-radius: 12px !important; padding: 2px 4px !important; max-width: 560px; }
+.mq-skin #djep-content .sq-card-wrapper * { background-color: initial; }
+@media (min-width: 768px) { .mq-skin #djep-content .col-sm-6 { width: 50% !important; float: left; padding-right: 24px !important; } }
+.mq-skin #djep-content::after { content: ''; display: block; clear: both; }
 .mq-skin-head { display: flex; flex-direction: column; gap: 28px; }
 .mq-skin-extra:empty { display: none; }
 
@@ -110,31 +114,35 @@ html.mq-portal, .mq-portal body {
 .mq-paysum .t { font-family: var(--mq-head); font-weight: 800; font-size: 20px; color: #fff; }
 .mq-paysum .mq-next { flex: 1 1 240px; }
 .mq-paygrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 14px 0 6px; }
-.mq-skin-main #djep-content a.mq-paycard { display: flex !important; flex-direction: column; gap: 14px; padding: 16px !important; border-radius: 18px; border: 1px solid var(--mq-edge);
+.mq-skin #djep-content a.mq-paycard { display: flex !important; flex-direction: column; gap: 14px; padding: 16px !important; border-radius: 18px; border: 1px solid var(--mq-edge);
   background: rgba(8,8,10,.5) !important; color: var(--mq-ink) !important; text-decoration: none !important; transition: border-color .2s, transform .2s, box-shadow .2s; width: auto !important; height: auto !important; margin: 0 !important; }
-.mq-skin-main #djep-content a.mq-paycard:hover { border-color: var(--mq-pink); transform: translateY(-2px); box-shadow: 0 0 34px rgba(255,46,136,.25); }
-.mq-skin-main #djep-content a.mq-paycard img { display: block; width: 100% !important; height: 96px !important; object-fit: contain; background: #fff !important; border-radius: 12px; padding: 14px; box-sizing: border-box; margin: 0 !important; border: 0 !important; }
+.mq-skin #djep-content a.mq-paycard:hover { border-color: var(--mq-pink); transform: translateY(-2px); box-shadow: 0 0 34px rgba(255,46,136,.25); }
+.mq-skin #djep-content a.mq-paycard img { display: block; width: 100% !important; height: 96px !important; object-fit: contain; background: #fff !important; border-radius: 12px; padding: 14px; box-sizing: border-box; margin: 0 !important; border: 0 !important; }
 .mq-paytext { display: flex; flex-direction: column; gap: 4px; }
 .mq-paytext b { font-family: var(--mq-head) !important; font-size: 18px !important; font-weight: 900 !important; text-transform: uppercase; color: #fff !important; }
 .mq-paytext i { font-style: normal; color: var(--mq-muted) !important; font-size: 13px !important; }
 .mq-paytext em { margin-top: 6px; font-style: normal; display: inline-flex; align-items: center; gap: 8px; color: var(--mq-pink-soft) !important; font-size: 11px !important; font-weight: 800 !important; letter-spacing: .2em !important; text-transform: uppercase; }
 .mq-paychoose .col-xs-12:first-of-type { color: var(--mq-muted) !important; font-size: 14px !important; margin-bottom: 18px; }
 
+.mq-gwtip { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 18px; }
+.mq-skin #djep-content a.mq-otherway { display: block; text-align: center; margin-top: 18px; font-size: 11px !important; font-weight: 800 !important; letter-spacing: .2em !important; text-transform: uppercase; }
+.mq-skin #djep-content .djep-makepaymentbox img { max-width: 100%; height: auto; }
+
 /* Request Changes */
-.mq-skin-main #djep-content .mq-choices { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 6px 0 22px; float: none !important; width: auto !important; }
-.mq-skin-main #djep-content .mq-choices .radio { margin: 0 !important; padding: 0 !important; }
-.mq-skin-main #djep-content label.mq-choice { display: flex !important; align-items: flex-start; gap: 12px; height: 100%; padding: 16px !important; margin: 0 !important; border-radius: 16px; border: 1px solid var(--mq-edge);
+.mq-skin #djep-content .mq-choices { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 6px 0 22px; float: none !important; width: auto !important; }
+.mq-skin #djep-content .mq-choices .radio { margin: 0 !important; padding: 0 !important; }
+.mq-skin #djep-content label.mq-choice { display: flex !important; align-items: flex-start; gap: 12px; height: 100%; padding: 16px !important; margin: 0 !important; border-radius: 16px; border: 1px solid var(--mq-edge);
   cursor: pointer; transition: border-color .2s, background-color .2s; box-sizing: border-box; }
-.mq-skin-main #djep-content label.mq-choice:hover { border-color: var(--mq-pink); }
-.mq-skin-main #djep-content label.mq-choice:has(input:checked) { border-color: var(--mq-pink); background: rgba(255,46,136,.10) !important; box-shadow: 0 0 24px rgba(255,46,136,.18); }
-.mq-skin-main #djep-content label.mq-choice input { position: static !important; margin: 3px 0 0 !important; flex: 0 0 auto; }
+.mq-skin #djep-content label.mq-choice:hover { border-color: var(--mq-pink); }
+.mq-skin #djep-content label.mq-choice:has(input:checked) { border-color: var(--mq-pink); background: rgba(255,46,136,.10) !important; box-shadow: 0 0 24px rgba(255,46,136,.18); }
+.mq-skin #djep-content label.mq-choice input { position: static !important; margin: 3px 0 0 !important; flex: 0 0 auto; }
 .mq-choice > span { display: flex; flex-direction: column; gap: 2px; }
 .mq-choice > span b { font-family: var(--mq-head) !important; font-size: 16px !important; font-weight: 800 !important; color: #fff !important; }
 .mq-choice > span i { font-style: normal; color: var(--mq-muted) !important; font-size: 13px !important; }
 
 /* Contact */
-.mq-skin-main #djep-content .djep-ourcontactinfobox td[id] { width: 56px; }
-.mq-skin-main #djep-content .djep-ourcontactinfobox td { border-bottom: 1px solid var(--mq-line-2) !important; text-transform: none !important; letter-spacing: 0 !important; font-size: 15px !important; color: var(--mq-ink) !important; font-weight: 600 !important; }
+.mq-skin #djep-content .djep-ourcontactinfobox td[id] { width: 56px; }
+.mq-skin #djep-content .djep-ourcontactinfobox td { border-bottom: 1px solid var(--mq-line-2) !important; text-transform: none !important; letter-spacing: 0 !important; font-size: 15px !important; color: var(--mq-ink) !important; font-weight: 600 !important; }
 
 /* Layout */
 .mq-main { max-width: 1180px; margin: 0 auto; padding: 56px 24px 64px; display: flex; flex-direction: column; gap: 32px; }

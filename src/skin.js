@@ -49,7 +49,7 @@ MQ.skin = (function () {
     var extra = document.createElement('div');
     extra.className = 'mq-skin-extra';
     main.appendChild(extra);
-    main.appendChild(content);
+    content.classList.add('mq-skin-content');
     if (page.enhance) {
       try { page.enhance(content, extra); } catch (e) { console.error('[Marquee portal] skin', e); }
     }
@@ -63,8 +63,8 @@ MQ.skin = (function () {
       content.classList.add('mq-paychoose');
       var info = {
         'djep-squarebutton': { name: 'Card', sub: 'Visa, Mastercard, Amex, Discover through Square. A 3.5% processing fee applies.' },
-        'djep-venmobutton': { name: 'Venmo', sub: 'Send from the Venmo app. No processing fee.' },
-        'djep-cashappbutton': { name: 'Cash App', sub: 'Send from Cash App. No processing fee.' }
+        'djep-venmobutton': { name: 'Venmo', sub: 'Pay from your Venmo app.' },
+        'djep-cashappbutton': { name: 'Cash App', sub: 'Pay from your Cash App.' }
       };
       var grid = document.createElement('div');
       grid.className = 'mq-paygrid';
@@ -80,10 +80,29 @@ MQ.skin = (function () {
       var box = content.querySelector('.djep-makepaymentbox') || content;
       box.insertBefore(grid, box.firstChild);
       Array.prototype.forEach.call(box.querySelectorAll(':scope > p, :scope > br'), function (n) { if (!n.querySelector('a')) n.remove(); });
+      var introText = content.querySelector('.col-xs-12');
+      if (introText && /option to make payments/i.test(introText.textContent)) introText.style.display = 'none';
       var choose = document.createElement('div');
       choose.className = 'mq-rule hot';
       choose.innerHTML = '<span>Choose How To Pay</span>';
       box.insertBefore(choose, grid);
+    }
+    var gw = (new URLSearchParams(location.search).get('gateway') || '').toLowerCase();
+    if (gw === 'venmo' || gw === 'cashapp') {
+      var name = gw === 'venmo' ? 'Venmo' : 'Cash App';
+      var box2 = content.querySelector('.djep-makepaymentbox') || content;
+      var tip = document.createElement('div');
+      tip.className = 'mq-gwtip';
+      tip.innerHTML = '<span class="mq-eyebrow">Pay With ' + name + '</span><p class="mq-body">Tap the button below to pay from your ' + name +
+        ' app.</p>';
+      box2.insertBefore(tip, box2.firstChild);
+    }
+    if (gw) {
+      var other = document.createElement('a');
+      other.className = 'mq-otherway';
+      other.href = '/clients/makeapayment.asp?action=choose_payment_gateway&eventid=' + encodeURIComponent(id || '');
+      other.textContent = 'Choose a different way to pay';
+      content.appendChild(other);
     }
     if (!id) return;
     MQ.reader.loadEventDetails(id).then(function (d) {

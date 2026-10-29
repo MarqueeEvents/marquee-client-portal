@@ -53,9 +53,23 @@ MQ.shell = (function () {
     wrap.appendChild(header());
     var main = document.createElement('main');
     main.className = 'mq-main' + (takeover ? '' : ' mq-skin-main');
-    wrap.appendChild(main);
-    wrap.appendChild(footer());
     page.insertBefore(wrap, page.firstChild);
+    var content = document.getElementById('djep-content');
+    if (takeover || !content) {
+      wrap.appendChild(main);
+      wrap.appendChild(footer());
+    } else {
+      /* DJEP's content must never be moved: moving it reloads Square's secure card frame and breaks payments.
+       * The Marquee heading goes right before it and the footer right after it. */
+      var head = document.createElement('div');
+      head.className = 'mq-app mq-skin-top';
+      head.appendChild(main);
+      content.parentNode.insertBefore(head, content);
+      var foot = document.createElement('div');
+      foot.className = 'mq-app';
+      foot.appendChild(footer());
+      content.parentNode.insertBefore(foot, content.nextSibling);
+    }
     if (!MQ.config.LIVE_FOR_EVERYONE) {
       var b = document.createElement('div');
       b.className = 'mq-test-banner';
