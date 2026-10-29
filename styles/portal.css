@@ -424,7 +424,8 @@ html.mq-portal, .mq-portal body {
 .mq-evcard .bd { position: relative; padding: 0 26px 26px; margin-top: -40px; display: flex; flex-direction: column; gap: 10px; }
 .mq-evcard h3 { margin: 0; font-family: var(--mq-head); font-weight: 900; font-size: 28px; text-transform: uppercase; line-height: 1; }
 .mq-evcard .meta { color: var(--mq-body); font-size: 14px; }
-.mq-evcard .mq-evlogo { position: absolute; right: 26px; bottom: 24px; width: auto; max-width: 46%; object-fit: contain; opacity: .92; }
+.mq-evbrand { position: absolute; right: 26px; bottom: 24px; max-width: 48%; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.mq-evcard .mq-evlogo { display: block; width: auto; max-width: 100%; object-fit: contain; object-position: right bottom; opacity: .92; }
 .mq-evcard .go { margin-top: 8px; display: inline-flex; align-items: center; gap: 10px; color: var(--mq-pink-soft); font-size: 12px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
 
 .mq-footer { max-width: 1180px; margin: 0 auto; padding: 24px 24px 48px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; border-top: 1px solid #1d1d23; color: var(--mq-faint); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
@@ -503,7 +504,8 @@ html.mq-portal, .mq-portal body {
   .mq-nav { flex-wrap: nowrap; gap: 0; justify-content: center; }
   .mq-app .mq-nav a { padding: 10px 8px; letter-spacing: .1em; font-size: 10px; white-space: nowrap; }
   .mq-hide-sm { display: none; }
-  .mq-evcard .mq-evlogo { position: static; align-self: flex-end; max-height: 40px; margin-top: -4px; }
+  .mq-evbrand { position: static; align-self: flex-end; max-width: 100%; margin-top: 2px; }
+  .mq-evcard .mq-evlogo { max-height: 40px; }
   .mq-photo { min-height: 340px; }
   .mq-photo .mq-edge { top: auto; left: 0; width: auto; height: 2px; background: linear-gradient(90deg, rgba(255,46,136,0), #ff2e88 30%, #ff2e88 70%, rgba(255,46,136,0)); }
   .mq-countdown { padding: 18px 16px; }

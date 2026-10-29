@@ -18,8 +18,9 @@ MQ.renderChooser = (function () {
         '<h3>' + esc(label) + '</h3><span class="meta">' + esc(U.fmtDateLong(d)) + (e.isPhotoBooth ? '' : ' \u00b7 with ' + esc(dj.first)) + '</span>' +
         '<span class="mq-chip mq-chip-ok" style="align-self:flex-start"><span class="mq-dot"></span>' + esc(e.status || 'Booked') + '</span>' +
         '<span class="go">Open This Event ' + U.icon('arrow', 14) + '</span>' +
+        '<span class="mq-evbrand">' + (e.isPhotoBooth ? '' : '<span class="mq-tier">' + esc(dj.cardTier || dj.tier) + '</span>') +
         '<img class="mq-evlogo" src="' + esc(e.isPhotoBooth ? MQ.ASSET_BASE + 'brand/marquee-logo-white.png' : dj.logo) + '" alt="" style="height:' +
-        (e.isPhotoBooth ? 34 : Math.round((dj.logoH || 58) * 0.78)) + 'px" onerror="this.remove()"></div></a>';
+        (e.isPhotoBooth ? 34 : (dj.cardLogoH || Math.round((dj.logoH || 58) * 0.78))) + 'px" onerror="this.remove()"></span></div></a>';
     }).join('');
     main.innerHTML = '<section class="mq-hero"><span class="mq-eyebrow">Client Portal</span><h1>Welcome back,<br>' + esc(first) + '.</h1>' +
       '<p class="mq-serif">your night, by design.</p><p>You have ' + events.length + ' events with Marquee. Pick one to see its details, payments and add-ons.</p></section>' +

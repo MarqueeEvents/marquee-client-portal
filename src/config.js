@@ -48,22 +48,22 @@ MQ.config = {
   // TODO: fill in IDs, contact info and Calendly links from Bob's checklist.
   TEAM: {
     '43180': {
-      key: 'bob', cardPhotoFile: 'bob-card-2.jpg', cardPos: 'center 8%', photoFile: 'bob-photo-2.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Marquee Luxury', role: 'Owner, Lead DJ & MC', price: 3500,
+      key: 'bob', cardTier: 'Luxury Headliner', cardLogoH: 58, cardPhotoFile: 'bob-card-2.jpg', cardPos: 'center 8%', photoFile: 'bob-photo-2.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Marquee Luxury', role: 'Owner, Lead DJ & MC', price: 3500,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
     'BRADON_ID': {
-      key: 'bradon', cardPos: 'center 30%', photoFile: 'bradon-photo.jpg', logoFile: 'bradon-logo.png', logoH: 64, name: 'Bradon Smith', first: 'Bradon', tier: 'Executive Headliner', role: 'Lead DJ & MC', price: 2700,
+      key: 'bradon', cardTier: 'Executive Headliner', cardLogoH: 46, cardPos: 'center 30%', photoFile: 'bradon-photo.jpg', logoFile: 'bradon-logo.png', logoH: 64, name: 'Bradon Smith', first: 'Bradon', tier: 'Executive Headliner', role: 'Lead DJ & MC', price: 2700,
       phone: '330.432.4143', email: 'bradon@marqueeohio.com', instagram: 'dj_bradon',
       calendly: { creative: '', final: '' }
     },
     'DAN_ID': {
-      key: 'dan', cardPhotoFile: 'dan-card-2.jpg', cardPos: 'center 0%', photoFile: 'dan-photo-2.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
+      key: 'dan', cardTier: 'Headliner', cardLogoH: 56, cardPhotoFile: 'dan-card-2.jpg', cardPos: 'center 0%', photoFile: 'dan-photo-2.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
     'JAMES_ID': {
-      key: 'james', cardPos: 'center 0%', photoFile: 'james-photo.jpg', logoFile: 'james-logo.png', logoH: 58, name: 'James Stevenson', first: 'James', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
+      key: 'james', cardTier: 'Headliner', cardLogoH: 54, cardPos: 'center 0%', photoFile: 'james-photo.jpg', logoFile: 'james-logo-2.png', logoH: 58, name: 'James Stevenson', first: 'James', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     }
