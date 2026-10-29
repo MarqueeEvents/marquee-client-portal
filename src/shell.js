@@ -18,7 +18,7 @@ MQ.shell = (function () {
     var html = items.map(function (i) {
       return '<a href="' + i.href + '"' + (i.on ? ' aria-current="page"' : '') + '>' + i.label + '</a>';
     }).join('');
-    html += '<a href="#" data-mq-logout>' + U.icon('logout', 14) + 'Logout</a>';
+    html += '<a href="#" data-mq-logout aria-label="Logout">' + U.icon('logout', 14) + '<span class="mq-hide-sm">Logout</span></a>';
     return { html: html, logout: logout };
   }
 

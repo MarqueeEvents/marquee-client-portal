@@ -497,7 +497,9 @@ html.mq-portal, .mq-portal body {
 @media (max-width: 720px) {
   .mq-main { padding: 32px 16px 48px; gap: 24px; }
   .mq-header-in { padding: 14px 16px; justify-content: center; }
-  .mq-app .mq-nav a { padding: 10px 10px; letter-spacing: .12em; font-size: 11px; }
+  .mq-nav { flex-wrap: nowrap; gap: 0; justify-content: center; }
+  .mq-app .mq-nav a { padding: 10px 8px; letter-spacing: .1em; font-size: 10px; white-space: nowrap; }
+  .mq-hide-sm { display: none; }
   .mq-photo { min-height: 340px; }
   .mq-photo .mq-edge { top: auto; left: 0; width: auto; height: 2px; background: linear-gradient(90deg, rgba(255,46,136,0), #ff2e88 30%, #ff2e88 70%, rgba(255,46,136,0)); }
   .mq-countdown { padding: 18px 16px; }
