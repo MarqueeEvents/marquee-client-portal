@@ -20,7 +20,7 @@ MQ.reader = (function () {
     var c = el.cloneNode(true);
     Array.prototype.forEach.call(c.querySelectorAll('br'), function (b) { b.replaceWith('\n'); });
     Array.prototype.forEach.call(c.querySelectorAll('p,div,tr,li,b,strong'), function (b) { b.append('\n'); });
-    return c.textContent.replace(/[ \t ]+/g, ' ');
+    return c.textContent.replace(/[ \t\u00a0]+/g, ' ');
   }
   /* Non-empty lines of a box, minus its title and any lines matching skip. */
   function boxLines(container, skip) {
@@ -31,8 +31,13 @@ MQ.reader = (function () {
   }
   function labelValue(container, label) {
     if (!container) return null;
-    var m = new RegExp(label + ':\\s*([^\\n]+)', 'i').exec(blockText(container));
-    return m ? m[1].trim() : null;
+    /* Value on the same line only, so an empty "Setup Time:" does not swallow the next line. */
+    /* If the label sits alone on its line (bold labels do), use the next line unless it is another label. */
+    var m = new RegExp(label + ':[ \\t]*([^\\n]*)(?:\\n\\s*([^\\n]*))?', 'i').exec(blockText(container));
+    if (!m) return null;
+    if (m[1].trim()) return m[1].trim();
+    var next = (m[2] || '').trim();
+    return next && !/^[A-Za-z][A-Za-z /#]{1,30}:/.test(next) ? next : null;
   }
 
   /* Home page and My Events: one block per event (.djep-singleeventdiv). */
@@ -64,34 +69,72 @@ MQ.reader = (function () {
   function readEventDetails(root) {
     root = root || document;
     var feeBox = root.querySelector('.djep-feedetailsbox');
-    var lines = [];
+    var lines = [], group = null;
     if (feeBox) {
       Array.prototype.forEach.call(feeBox.querySelectorAll('tr'), function (tr) {
         var cells = tr.querySelectorAll('td');
-        if (cells.length >= 2) {
-          var price = money(text(cells[cells.length - 1]));
-          var name = text(cells[0]);
-          if (name && price !== null) lines.push({ name: name, price: price });
-        }
+        if (!cells.length) return;
+        var name = text(cells[0]);
+        var price = cells.length >= 2 ? money(text(cells[cells.length - 1])) : null;
+        if (name && price !== null) lines.push({ name: name, price: price, group: group });
+        else if (name && !/^description$/i.test(name)) group = name;
       });
     }
+
+    /* Service details: fieldsets with a legend (Service, Description, Addons). */
+    var service = {};
+    Array.prototype.forEach.call(root.querySelectorAll('.djep-servicedetailsbox fieldset'), function (fs) {
+      var legend = fs.querySelector('legend');
+      var key = text(legend);
+      if (!key) return;
+      var c = fs.cloneNode(true);
+      var lg = c.querySelector('legend');
+      if (lg) lg.remove();
+      service[key.toLowerCase()] = boxLines(c);
+    });
+
+    /* Payment history rows (date, method, amount...). */
+    var payBox = root.querySelector('.djep-paymenthistorybox');
+    var history = [];
+    if (payBox) {
+      Array.prototype.forEach.call(payBox.querySelectorAll('tr'), function (tr) {
+        var cells = Array.prototype.map.call(tr.querySelectorAll('td'), text).filter(Boolean);
+        if (cells.length >= 2 && !cells.every(function (c) { return /^(date|amount|method|type|description|payment)s?$/i.test(c); })) history.push(cells);
+      });
+    }
+
+    var docs = Array.prototype.map.call(root.querySelectorAll('.djep-documentsbox a[href]'), function (a) {
+      return { name: text(a), href: a.href };
+    }).filter(function (d) { return d.name; });
+
+    var desc = root.querySelector('.djep-eventdescriptionbox');
+    var times = root.querySelector('.djep-eventdatetimesbox');
     var totals = root.querySelector('.djep-totalfeebox');
+    var req = root.querySelector('.djep-requestchangesbox a[href]');
+    var pay = root.querySelector('a.djep-paymentbutton');
     return {
-      id: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Event ID'),
-      name: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Event Name'),
-      type: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Event Type'),
-      status: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Booking Status'),
-      date: labelValue(root.querySelector('.djep-eventdatetimesbox'), 'Event Date'),
-      start: labelValue(root.querySelector('.djep-eventdatetimesbox'), 'Start Time'),
-      end: labelValue(root.querySelector('.djep-eventdatetimesbox'), 'End Time'),
+      id: labelValue(desc, 'Event ID'),
+      name: labelValue(desc, 'Event Name'),
+      type: labelValue(desc, 'Event Type'),
+      status: labelValue(desc, 'Booking Status'),
+      date: labelValue(times, 'Event Date'),
+      setup: labelValue(times, 'Setup Time'),
+      start: labelValue(times, 'Start Time'),
+      end: labelValue(times, 'End Time'),
+      venueLines: boxLines(root.querySelector('.djep-venueinfobox'), /^venue information$/i),
       venue: boxLines(root.querySelector('.djep-venueinfobox'), /^venue information$/i).join(', ') || null,
       staff: boxLines(root.querySelector('.djep-staffingbox'), /^staffing$|^attire:/i),
       attire: labelValue(root.querySelector('.djep-staffingbox'), 'Attire'),
+      service: service,
       lines: lines,
+      history: history,
+      documents: docs,
+      subtotal: money(labelValue(totals, 'Subtotal')),
       totalFee: money(labelValue(totals, 'TOTAL FEE')),
       deposit: money(labelValue(totals, 'DEPOSIT')),
       payments: money(labelValue(totals, 'Payments')),
-      balanceDue: money(labelValue(totals, 'BALANCE DUE'))
+      balanceDue: money(labelValue(totals, 'BALANCE DUE')),
+      links: { request: req ? req.href : null, payment: pay ? pay.href : null }
     };
   }
 

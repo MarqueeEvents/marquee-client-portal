@@ -43,7 +43,8 @@ MQ.shell = (function () {
     return el;
   }
 
-  /* Puts the Marquee header at the top of every portal page. Returns the app container for takeover pages. */
+  /* Puts the Marquee header, main area and footer on the page. On takeover pages DJEP's content is hidden;
+   * on other pages MQ.skin moves DJEP's content into the main area. */
   function mount(takeover) {
     var page = document.getElementById('djep-page') || document.body;
     var wrap = document.createElement('div');
@@ -51,23 +52,19 @@ MQ.shell = (function () {
     wrap.id = 'mq-app';
     wrap.appendChild(header());
     var main = document.createElement('main');
-    main.className = 'mq-main';
-    if (takeover) wrap.appendChild(main);
-    var content = document.getElementById('djep-content');
-    if (content && content.parentNode === page) page.insertBefore(wrap, content);
-    else page.insertBefore(wrap, page.firstChild);
-    if (takeover) wrap.appendChild(footer());
-    else {
-      var f = document.createElement('div');
-      f.className = 'mq-app';
-      f.appendChild(footer());
-      page.appendChild(f);
-    }
+    main.className = 'mq-main' + (takeover ? '' : ' mq-skin-main');
+    wrap.appendChild(main);
+    wrap.appendChild(footer());
+    page.insertBefore(wrap, page.firstChild);
     if (!MQ.config.LIVE_FOR_EVERYONE) {
       var b = document.createElement('div');
       b.className = 'mq-test-banner';
       b.textContent = 'Marquee preview \u00b7 test mode';
       wrap.appendChild(b);
+    }
+    if (!takeover) {
+      document.documentElement.classList.add('mq-skin');
+      MQ.skin.mount(main);
     }
     return main;
   }

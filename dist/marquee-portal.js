@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T13:17Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T13:25Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -291,7 +291,7 @@ MQ.reader = (function () {
     var c = el.cloneNode(true);
     Array.prototype.forEach.call(c.querySelectorAll('br'), function (b) { b.replaceWith('\n'); });
     Array.prototype.forEach.call(c.querySelectorAll('p,div,tr,li,b,strong'), function (b) { b.append('\n'); });
-    return c.textContent.replace(/[ \t ]+/g, ' ');
+    return c.textContent.replace(/[ \t\u00a0]+/g, ' ');
   }
   /* Non-empty lines of a box, minus its title and any lines matching skip. */
   function boxLines(container, skip) {
@@ -302,8 +302,13 @@ MQ.reader = (function () {
   }
   function labelValue(container, label) {
     if (!container) return null;
-    var m = new RegExp(label + ':\\s*([^\\n]+)', 'i').exec(blockText(container));
-    return m ? m[1].trim() : null;
+    /* Value on the same line only, so an empty "Setup Time:" does not swallow the next line. */
+    /* If the label sits alone on its line (bold labels do), use the next line unless it is another label. */
+    var m = new RegExp(label + ':[ \\t]*([^\\n]*)(?:\\n\\s*([^\\n]*))?', 'i').exec(blockText(container));
+    if (!m) return null;
+    if (m[1].trim()) return m[1].trim();
+    var next = (m[2] || '').trim();
+    return next && !/^[A-Za-z][A-Za-z /#]{1,30}:/.test(next) ? next : null;
   }
 
   /* Home page and My Events: one block per event (.djep-singleeventdiv). */
@@ -335,34 +340,72 @@ MQ.reader = (function () {
   function readEventDetails(root) {
     root = root || document;
     var feeBox = root.querySelector('.djep-feedetailsbox');
-    var lines = [];
+    var lines = [], group = null;
     if (feeBox) {
       Array.prototype.forEach.call(feeBox.querySelectorAll('tr'), function (tr) {
         var cells = tr.querySelectorAll('td');
-        if (cells.length >= 2) {
-          var price = money(text(cells[cells.length - 1]));
-          var name = text(cells[0]);
-          if (name && price !== null) lines.push({ name: name, price: price });
-        }
+        if (!cells.length) return;
+        var name = text(cells[0]);
+        var price = cells.length >= 2 ? money(text(cells[cells.length - 1])) : null;
+        if (name && price !== null) lines.push({ name: name, price: price, group: group });
+        else if (name && !/^description$/i.test(name)) group = name;
       });
     }
+
+    /* Service details: fieldsets with a legend (Service, Description, Addons). */
+    var service = {};
+    Array.prototype.forEach.call(root.querySelectorAll('.djep-servicedetailsbox fieldset'), function (fs) {
+      var legend = fs.querySelector('legend');
+      var key = text(legend);
+      if (!key) return;
+      var c = fs.cloneNode(true);
+      var lg = c.querySelector('legend');
+      if (lg) lg.remove();
+      service[key.toLowerCase()] = boxLines(c);
+    });
+
+    /* Payment history rows (date, method, amount...). */
+    var payBox = root.querySelector('.djep-paymenthistorybox');
+    var history = [];
+    if (payBox) {
+      Array.prototype.forEach.call(payBox.querySelectorAll('tr'), function (tr) {
+        var cells = Array.prototype.map.call(tr.querySelectorAll('td'), text).filter(Boolean);
+        if (cells.length >= 2 && !cells.every(function (c) { return /^(date|amount|method|type|description|payment)s?$/i.test(c); })) history.push(cells);
+      });
+    }
+
+    var docs = Array.prototype.map.call(root.querySelectorAll('.djep-documentsbox a[href]'), function (a) {
+      return { name: text(a), href: a.href };
+    }).filter(function (d) { return d.name; });
+
+    var desc = root.querySelector('.djep-eventdescriptionbox');
+    var times = root.querySelector('.djep-eventdatetimesbox');
     var totals = root.querySelector('.djep-totalfeebox');
+    var req = root.querySelector('.djep-requestchangesbox a[href]');
+    var pay = root.querySelector('a.djep-paymentbutton');
     return {
-      id: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Event ID'),
-      name: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Event Name'),
-      type: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Event Type'),
-      status: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Booking Status'),
-      date: labelValue(root.querySelector('.djep-eventdatetimesbox'), 'Event Date'),
-      start: labelValue(root.querySelector('.djep-eventdatetimesbox'), 'Start Time'),
-      end: labelValue(root.querySelector('.djep-eventdatetimesbox'), 'End Time'),
+      id: labelValue(desc, 'Event ID'),
+      name: labelValue(desc, 'Event Name'),
+      type: labelValue(desc, 'Event Type'),
+      status: labelValue(desc, 'Booking Status'),
+      date: labelValue(times, 'Event Date'),
+      setup: labelValue(times, 'Setup Time'),
+      start: labelValue(times, 'Start Time'),
+      end: labelValue(times, 'End Time'),
+      venueLines: boxLines(root.querySelector('.djep-venueinfobox'), /^venue information$/i),
       venue: boxLines(root.querySelector('.djep-venueinfobox'), /^venue information$/i).join(', ') || null,
       staff: boxLines(root.querySelector('.djep-staffingbox'), /^staffing$|^attire:/i),
       attire: labelValue(root.querySelector('.djep-staffingbox'), 'Attire'),
+      service: service,
       lines: lines,
+      history: history,
+      documents: docs,
+      subtotal: money(labelValue(totals, 'Subtotal')),
       totalFee: money(labelValue(totals, 'TOTAL FEE')),
       deposit: money(labelValue(totals, 'DEPOSIT')),
       payments: money(labelValue(totals, 'Payments')),
-      balanceDue: money(labelValue(totals, 'BALANCE DUE'))
+      balanceDue: money(labelValue(totals, 'BALANCE DUE')),
+      links: { request: req ? req.href : null, payment: pay ? pay.href : null }
     };
   }
 
@@ -681,6 +724,151 @@ MQ.reels = (function () {
   return { render: render, load: load };
 })();
 
+/* ---- src/skin.js ---- */
+/* Pages we keep from DJEP because they hold live forms (payments, request changes, profile, contact).
+ * DJEP's content and its working buttons stay exactly as they are; we move them into the Marquee
+ * layout, replace the old title with a Marquee heading, and add a few page-specific touches.
+ */
+window.MQ = window.MQ || {};
+
+MQ.skin = (function () {
+  var U = MQ.util, esc = U.esc, icon = U.icon;
+
+  var PAGES = [
+    { test: /makeapayment\.asp/i, eyebrow: 'Payments', title: 'Make a Payment', serif: 'quick, simple, secure.', enhance: payment },
+    { test: /requestchanges\.asp/i, eyebrow: 'Your Event', title: 'Request Changes', serif: 'we\u2019ll take it from here.', enhance: requestChanges,
+      intro: 'Pick what you would like to change and send it over. Your headliner reviews every request and confirms with you before anything changes.' },
+    { test: /profile\.asp/i, eyebrow: 'Your Account', title: 'My Profile', serif: 'your info, up to date.', enhance: profile },
+    { test: /contact\.asp/i, eyebrow: 'Get In Touch', title: 'Contact Us', serif: 'we\u2019re here for you.', enhance: contact,
+      intro: 'Send us a message anytime. Texts and emails are answered within 24 to 48 hours. Weekends are show days, so replies may come Monday.' },
+    { test: /planmyevent\.asp/i, eyebrow: 'Planning', title: 'Plan Your Event', serif: 'your night, by design.',
+      intro: 'Marquee couples plan their music and timeline in the Vibo app.', enhance: planner }
+  ];
+
+  function eventId() { return new URLSearchParams(location.search).get('eventid'); }
+
+  function oldTitle(content) {
+    var h = content.querySelector('.djep-h2');
+    if (!h) return '';
+    var t = '';
+    Array.prototype.forEach.call(h.childNodes, function (n) { if (n.nodeType === 3) t += n.textContent; });
+    if (!t.trim()) { var s = h.querySelector('span'); t = s ? s.textContent : h.textContent; }
+    return t.trim();
+  }
+
+  function mount(main) {
+    var content = document.getElementById('djep-content');
+    if (!content) return;
+    var page = PAGES.filter(function (p) { return p.test.test(location.pathname); })[0] || {};
+    var title = page.title || oldTitle(content) || 'Client Portal';
+    if (/makeapayment/i.test(location.pathname)) {
+      var t = oldTitle(content);
+      if (t && !/choose a payment gateway/i.test(t)) title = t.replace(/^make a payment$/i, 'Make a Payment');
+    }
+    var backId = eventId();
+    var hero = document.createElement('div');
+    hero.className = 'mq-skin-head';
+    hero.innerHTML = (backId ? '<nav class="mq-crumb" aria-label="Breadcrumb"><a href="/clients/eventdetails.asp?eventid=' + encodeURIComponent(backId) + '">' +
+        icon('arrow', 14).replace('<svg', '<svg style="transform:rotate(180deg)"') + 'Back to event details</a></nav>' : '') +
+      '<section class="mq-hero mq-hero-sm"><span class="mq-eyebrow">' + esc(page.eyebrow || 'Client Portal') + '</span><h1>' + esc(title) + '</h1>' +
+      '<p class="mq-serif">' + esc(page.serif || 'your night, by design.') + '</p>' + (page.intro ? '<p>' + esc(page.intro) + '</p>' : '') + '</section>';
+    main.appendChild(hero);
+    var extra = document.createElement('div');
+    extra.className = 'mq-skin-extra';
+    main.appendChild(extra);
+    main.appendChild(content);
+    if (page.enhance) {
+      try { page.enhance(content, extra); } catch (e) { console.error('[Marquee portal] skin', e); }
+    }
+  }
+
+  /* Make a Payment: balance summary on top, gateway buttons as cards. */
+  function payment(content, extra) {
+    var id = eventId();
+    var buttons = content.querySelectorAll('a.djep-paywithbutton');
+    if (buttons.length) {
+      content.classList.add('mq-paychoose');
+      var info = {
+        'djep-squarebutton': { name: 'Card', sub: 'Visa, Mastercard, Amex, Discover through Square. A 3.5% processing fee applies.' },
+        'djep-venmobutton': { name: 'Venmo', sub: 'Send from the Venmo app. No processing fee.' },
+        'djep-cashappbutton': { name: 'Cash App', sub: 'Send from Cash App. No processing fee.' }
+      };
+      var grid = document.createElement('div');
+      grid.className = 'mq-paygrid';
+      Array.prototype.forEach.call(buttons, function (a) {
+        var meta = info[a.id] || { name: a.textContent.trim() || 'Pay', sub: '' };
+        var label = document.createElement('span');
+        label.className = 'mq-paytext';
+        label.innerHTML = '<b>' + esc(meta.name) + '</b><i>' + esc(meta.sub) + '</i><em>Continue ' + icon('arrow', 14) + '</em>';
+        a.appendChild(label);
+        a.classList.add('mq-paycard');
+        grid.appendChild(a);
+      });
+      var box = content.querySelector('.djep-makepaymentbox') || content;
+      box.insertBefore(grid, box.firstChild);
+      Array.prototype.forEach.call(box.querySelectorAll(':scope > p, :scope > br'), function (n) { if (!n.querySelector('a')) n.remove(); });
+      var choose = document.createElement('div');
+      choose.className = 'mq-rule hot';
+      choose.innerHTML = '<span>Choose How To Pay</span>';
+      box.insertBefore(choose, grid);
+    }
+    if (!id) return;
+    MQ.reader.loadEventDetails(id).then(function (d) {
+      var date = U.parseDate(d.date);
+      if (!date || d.totalFee == null) return;
+      var total = d.totalFee, bal = d.balanceDue != null ? d.balanceDue : total;
+      var sched = MQ.model.schedule(date, total, U.round2(total - bal));
+      var next = sched.filter(function (p) { return p.status !== 'paid'; })[0];
+      var pct = total ? Math.round((total - bal) / total * 100) : 0;
+      extra.innerHTML = '<section class="mq-card mq-paysum"><div class="c"><span class="mq-sub">' + esc(U.coupleFromName(d.name, d.type).couple) + '</span>' +
+        '<b class="t">' + esc(d.type || '') + ' \u00b7 ' + esc(U.fmtDateLong(date)) + '</b>' +
+        '<div class="mq-meter" style="margin-top:14px"><div style="width:' + pct + '%"></div></div>' +
+        '<div class="mq-meter-lbl"><span><b>' + U.money(total - bal, true) + '</b> paid</span><span><b>' + U.money(bal, true) + '</b> remaining</span></div></div>' +
+        (next ? '<div class="mq-next"><span>' + (next.status === 'due' ? 'Due Now \u00b7 ' : 'Next Payment \u00b7 ') + esc(next.label) + '</span><b>' + U.money(next.left) +
+          '</b><span>' + (next.due ? (next.status === 'due' ? 'Was due ' : 'Due ') + U.fmtDateLong(next.due) : 'Due now') + '</span></div>'
+          : '<div class="mq-next paid"><span>All Set</span><b>Paid in full</b><span>Thank you!</span></div>') +
+        '</section>';
+    }).catch(function () {});
+  }
+
+  /* Request Changes: the four choices become cards; DJEP shows the matching form below. */
+  function requestChanges(content) {
+    var radios = content.querySelectorAll('input[type=radio][name=type_of_change]');
+    if (!radios.length) return;
+    var wrap = radios[0].closest('.col-xs-12') || radios[0].parentNode.parentNode;
+    wrap.classList.add('mq-choices');
+    var subs = ['Moving to a new date', 'Start or end times', 'New location', 'Anything else, including add-ons'];
+    Array.prototype.forEach.call(radios, function (r, i) {
+      var label = r.closest('label');
+      if (!label) return;
+      label.classList.add('mq-choice');
+      var t = label.textContent.trim().replace(/^change of /i, '');
+      Array.prototype.forEach.call(label.childNodes, function (n) { if (n.nodeType === 3) n.textContent = ''; });
+      var s = document.createElement('span');
+      s.innerHTML = '<b>' + esc(t.charAt(0).toUpperCase() + t.slice(1)) + '</b><i>' + esc(subs[i] || '') + '</i>';
+      label.appendChild(s);
+    });
+  }
+
+  function profile(content) { content.classList.add('mq-profile'); }
+
+  function contact(content) {
+    var icons = { 'djep-contacttelephone': 'phone', 'djep-contactemail': 'mail', 'djep-contactaddress': 'pin', 'djep-contactwebsite': 'arrow' };
+    Array.prototype.forEach.call(content.querySelectorAll('.djep-ourcontactinfobox td[id]'), function (td) {
+      var name = icons[td.id] || (/addr/i.test(td.id) ? 'pin' : /web/i.test(td.id) ? 'arrow' : 'chat');
+      td.innerHTML = '<span class="mq-ico">' + icon(name, 18) + '</span>';
+    });
+  }
+
+  function planner(content, extra) {
+    extra.innerHTML = '<section class="mq-card mq-dcard" style="align-items:flex-start"><span class="mq-eyebrow">Plan In Vibo</span>' +
+      '<p class="mq-body">Build your timeline, must-play and do-not-play lists in the Vibo app. Your headliner sees every change.</p>' +
+      '<a class="mq-btn mq-btn-pink" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">' + icon('music', 16) + 'Open Vibo</a></section>';
+  }
+
+  return { mount: mount };
+})();
+
 /* ---- src/shell.js ---- */
 /* Header, footer and the app container. Our header replaces DJEP's on every portal page. */
 window.MQ = window.MQ || {};
@@ -727,7 +915,8 @@ MQ.shell = (function () {
     return el;
   }
 
-  /* Puts the Marquee header at the top of every portal page. Returns the app container for takeover pages. */
+  /* Puts the Marquee header, main area and footer on the page. On takeover pages DJEP's content is hidden;
+   * on other pages MQ.skin moves DJEP's content into the main area. */
   function mount(takeover) {
     var page = document.getElementById('djep-page') || document.body;
     var wrap = document.createElement('div');
@@ -735,23 +924,19 @@ MQ.shell = (function () {
     wrap.id = 'mq-app';
     wrap.appendChild(header());
     var main = document.createElement('main');
-    main.className = 'mq-main';
-    if (takeover) wrap.appendChild(main);
-    var content = document.getElementById('djep-content');
-    if (content && content.parentNode === page) page.insertBefore(wrap, content);
-    else page.insertBefore(wrap, page.firstChild);
-    if (takeover) wrap.appendChild(footer());
-    else {
-      var f = document.createElement('div');
-      f.className = 'mq-app';
-      f.appendChild(footer());
-      page.appendChild(f);
-    }
+    main.className = 'mq-main' + (takeover ? '' : ' mq-skin-main');
+    wrap.appendChild(main);
+    wrap.appendChild(footer());
+    page.insertBefore(wrap, page.firstChild);
     if (!MQ.config.LIVE_FOR_EVERYONE) {
       var b = document.createElement('div');
       b.className = 'mq-test-banner';
       b.textContent = 'Marquee preview \u00b7 test mode';
       wrap.appendChild(b);
+    }
+    if (!takeover) {
+      document.documentElement.classList.add('mq-skin');
+      MQ.skin.mount(main);
     }
     return main;
   }
@@ -1103,6 +1288,120 @@ MQ.renderEvent = (function () {
   return { render: render };
 })();
 
+/* ---- src/render-details.js ---- */
+/* Event Details page (eventdetails.asp), rebuilt in the Marquee design from the data DJEP puts on the page. */
+window.MQ = window.MQ || {};
+
+MQ.renderDetails = (function () {
+  var U = MQ.util, esc = U.esc, icon = U.icon;
+
+  function row(label, value, extra) {
+    if (!value) return '';
+    return '<div class="mq-dl-row"><dt>' + esc(label) + '</dt><dd>' + (extra ? value : esc(value)) + '</dd></div>';
+  }
+
+  function card(eyebrow, title, body, cls) {
+    return '<section class="mq-card mq-dcard' + (cls ? ' ' + cls : '') + '"><div class="mq-dcard-hd"><span class="mq-eyebrow">' + esc(eyebrow) + '</span>' +
+      (title ? '<h2>' + title + '</h2>' : '') + '</div>' + body + '</section>';
+  }
+
+  function render(main, vm, events) {
+    var d = vm.details, dj = vm.dj, date = vm.eventDate;
+    var backHref = '/clients/home.asp' + (events.length > 1 ? '?mqevent=' + vm.id : '');
+    var payHref = d.links.payment || vm.list.links.payment || '#';
+    var reqHref = d.links.request || '/clients/requestchanges.asp?eventid=' + encodeURIComponent(vm.id);
+    var mapHref = d.venueLines.length ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(d.venueLines.join(', ')) : '';
+
+    /* Header */
+    var html = '<nav class="mq-crumb" aria-label="Breadcrumb"><a href="' + backHref + '">' + icon('arrow', 14).replace('<svg', '<svg style="transform:rotate(180deg)"') +
+      'Back to your event</a></nav>' +
+      '<section class="mq-hero mq-hero-sm"><span class="mq-eyebrow">Event Details</span><h1>' + esc(vm.couple.couple) + '</h1>' +
+      '<p class="mq-serif">every detail, in one place.</p></section>';
+
+    /* Summary strip: date tile, type, status, quick actions */
+    html += '<section class="mq-card mq-dsum"><div class="mq-datetile" aria-label="' + esc(U.fmtDateLong(date)) + '"><div class="m">' + U.MONTHS[date.getMonth()] +
+      '</div><div class="b"><div class="d">' + date.getDate() + '</div><div class="y">' + date.getFullYear() + '</div><div class="w">' + U.DAYS[date.getDay()] + '</div></div></div>' +
+      '<div class="mq-dsum-info"><div class="mq-tags"><span class="mq-chip mq-chip-ok"><span class="mq-dot"></span>' + esc(d.status || vm.list.status || 'Booked') + '</span>' +
+      '<span class="mq-chip mq-chip-dim">Event #' + esc(d.id || vm.id) + '</span></div>' +
+      '<h2>' + esc(d.type || vm.list.type || '') + '</h2>' +
+      (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') + '</div>' +
+      '<div class="mq-dsum-act"><a class="mq-btn mq-btn-pink" href="' + esc(payHref) + '">' + icon('card', 16) + 'Make a Payment</a>' +
+      (vm.isBooth ? '' : '<a class="mq-btn mq-btn-ghost" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">' + icon('music', 15) + 'Open Vibo</a>') + '</div></section>';
+
+    /* When & Where */
+    var when = '<dl class="mq-dl">' + row('Date', U.fmtDateLong(date) + ' (' + U.DAYS[date.getDay()] + ')') +
+      row('Setup', d.setup) + row('Start', d.start) + row('End', d.end) + '</dl>' +
+      '<p class="mq-small">Times can shift as your timeline comes together. Your headliner confirms everything at final planning.</p>';
+    var where = '<div class="mq-place"><span class="mq-ico">' + icon('pin', 20) + '</span><div><b>' + esc(d.venueLines[0] || 'Venue to be confirmed') + '</b>' +
+      (d.venueLines.length > 1 ? '<span>' + esc(d.venueLines.slice(1).join(', ')) + '</span>' : '') + '</div></div>' +
+      (mapHref ? '<a class="mq-btn mq-btn-ghost mq-btn-sm" href="' + mapHref + '" target="_blank" rel="noopener">' + icon('arrow', 14) + 'Open in Maps</a>' : '');
+    html += '<div class="mq-dgrid">' + card('When', 'Date &amp; Times', when) + card('Where', 'Your Venue', where) + '</div>';
+
+    /* Package + Team */
+    var svc = d.service || {};
+    var svcName = (svc.service || [])[0] || '';
+    var included = svc.description || [];
+    var addons = (svc.addons || []).join(', ').split(/\s*,\s*/).filter(Boolean);
+    var pkg = (svcName ? '<div class="mq-pkg-name">' + esc(svcName) + '</div>' : '') +
+      (included.length ? '<ul class="mq-incl">' + included.map(function (l) { return '<li><span class="ck">' + icon('check', 12) + '</span>' + esc(l) + '</li>'; }).join('') + '</ul>' : '') +
+      (addons.length ? '<div class="mq-sub" style="margin-top:18px">Add-Ons</div><div class="mq-addchips">' + addons.map(function (a) { return '<span>' + esc(a) + '</span>'; }).join('') + '</div>' : '');
+    var team = '<div class="mq-hl-row"><img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + '" style="height:' + Math.round(dj.logoH * 0.8) + 'px">' +
+      '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
+      '<ul class="mq-staff">' + (d.staff.length ? d.staff : [dj.name]).map(function (s) { return '<li>' + icon('music', 14) + esc(s) + '</li>'; }).join('') + '</ul>' +
+      (d.attire ? '<dl class="mq-dl">' + row('Attire', d.attire) + '</dl>' : '') +
+      '<div class="mq-contacts mq-contacts-sm">' + [
+        dj.sms && '<a href="' + dj.sms + '">' + icon('chat') + '<span>Text ' + esc(dj.first) + '</span></a>',
+        dj.mailto && '<a href="' + dj.mailto + '">' + icon('mail') + '<span>Email ' + esc(dj.first) + '</span></a>'
+      ].filter(Boolean).join('') + '</div>';
+    html += '<div class="mq-dgrid mq-dgrid-wide">' + card('Your Package', 'What&rsquo;s Included', pkg || '<p class="mq-small">Package details will appear here.</p>') +
+      card('Your Team', vm.isBooth ? 'Your Point Of Contact' : 'Your Headliner', team) + '</div>';
+
+    /* Fees + payments */
+    var groups = [];
+    d.lines.forEach(function (l) {
+      var g = groups.filter(function (x) { return x.name === (l.group || 'Fees'); })[0];
+      if (!g) { g = { name: l.group || 'Fees', items: [] }; groups.push(g); }
+      g.items.push(l);
+    });
+    var fees = groups.map(function (g) {
+      return '<div class="mq-sub" style="margin-top:14px">' + esc(g.name === 'Addons' ? 'Add-Ons' : g.name) + '</div><ul class="mq-feelist">' +
+        g.items.map(function (l) { return '<li><span>' + esc(l.name) + '</span><b>' + U.money(l.price, true) + '</b></li>'; }).join('') + '</ul>';
+    }).join('');
+    var totals = '<dl class="mq-totals">' +
+      (d.subtotal != null && d.subtotal !== d.totalFee ? row('Subtotal', U.money(d.subtotal, true)) : '') +
+      row('Total Fee', U.money(d.totalFee, true)) + row('Retainer', U.money(d.deposit, true)) + row('Paid So Far', U.money(d.payments || 0, true)) +
+      '</dl><div class="mq-baldue"><span>Balance Due</span><b>' + U.money(d.balanceDue, true) + '</b></div>';
+    var hist = d.history.length
+      ? '<ul class="mq-hist">' + d.history.map(function (cells) {
+          return '<li><span class="ck">' + icon('check', 12) + '</span><span>' + esc(cells.slice(0, -1).join(' \u00b7 ')) + '</span><b>' + esc(cells[cells.length - 1]) + '</b></li>';
+        }).join('') + '</ul>'
+      : '<p class="mq-empty">No payments yet. Your retainer locks in your date.</p>';
+    var n = vm.next;
+    var nextBox = n
+      ? '<div class="mq-next"><span>' + (n.status === 'due' ? 'Due Now \u00b7 ' : 'Next Payment \u00b7 ') + esc(n.label) + '</span><b>' + U.money(n.left) + '</b><span>' +
+        (n.due ? (n.status === 'due' ? 'Was due ' : 'Due ') + U.fmtDateLong(n.due) : 'Due now') + '</span></div>'
+      : '<div class="mq-next paid"><span>All Set</span><b>Paid in full</b><span>Thank you! Nothing more is due.</span></div>';
+    html += '<section class="mq-invest" aria-labelledby="mq-fees"><div class="mq-sechead"><div><span class="mq-eyebrow">Payments &amp; Finances</span>' +
+      '<h2 class="mq-h2" id="mq-fees">Your Investment</h2></div></div><div class="mq-invest-row">' +
+      '<div class="mq-night"><span class="mq-sub">Fee Details</span>' + fees + totals + '</div>' +
+      '<div class="mq-stand"><span class="mq-sub">Payment History</span>' + hist + nextBox +
+      (n ? '<a class="mq-btn mq-btn-pink" href="' + esc(payHref) + '">' + icon('card', 16) + 'Make a Payment</a>' : '') +
+      '<p class="mq-small">Pay by card (3.5% processing fee), Venmo or Cash App.</p></div></div></section>';
+
+    /* Documents + Request changes */
+    var docs = d.documents.length
+      ? '<ul class="mq-docs">' + d.documents.map(function (x) { return '<li><a href="' + esc(x.href) + '" target="_blank" rel="noopener">' + icon('checkbox', 16) + '<span>' + esc(x.name) + '</span>' + icon('arrow', 14) + '</a></li>'; }).join('') + '</ul>'
+      : '<p class="mq-empty">Your agreement and any shared files will show up here.</p>';
+    var change = '<p class="mq-body">Something not quite right? Venue change, new time, or anything else, send it over and ' + esc(dj.first) +
+      ' will update your event and confirm with you.</p><a class="mq-btn mq-btn-ghost" href="' + esc(reqHref) + '">' + icon('send', 15) + 'Request Changes</a>';
+    html += '<div class="mq-dgrid">' + card('Documents', 'Your Files', docs) + card('Need A Change?', 'Request Changes', change) + '</div>';
+
+    main.innerHTML = html;
+  }
+
+  return { render: render };
+})();
+
 /* ---- src/main.js ---- */
 /* Entry point. Runs on every DJEP client portal page via the Custom Scripting box.
  * Home and My Events are rebuilt in the Marquee design. Every other portal page keeps DJEP's
@@ -1113,6 +1412,8 @@ MQ.renderEvent = (function () {
     return /\/clients\/(home|events)\.asp/i.test(location.pathname) || /\/clients\/?$/i.test(location.pathname);
   }
 
+  function isDetailsPage() { return /\/clients\/eventdetails\.asp/i.test(location.pathname); }
+
   function upcoming(events) {
     return events.filter(function (e) { return e.id && !/cancel/i.test(e.status || ''); });
   }
@@ -1121,6 +1422,7 @@ MQ.renderEvent = (function () {
     if (!window.MQ || !MQ.gate || !MQ.gate.shouldRun()) return;
     var html = document.documentElement;
     html.classList.add('mq-portal');
+    if (isDetailsPage()) return startDetails(html);
     var takeover = isTakeoverPage();
     var events = takeover ? upcoming(MQ.reader.readEventList()) : [];
     if (!takeover || !events.length) { MQ.shell.mount(false); return; }
@@ -1143,6 +1445,28 @@ MQ.renderEvent = (function () {
       console.error('[Marquee portal] could not build event page', err);
       html.classList.remove('mq-takeover');
     }).then(function () { html.classList.remove('mq-loading'); });
+  }
+
+  /* Event Details: rebuild from this page's own data; the event list (for the headliner) comes from home. */
+  function startDetails(html) {
+    var details = MQ.reader.readEventDetails(document);
+    if (!details.date) { MQ.shell.mount(false); return; }
+    html.classList.add('mq-takeover', 'mq-loading');
+    var main = MQ.shell.mount(true);
+    var id = new URLSearchParams(location.search).get('eventid') || details.id;
+    MQ.reader.fetchPage('/clients/home.asp').then(function (doc) {
+      return upcoming(MQ.reader.readEventList(doc));
+    }).catch(function () { return []; }).then(function (events) {
+      var item = events.filter(function (e) { return e.id === id; })[0] || {
+        id: id, employeeId: null, date: details.date, name: details.name, status: details.status, type: details.type, package: null,
+        links: { payment: details.links.payment, details: location.href }, isPhotoBooth: /photo\s*booth/i.test(details.type || '')
+      };
+      var vm = MQ.model.build(item, details, events.length ? events : [item]);
+      MQ.renderDetails.render(main, vm, events);
+    }).catch(function (err) {
+      console.error('[Marquee portal] could not build details page', err);
+      html.classList.remove('mq-takeover');
+    }).then(function () { html.classList.remove('mq-loading'); window.scrollTo(0, 0); });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
