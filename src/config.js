@@ -17,6 +17,8 @@ MQ.config = {
   // Full names only, so a real couple who shares a first name never sees the test design.
   TEST_CLIENTS: ['Teddi Price', 'Kevin Garrity'],
   // TODO: add Tony & Liana's full names here once confirmed.
+  // DJEP client IDs of test clients (shown on the client's page in DJEP admin as CLIENT ID).
+  TEST_CLIENT_IDS: ['387027'],
 
   // REQUESTS. 'test' = Request to Add shows exactly what would be sent but sends nothing.
   // 'live' = sends the request to Bob through DJEP's Request Changes form. Nothing is ever added to an event automatically.

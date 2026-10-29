@@ -17,9 +17,21 @@ MQ.gate = (function () {
     }
   }
 
+  /* Test client check. Most pages carry DJEP's client ID (#clientIDspan); Event Details carries the names;
+   * Make a Payment carries neither, so a confirmed test client is remembered for this browser tab only.
+   * A page showing a different client ID clears it right away. */
+  var SESSION_KEY = 'mq-test-client';
   function isTestClient() {
+    var idEl = document.getElementById('clientIDspan');
+    var id = idEl ? idEl.textContent.trim() : '';
     var text = document.body ? document.body.textContent : '';
-    return MQ.config.TEST_CLIENTS.some(function (name) { return text.indexOf(name) >= 0; });
+    var ok = (id && (MQ.config.TEST_CLIENT_IDS || []).indexOf(id) >= 0) ||
+      MQ.config.TEST_CLIENTS.some(function (name) { return text.indexOf(name) >= 0; });
+    try {
+      if (ok) { sessionStorage.setItem(SESSION_KEY, '1'); return true; }
+      if (id) { sessionStorage.removeItem(SESSION_KEY); return false; }
+      return sessionStorage.getItem(SESSION_KEY) === '1';
+    } catch (e) { return ok; }
   }
 
   function isClientPortal() {

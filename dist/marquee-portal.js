@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T13:25Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T13:26Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -20,6 +20,8 @@ MQ.config = {
   // Full names only, so a real couple who shares a first name never sees the test design.
   TEST_CLIENTS: ['Teddi Price', 'Kevin Garrity'],
   // TODO: add Tony & Liana's full names here once confirmed.
+  // DJEP client IDs of test clients (shown on the client's page in DJEP admin as CLIENT ID).
+  TEST_CLIENT_IDS: ['387027'],
 
   // REQUESTS. 'test' = Request to Add shows exactly what would be sent but sends nothing.
   // 'live' = sends the request to Bob through DJEP's Request Changes form. Nothing is ever added to an event automatically.
@@ -116,9 +118,21 @@ MQ.gate = (function () {
     }
   }
 
+  /* Test client check. Most pages carry DJEP's client ID (#clientIDspan); Event Details carries the names;
+   * Make a Payment carries neither, so a confirmed test client is remembered for this browser tab only.
+   * A page showing a different client ID clears it right away. */
+  var SESSION_KEY = 'mq-test-client';
   function isTestClient() {
+    var idEl = document.getElementById('clientIDspan');
+    var id = idEl ? idEl.textContent.trim() : '';
     var text = document.body ? document.body.textContent : '';
-    return MQ.config.TEST_CLIENTS.some(function (name) { return text.indexOf(name) >= 0; });
+    var ok = (id && (MQ.config.TEST_CLIENT_IDS || []).indexOf(id) >= 0) ||
+      MQ.config.TEST_CLIENTS.some(function (name) { return text.indexOf(name) >= 0; });
+    try {
+      if (ok) { sessionStorage.setItem(SESSION_KEY, '1'); return true; }
+      if (id) { sessionStorage.removeItem(SESSION_KEY); return false; }
+      return sessionStorage.getItem(SESSION_KEY) === '1';
+    } catch (e) { return ok; }
   }
 
   function isClientPortal() {
