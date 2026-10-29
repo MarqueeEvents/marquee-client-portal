@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T18:27Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T18:57Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -51,7 +51,7 @@ MQ.config = {
   // TODO: fill in IDs, contact info and Calendly links from Bob's checklist.
   TEAM: {
     '43180': {
-      key: 'bob', cardPos: 'center 6%', photoFile: 'bob-photo.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Marquee Luxury', role: 'Owner, Lead DJ & MC', price: 3500,
+      key: 'bob', cardPhotoFile: 'bob-card-2.jpg', cardPos: 'center 8%', photoFile: 'bob-photo-2.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Marquee Luxury', role: 'Owner, Lead DJ & MC', price: 3500,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
@@ -61,7 +61,7 @@ MQ.config = {
       calendly: { creative: '', final: '' }
     },
     'DAN_ID': {
-      key: 'dan', cardPos: 'center 0%', photoFile: 'dan-photo.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
+      key: 'dan', cardPhotoFile: 'dan-card-2.jpg', cardPos: 'center 0%', photoFile: 'dan-photo-2.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
@@ -449,6 +449,7 @@ MQ.model = (function () {
     var digits = (t.phone || '').replace(/\D/g, '');
     return Object.assign({}, t, {
       photo: t.photoFile ? base + t.photoFile : '',
+      cardPhoto: base + (t.cardPhotoFile || t.photoFile),
       logo: base + t.logoFile,
       tel: digits ? 'tel:+1' + digits : '',
       sms: digits ? 'sms:+1' + digits : '',
@@ -1003,7 +1004,7 @@ MQ.renderChooser = (function () {
     var cards = events.map(function (e) {
       var d = U.parseDate(e.date);
       var dj = MQ.model.team(e.employeeId);
-      var img = e.isPhotoBooth ? MQ.ASSET_BASE + 'events/photo-booth-scrapbook.jpg' : dj.photo;
+      var img = e.isPhotoBooth ? MQ.ASSET_BASE + 'events/photo-booth-scrapbook.jpg' : dj.cardPhoto;
       var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : 'Wedding Entertainment';
       return '<a class="mq-evcard" href="?mqevent=' + e.id + '"><div class="img"><img src="' + esc(img) + '" alt="" style="object-position:center ' + (e.isPhotoBooth ? '62%' : (dj.cardPos || 'center 6%').replace('center ', '')) + '"></div>' +
         '<div class="bd"><span class="mq-eyebrow">' + U.icon(e.isPhotoBooth ? 'camera' : 'music', 13) + ' ' + esc(e.isPhotoBooth ? 'Photo Booth' : 'DJ & MC') + '</span>' +

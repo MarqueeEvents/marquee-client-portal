@@ -12,6 +12,7 @@ MQ.model = (function () {
     var digits = (t.phone || '').replace(/\D/g, '');
     return Object.assign({}, t, {
       photo: t.photoFile ? base + t.photoFile : '',
+      cardPhoto: base + (t.cardPhotoFile || t.photoFile),
       logo: base + t.logoFile,
       tel: digits ? 'tel:+1' + digits : '',
       sms: digits ? 'sms:+1' + digits : '',
