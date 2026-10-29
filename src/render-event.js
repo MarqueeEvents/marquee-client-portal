@@ -42,7 +42,7 @@ MQ.renderEvent = (function () {
     var links = vm.list.links;
     var vibo = vm.isBooth ? '' : '<a class="mq-btn mq-btn-ghost" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">' + icon('music', 15) + 'Open Vibo</a>';
     return '<section class="mq-event" aria-labelledby="mq-ev-title"><div class="mq-event-row">' +
-      '<div class="mq-photo"><img src="' + esc(photo) + '" alt="' + esc(vm.isBooth ? 'Marquee photo booth' : dj.name) + '" style="object-position:' + (vm.isBooth ? 'center 70%' : (dj.pos || 'center 20%')) + '">' +
+      '<div class="mq-photo"><img src="' + esc(photo) + '" alt="' + esc(vm.isBooth ? 'Marquee photo booth' : dj.name) + '" style="object-position:' + (vm.isBooth ? 'center 35%' : (dj.pos || 'center 20%')) + '">' +
       '<div class="mq-fade"></div><div class="mq-edge"></div><div class="mq-mini" aria-hidden="true">' + miniBars() + '</div></div>' +
       '<div class="mq-event-body">' +
         '<div class="mq-ev-top">' +

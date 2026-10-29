@@ -190,7 +190,7 @@ html.mq-portal, .mq-portal body {
 .mq-hero .mq-eyebrow { display: flex; align-items: center; gap: 14px; }
 .mq-hero .mq-eyebrow::before, .mq-hero .mq-eyebrow::after { content: ''; width: 44px; height: 2px; background: var(--mq-pink); display: block; }
 .mq-hero h1 { margin: 0; font-family: var(--mq-head); font-weight: 900; text-transform: uppercase; letter-spacing: -.02em; line-height: .98; font-size: clamp(36px, 6vw, 68px); }
-.mq-hero .mq-serif { font-size: clamp(24px, 3.2vw, 38px); line-height: 1.15; }
+.mq-hero .mq-serif { font-size: clamp(24px, 3.2vw, 38px); line-height: 1.15; color: var(--mq-pink); margin-top: 0; }
 .mq-hero p { margin: 6px 0 0; max-width: 580px; color: var(--mq-body); font-size: 16px; }
 
 /* Event switcher */
