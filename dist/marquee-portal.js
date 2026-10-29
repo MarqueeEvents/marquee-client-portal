@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T19:20Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T19:26Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -51,7 +51,7 @@ MQ.config = {
   // TODO: fill in IDs, contact info and Calendly links from Bob's checklist.
   TEAM: {
     '43180': {
-      key: 'bob', cardTier: 'Luxury Headliner', cardLogoH: 58, cardPhotoFile: 'bob-card-2.jpg', cardPos: 'center 8%', photoFile: 'bob-photo-2.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Marquee Luxury', role: 'Owner, Lead DJ & MC', price: 3500,
+      key: 'bob', cardTier: 'Luxury Headliner', cardLogoH: 58, cardPhotoFile: 'bob-card-2.jpg', cardPos: 'center 8%', photoFile: 'bob-photo-2.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Luxury Headliner', role: 'Founder, DJ & MC', price: 3500,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
