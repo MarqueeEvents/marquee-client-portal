@@ -4,8 +4,8 @@
 const http = require('http'), fs = require('fs'), path = require('path');
 const ROOT = path.join(__dirname, '..');
 const EVENTS = [
-  { id: '435927', type: 'Classic Photo Booth', pkg: 'The Classic Photo Booth', lines: [['The Classic Photo Booth', 795], ['Photo Booth Scrapbook', 150]], total: 945, deposit: 236.25, staff: 'Photo Booth Attendant' },
-  { id: '435926', type: 'Ceremony & Reception', pkg: 'Marquee Luxury', lines: [['Bob Wedding Talent Fee', 3500], ['Bob Additional Hour', 500], ['Ceremony Package w/o Rehearsal', 395], ['Dancing on the Clouds', 350], ['Animated Monogram Projection', 350]], total: 5095, deposit: 1273.75, staff: 'DJ Bob' }
+  { id: '435927', type: 'Private Photo Booth Rental', nameType: 'Classic Photo Booth', pkg: 'The Classic Photo Booth', lines: [['The Classic Photo Booth', 795], ['Photo Booth Scrapbook', 150]], total: 945, deposit: 236.25, staff: 'Photo Booth Attendant' },
+  { id: '435926', type: 'Wedding', nameType: 'Ceremony & Reception', pkg: 'Marquee Luxury', lines: [['Bob Wedding Talent Fee', 3500], ['Bob Additional Hour', 500], ['Ceremony Package w/o Rehearsal', 395], ['Dancing on the Clouds', 350], ['Animated Monogram Projection', 350]], total: 5095, deposit: 1273.75, staff: 'DJ Bob' }
 ];
 const single = process.env.SINGLE === '1';
 const NAME = 'Teddi Price & Kevin Garrity';
@@ -17,12 +17,12 @@ ${['config', 'gate', 'util', 'djep-reader', 'model', 'requests', 'reels', 'shell
 <script>${process.env.TODAY ? `MQ.util.overrideToday='${process.env.TODAY}';` : ''}</script></body></html>`;
 }
 function eventBlock(e) {
-  return `<div class="djep-singleeventdiv"><div class="hidden_event_information" style="display:none"><span class="primary_employee_id">43180</span><span class="event_date_${e.id}">12/30/2028</span><span class="event_name_${e.id}">${NAME} ${e.type}</span><span class="event_status_${e.id}">Booked</span></div>
+  return `<div class="djep-singleeventdiv"><div class="hidden_event_information" style="display:none"><span class="primary_employee_id">43180</span><span class="event_date_${e.id}">12/30/2028</span><span class="event_name_${e.id}">${NAME} ${e.nameType}</span><span class="event_status_${e.id}">Booked</span></div>
 Event Type: ${e.type}<br>Package: ${e.pkg}<br><a class="djep-planeventbutton" href="planmyevent.asp?eventid=${e.id}">Plan</a><a class="djep-eventdetailsbutton" href="eventdetails.asp?eventid=${e.id}">Details</a><a class="djep-paymentbutton" href="makeapayment.asp?action=choose_payment_gateway&eventid=${e.id}">Pay</a></div>`;
 }
 function details(e) {
-  return `<div class="djep-eventdatetimesbox">Event Date: 12/30/2028<br>Start Time: 5:00 PM<br>End Time: 11:00 PM</div>
-<div class="djep-eventdescriptionbox">Event ID: ${e.id}<br>Event Name: ${NAME} ${e.type}<br>Event Type: ${e.type}<br>Booking Status: Booked</div>
+  return `<div class="djep-eventdatetimesbox">Event Date: Saturday, December 30, 2028<br>Start Time: 5:00 PM<br>End Time: 11:00 PM</div>
+<div class="djep-eventdescriptionbox">Event ID: ${e.id}<br>Event Name: ${NAME} ${e.nameType}<br>Event Type: ${e.type}<br>Booking Status: Booked</div>
 <div class="djep-venueinfobox"><b>Venue Information</b><br>Bella Amore<br>New Philadelphia, OH</div>
 <div class="djep-staffingbox"><b>Staffing</b><br>${e.staff}<br>Attire: Formal</div>
 <div class="djep-feedetailsbox"><table>${e.lines.map(l => `<tr><td>${l[0]}</td><td>$${l[1].toFixed(2)}</td></tr>`).join('')}</table></div>

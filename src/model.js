@@ -145,7 +145,7 @@ MQ.model = (function () {
   }
 
   function build(listItem, details, allEvents) {
-    var eventDate = U.parseDate(details.date || listItem.date);
+    var eventDate = U.parseDate(details.date) || U.parseDate(listItem.date);
     var total = details.totalFee || 0;
     var balance = details.balanceDue != null ? details.balanceDue : total;
     var paid = U.round2(total - balance);
@@ -153,7 +153,7 @@ MQ.model = (function () {
     var hasBoothEvent = allEvents.some(function (e) { return e.isPhotoBooth; });
     var sched = schedule(eventDate, total, paid);
     var next = sched.filter(function (p) { return p.status !== 'paid'; })[0] || null;
-    var couple = U.coupleFromName(listItem.name || details.name, listItem.type || details.type);
+    var couple = U.coupleFromName(listItem.name || details.name, listItem.type || details.type, listItem.package);
     return {
       id: listItem.id,
       list: listItem,

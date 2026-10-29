@@ -321,6 +321,7 @@ html.mq-portal, .mq-portal body {
 .mq-msgs .empty { color: var(--mq-muted); font-size: 14px; padding: 14px 10px; border-top: 1px solid var(--mq-line-2); }
 .mq-reels { display: flex; flex-direction: column; gap: 16px; }
 .mq-livepill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: var(--mq-pink); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; box-shadow: 0 0 22px rgba(255,46,136,.6); }
+.mq-app a.mq-livepill, .mq-app a.mq-livepill:hover { color: #fff; }
 .mq-livepill i { width: 7px; height: 7px; border-radius: 50%; background: #fff; display: block; animation: mqpulse 1.6s ease-in-out infinite; }
 .mq-reel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
 .mq-app a.mq-reel { position: relative; display: block; aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden; border: 1px solid var(--mq-line); background: var(--mq-deep); color: #fff; }

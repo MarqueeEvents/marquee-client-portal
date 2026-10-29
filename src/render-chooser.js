@@ -7,7 +7,7 @@ MQ.renderChooser = (function () {
   var U = MQ.util, esc = U.esc;
 
   function render(main, events) {
-    var first = U.coupleFromName(events[0].name, events[0].type).first;
+    var first = U.coupleFromName(events[0].name, events[0].type, events[0].package).first;
     var cards = events.map(function (e) {
       var d = U.parseDate(e.date);
       var dj = MQ.model.team(e.employeeId);

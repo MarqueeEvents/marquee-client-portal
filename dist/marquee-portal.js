@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T00:37Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T13:17Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -150,9 +150,16 @@ MQ.util = (function () {
   }
 
   /* DJEP dates come as M/D/YYYY. */
+  /* DJEP writes dates two ways: 12/30/2028 (event lists) and Saturday, December 30, 2028 (event details). */
   function parseDate(s) {
     var m = /(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s || '');
-    return m ? new Date(+m[3], +m[1] - 1, +m[2]) : null;
+    if (m) return new Date(+m[3], +m[1] - 1, +m[2]);
+    m = /([A-Za-z]{3,9})\.?\s+(\d{1,2}),?\s+(\d{4})/.exec(s || '');
+    if (m) {
+      var mi = MONTHS.map(function (x) { return x.toLowerCase(); }).indexOf(m[1].slice(0, 3).toLowerCase());
+      if (mi >= 0) return new Date(+m[3], mi, +m[2]);
+    }
+    return null;
   }
 
   function today() {
@@ -196,9 +203,14 @@ MQ.util = (function () {
   function round2(n) { return Math.round(n * 100) / 100; }
 
   /* "Teddi Price & Kevin Garrity Ceremony & Reception" -> { couple, first, rest } */
-  function coupleFromName(name, type) {
+  /* Event names look like "Teddi Price & Kevin Garrity Ceremony & Reception". Strip the event part. */
+  var EVENT_WORDS = /\s+(ceremony\s*&\s*reception|ceremony|reception|wedding|(the\s+)?(classic|roamer|private|open[- ]air|360)?\s*photo\s*booth(\s+rental)?|dj\s+services?)\s*$/i;
+  function coupleFromName(name, type, pkg) {
     var n = (name || '').trim();
-    if (type && n.toLowerCase().slice(-type.length) === type.toLowerCase()) n = n.slice(0, -type.length).trim();
+    [type, pkg, pkg && pkg.replace(/^the\s+/i, '')].forEach(function (t) {
+      if (t && n.toLowerCase().slice(-t.length) === t.toLowerCase()) n = n.slice(0, -t.length).trim();
+    });
+    for (var i = 0; i < 3 && EVENT_WORDS.test(n); i++) n = n.replace(EVENT_WORDS, '').trim();
     var parts = n.split(/\s+(?:&|and)\s+/i);
     var first = parts.map(function (p) { return p.split(/\s+/)[0]; }).filter(Boolean);
     return { couple: n, first: first.length >= 2 ? first[0] + ' & ' + first[1] : (first[0] || 'friends') };
@@ -516,7 +528,7 @@ MQ.model = (function () {
   }
 
   function build(listItem, details, allEvents) {
-    var eventDate = U.parseDate(details.date || listItem.date);
+    var eventDate = U.parseDate(details.date) || U.parseDate(listItem.date);
     var total = details.totalFee || 0;
     var balance = details.balanceDue != null ? details.balanceDue : total;
     var paid = U.round2(total - balance);
@@ -524,7 +536,7 @@ MQ.model = (function () {
     var hasBoothEvent = allEvents.some(function (e) { return e.isPhotoBooth; });
     var sched = schedule(eventDate, total, paid);
     var next = sched.filter(function (p) { return p.status !== 'paid'; })[0] || null;
-    var couple = U.coupleFromName(listItem.name || details.name, listItem.type || details.type);
+    var couple = U.coupleFromName(listItem.name || details.name, listItem.type || details.type, listItem.package);
     return {
       id: listItem.id,
       list: listItem,
@@ -757,7 +769,7 @@ MQ.renderChooser = (function () {
   var U = MQ.util, esc = U.esc;
 
   function render(main, events) {
-    var first = U.coupleFromName(events[0].name, events[0].type).first;
+    var first = U.coupleFromName(events[0].name, events[0].type, events[0].package).first;
     var cards = events.map(function (e) {
       var d = U.parseDate(e.date);
       var dj = MQ.model.team(e.employeeId);

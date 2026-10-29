@@ -13,9 +13,16 @@ MQ.util = (function () {
   }
 
   /* DJEP dates come as M/D/YYYY. */
+  /* DJEP writes dates two ways: 12/30/2028 (event lists) and Saturday, December 30, 2028 (event details). */
   function parseDate(s) {
     var m = /(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s || '');
-    return m ? new Date(+m[3], +m[1] - 1, +m[2]) : null;
+    if (m) return new Date(+m[3], +m[1] - 1, +m[2]);
+    m = /([A-Za-z]{3,9})\.?\s+(\d{1,2}),?\s+(\d{4})/.exec(s || '');
+    if (m) {
+      var mi = MONTHS.map(function (x) { return x.toLowerCase(); }).indexOf(m[1].slice(0, 3).toLowerCase());
+      if (mi >= 0) return new Date(+m[3], mi, +m[2]);
+    }
+    return null;
   }
 
   function today() {
@@ -59,9 +66,14 @@ MQ.util = (function () {
   function round2(n) { return Math.round(n * 100) / 100; }
 
   /* "Teddi Price & Kevin Garrity Ceremony & Reception" -> { couple, first, rest } */
-  function coupleFromName(name, type) {
+  /* Event names look like "Teddi Price & Kevin Garrity Ceremony & Reception". Strip the event part. */
+  var EVENT_WORDS = /\s+(ceremony\s*&\s*reception|ceremony|reception|wedding|(the\s+)?(classic|roamer|private|open[- ]air|360)?\s*photo\s*booth(\s+rental)?|dj\s+services?)\s*$/i;
+  function coupleFromName(name, type, pkg) {
     var n = (name || '').trim();
-    if (type && n.toLowerCase().slice(-type.length) === type.toLowerCase()) n = n.slice(0, -type.length).trim();
+    [type, pkg, pkg && pkg.replace(/^the\s+/i, '')].forEach(function (t) {
+      if (t && n.toLowerCase().slice(-t.length) === t.toLowerCase()) n = n.slice(0, -t.length).trim();
+    });
+    for (var i = 0; i < 3 && EVENT_WORDS.test(n); i++) n = n.replace(EVENT_WORDS, '').trim();
     var parts = n.split(/\s+(?:&|and)\s+/i);
     var first = parts.map(function (p) { return p.split(/\s+/)[0]; }).filter(Boolean);
     return { couple: n, first: first.length >= 2 ? first[0] + ' & ' + first[1] : (first[0] || 'friends') };
