@@ -20,13 +20,22 @@ DJEP still runs everything behind the scenes: events, payments, staff and change
 
 | Path | What it is |
 |---|---|
-| `src/config.js` | Team list (by DJEP employee ID), test clients, options and pricing, safety switch |
+| `src/config.js` | Team list (by DJEP employee ID), test clients, options and pricing, safety switch, request mode |
 | `src/gate.js` | Decides whether the new design runs for the current visitor |
 | `src/djep-reader.js` | Reads event data from DJEP's client pages |
-| `src/main.js` | Entry point |
+| `src/model.js` | Payment schedule, journey steps and add-on options from DJEP data |
+| `src/shell.js` | Marquee header and footer on every portal page |
+| `src/render-chooser.js` | "Your Events" page for couples with 2+ events (DJ + photo booth) |
+| `src/render-event.js` | The event page |
+| `src/requests.js` | Request to Add (goes to Bob for review, never straight onto the event) |
+| `src/reels.js` | Latest Reels from the Behold feed |
+| `src/main.js` | Entry point and page routing |
 | `styles/portal.css` | Marquee brand styles (black, hot pink, Inter Tight, Lora italic) |
+| `assets/` | Team photos and logos, brand logo, event images |
+| `dist/marquee-portal.js` | One-file bundle that DJEP loads (built by `build.sh`) |
+| `test/` | Local mock of DJEP pages and screenshot scripts |
 | `docs/` | Install steps, data map, decisions |
 
 ## Status
 
-Initial scaffold. See `docs/roadmap.md`.
+Home and My Events are rebuilt (events chooser + full event page) and running against the test clients. Not yet installed in DJEP. See `docs/roadmap.md`.

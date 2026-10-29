@@ -1,0 +1,1138 @@
+/* Marquee Client Portal bundle. Built 2026-10-29T00:37Z. Source: src/ */
+
+/* ---- src/config.js ---- */
+/* Marquee Client Portal configuration.
+ * Everything Bob may want to change lives here.
+ */
+window.MQ = window.MQ || {};
+
+/* Photos and logos load from the same place this file was loaded from (GitHub via jsDelivr). */
+MQ.ASSET_BASE = (function () {
+  var src = (document.currentScript && document.currentScript.src) || '';
+  return src ? src.replace(/(src\/config|dist\/marquee-portal(\.min)?)\.js.*$/, 'assets/') : 'assets/';
+})();
+
+MQ.config = {
+  // SAFETY SWITCH. false = new design only for TEST_CLIENTS below. true = everyone.
+  LIVE_FOR_EVERYONE: false,
+
+  // Test clients (matched against event names on the page). Add more as needed.
+  // Full names only, so a real couple who shares a first name never sees the test design.
+  TEST_CLIENTS: ['Teddi Price', 'Kevin Garrity'],
+  // TODO: add Tony & Liana's full names here once confirmed.
+
+  // REQUESTS. 'test' = Request to Add shows exactly what would be sent but sends nothing.
+  // 'live' = sends the request to Bob through DJEP's Request Changes form. Nothing is ever added to an event automatically.
+  REQUEST_MODE: 'test',
+
+  // Anyone can preview by visiting a portal page once with ?mqpreview=on (and ?mqpreview=off to stop).
+  PREVIEW_PARAM: 'mqpreview',
+
+  // Payment schedule: 25% at booking, 25% at 9 months, 25% at 6 months, balance 90 days out.
+  PAYMENT_PLAN: [
+    { label: 'Retainer', pct: 0.25, monthsBefore: null },
+    { label: '9 Months Out', pct: 0.25, monthsBefore: 9 },
+    { label: '6 Months Out', pct: 0.25, monthsBefore: 6 },
+    { label: 'Final Balance', pct: 0.25, daysBefore: 90 }
+  ],
+
+  // Planning session windows
+  CREATIVE_SESSION: { fromMonthsBefore: 6, toMonthsBefore: 3, optional: true },
+  FINAL_PLANNING: { fromDaysBefore: 28, toDaysBefore: 14 },
+
+  // Behold Instagram feed (from @bob_hickman). Only Reels mentioning @marqueeohio or #marqueeohio show.
+  REELS_FEED: 'https://feeds.behold.so/WKarKAnpmHuUeM2c6jkt',
+  REELS_FILTER: ['marqueeohio'],
+
+  // Vibo planning app
+  VIBO_URL: 'https://web.vibodj.com/',
+
+  // Team, keyed by DJEP primary employee ID (found in each event block on the portal home page).
+  // TODO: fill in IDs, contact info and Calendly links from Bob's checklist.
+  TEAM: {
+    '43180': {
+      key: 'bob', photoFile: 'bob-photo.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Marquee Luxury', role: 'Owner, Lead DJ & MC', price: 3500,
+      phone: '', email: '', instagram: '',
+      calendly: { creative: '', final: '' }
+    },
+    'BRADON_ID': {
+      key: 'bradon', photoFile: 'bradon-photo.jpg', logoFile: 'bradon-logo.png', logoH: 64, name: 'Bradon Smith', first: 'Bradon', tier: 'Executive Headliner', role: 'Lead DJ & MC', price: 2700,
+      phone: '330.432.4143', email: 'bradon@marqueeohio.com', instagram: 'dj_bradon',
+      calendly: { creative: '', final: '' }
+    },
+    'DAN_ID': {
+      key: 'dan', photoFile: 'dan-photo.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
+      phone: '', email: '', instagram: '',
+      calendly: { creative: '', final: '' }
+    },
+    'JAMES_ID': {
+      key: 'james', photoFile: 'james-photo.jpg', logoFile: 'james-logo.png', logoH: 58, name: 'James Stevenson', first: 'James', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
+      phone: '', email: '', instagram: '',
+      calendly: { creative: '', final: '' }
+    }
+  },
+
+  // Add-on catalog (2027-2028 wedding guide pricing). TODO: replace with Bob's final options and pricing document.
+  // match: words that identify this item on a DJEP fee line, so already-booked items are hidden.
+  CATALOG: [
+    { id: 'clouds', cat: 'Atmosphere & Effects', name: 'Dancing on the Clouds', price: 350, match: 'clouds', sub: 'Low-lying cloud effect for your first dance.' },
+    { id: 'spark', cat: 'Atmosphere & Effects', name: 'Sparkler Fountains', price: 395, unit: 'pair', match: 'sparkler', sub: 'Cold spark fountains for the big moments.' },
+    { id: 'co2', cat: 'Atmosphere & Effects', name: 'CO2 Cryo Jets', price: 450, unit: 'pair', match: 'cryo', sub: 'Blasts of cold fog when the beat drops.' },
+    { id: 'coolburst', cat: 'Atmosphere & Effects', name: 'Cool Burst LED CO2 Gun', price: 350, match: 'cool burst', sub: 'Handheld LED CO2 bursts on the dance floor.' },
+    { id: 'snow', cat: 'Atmosphere & Effects', name: 'Snow Machine', price: 550, match: 'snow', sub: 'A winter-wonderland finish.' },
+    { id: 'foam', cat: 'Atmosphere & Effects', name: 'LED Foam Party Favors', price: 275, match: 'foam', sub: 'Glow sticks and wands for every guest.' },
+    { id: 'astera', cat: 'Lighting & Visuals', name: 'Astera LED Light Tubes', price: 400, match: 'astera', sub: 'Wireless light tubes that move with the music.' },
+    { id: 'mono', cat: 'Lighting & Visuals', name: 'Standard Monogram Projection', price: 300, match: 'standard monogram', sub: 'Your names or initials in light.' },
+    { id: 'amono', cat: 'Lighting & Visuals', name: 'Animated Monogram Projection', price: 350, match: 'monogram', sub: 'Your monogram, animated on the floor or wall.' },
+    { id: 'classic', cat: 'Photo Booths', name: 'Classic Photo Booth', price: 795, match: 'classic photo booth', booth: true, sub: 'Unlimited prints and a digital gallery.' },
+    { id: 'roamer', cat: 'Photo Booths', name: 'Roamer Photo Booth', price: 595, match: 'roamer', booth: true, sub: 'A roaming booth that comes to your guests.' },
+    { id: 'scrap', cat: 'Photo Booths', name: 'Keepsake Scrapbook', price: 150, match: 'scrapbook', booth: true, sub: 'Guests sign a book of your photo strips.' },
+    { id: 'sax', cat: 'Live Music', name: 'Saxy Rob', price: 1800, match: 'sax', sub: 'Live sax over the DJ set.' },
+    { id: 'ceremony', cat: 'Ceremony & More Time', name: 'Ceremony Package', price: 400, match: 'ceremony', sub: 'Sound, mics and music for your ceremony.' },
+    { id: 'hour', cat: 'Ceremony & More Time', name: 'Additional Hour', price: 500, match: 'additional hour', repeatable: true, sub: 'Keep the party going an extra hour.' }
+  ],
+
+  // The "Couples Love These" picks, in order. Anything already booked is skipped and the next item fills in.
+  FEATURED: ['clouds', 'spark', 'co2', 'amono', 'astera', 'sax']
+};
+
+/* ---- src/gate.js ---- */
+/* Decides whether the new Marquee design should run for this visitor.
+ * Real couples keep the stock DJEP portal until MQ.config.LIVE_FOR_EVERYONE is true.
+ */
+window.MQ = window.MQ || {};
+
+MQ.gate = (function () {
+  var KEY = 'mq-portal-preview';
+
+  function readPreviewParam() {
+    try {
+      var p = new URLSearchParams(window.location.search).get(MQ.config.PREVIEW_PARAM);
+      if (p === 'on') localStorage.setItem(KEY, 'on');
+      if (p === 'off') localStorage.removeItem(KEY);
+      return localStorage.getItem(KEY) === 'on';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function isTestClient() {
+    var text = document.body ? document.body.textContent : '';
+    return MQ.config.TEST_CLIENTS.some(function (name) { return text.indexOf(name) >= 0; });
+  }
+
+  function isClientPortal() {
+    return /\/clients\//i.test(window.location.pathname);
+  }
+
+  return {
+    shouldRun: function () {
+      if (!isClientPortal()) return false;
+      if (MQ.config.LIVE_FOR_EVERYONE) return true;
+      return readPreviewParam() || isTestClient();
+    }
+  };
+})();
+
+/* ---- src/util.js ---- */
+/* Small shared helpers: dates, money, safe HTML, icons. */
+window.MQ = window.MQ || {};
+
+MQ.util = (function () {
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  /* DJEP dates come as M/D/YYYY. */
+  function parseDate(s) {
+    var m = /(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s || '');
+    return m ? new Date(+m[3], +m[1] - 1, +m[2]) : null;
+  }
+
+  function today() {
+    var o = MQ.util.overrideToday;
+    var d = o ? new Date(o) : new Date();
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  function addMonths(d, n) {
+    var r = new Date(d.getFullYear(), d.getMonth() + n, 1);
+    var last = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
+    r.setDate(Math.min(d.getDate(), last));
+    return r;
+  }
+  function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+
+  /* Whole calendar days from a to b. */
+  function daysBetween(a, b) {
+    var ua = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+    var ub = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+    return Math.round((ub - ua) / 86400000);
+  }
+
+  function fmtDate(d) { return d ? MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() : ''; }
+  function fmtDateLong(d) { return d ? MONTHS_LONG[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() : ''; }
+
+  function away(days) {
+    if (days === 0) return 'Today';
+    if (days < 0) return Math.abs(days) + (days === -1 ? ' day ago' : ' days ago');
+    if (days < 60) return days + (days === 1 ? ' day away' : ' days away');
+    var months = Math.round(days / 30.4);
+    return months + ' months away';
+  }
+
+  function money(n, cents) {
+    if (n == null || isNaN(n)) return '';
+    var withCents = cents || Math.round(n) !== n;
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: withCents ? 2 : 0, maximumFractionDigits: withCents ? 2 : 0 });
+  }
+
+  function round2(n) { return Math.round(n * 100) / 100; }
+
+  /* "Teddi Price & Kevin Garrity Ceremony & Reception" -> { couple, first, rest } */
+  function coupleFromName(name, type) {
+    var n = (name || '').trim();
+    if (type && n.toLowerCase().slice(-type.length) === type.toLowerCase()) n = n.slice(0, -type.length).trim();
+    var parts = n.split(/\s+(?:&|and)\s+/i);
+    var first = parts.map(function (p) { return p.split(/\s+/)[0]; }).filter(Boolean);
+    return { couple: n, first: first.length >= 2 ? first[0] + ' & ' + first[1] : (first[0] || 'friends') };
+  }
+
+  var P = 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
+  var ICONS = {
+    card: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+    music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+    camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+    pin: '<path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+    phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+    chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+    mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+    ig: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/>',
+    cal: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+    check: '<path d="M20 6L9 17l-5-5"/>',
+    checkbox: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+    chev: '<path d="M6 9l6 6 6-6"/>',
+    send: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    alert: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
+    logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>',
+    arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    play: '<path d="M8 5v14l11-7z" fill="currentColor"/>'
+  };
+  function icon(name, size) {
+    var s = size || 16;
+    return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" ' + P + '>' + (ICONS[name] || '') + '</svg>';
+  }
+
+  /* Deterministic waveform heights (0..1) so bars look the same on every load. */
+  function wave(n, seed) {
+    var out = [];
+    for (var i = 0; i < n; i++) {
+      var t = i / Math.max(1, n - 1);
+      var w = 0.5 + 0.5 * Math.abs(Math.sin((i + (seed || 0)) * 1.73) * Math.cos(i * 0.51 + 0.4));
+      var env = 0.35 + 0.45 * Math.sin(Math.PI * t) + 0.2 * Math.abs(Math.sin(i * 0.21));
+      out.push(Math.min(1, 0.18 + env * w));
+    }
+    return out;
+  }
+
+  function store(key, val) {
+    try {
+      if (val === undefined) return JSON.parse(localStorage.getItem(key) || 'null');
+      localStorage.setItem(key, JSON.stringify(val));
+    } catch (e) { return null; }
+  }
+
+  return {
+    esc: esc, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
+    fmtDate: fmtDate, fmtDateLong: fmtDateLong, away: away, money: money, round2: round2, coupleFromName: coupleFromName,
+    icon: icon, wave: wave, store: store, MONTHS: MONTHS, DAYS: DAYS
+  };
+})();
+
+/* ---- src/djep-reader.js ---- */
+/* Reads event data from DJ Event Planner's client portal pages.
+ * Built from the data map in docs/data-map.md (mapped Oct 28, 2026).
+ * Every reader returns plain objects and never throws; missing data comes back as null.
+ */
+window.MQ = window.MQ || {};
+
+MQ.reader = (function () {
+  function text(el) { return el ? el.textContent.replace(/\s+/g, ' ').trim() : null; }
+  function money(str) {
+    if (!str) return null;
+    var n = parseFloat(String(str).replace(/[^0-9.\-]/g, ''));
+    return isNaN(n) ? null : n;
+  }
+  function eventIdFromHref(href) {
+    var m = /eventid=(\d+)/i.exec(href || '');
+    return m ? m[1] : null;
+  }
+  /* Text with line breaks preserved. Works on live pages and on fetched (unrendered) pages. */
+  function blockText(el) {
+    var c = el.cloneNode(true);
+    Array.prototype.forEach.call(c.querySelectorAll('br'), function (b) { b.replaceWith('\n'); });
+    Array.prototype.forEach.call(c.querySelectorAll('p,div,tr,li,b,strong'), function (b) { b.append('\n'); });
+    return c.textContent.replace(/[ \t ]+/g, ' ');
+  }
+  /* Non-empty lines of a box, minus its title and any lines matching skip. */
+  function boxLines(container, skip) {
+    if (!container) return [];
+    return blockText(container).split('\n').map(function (s) { return s.trim(); })
+      .filter(function (s) { return s && !(skip && skip.test(s)); })
+      .filter(function (s, i, a) { return a.indexOf(s) === i; });
+  }
+  function labelValue(container, label) {
+    if (!container) return null;
+    var m = new RegExp(label + ':\\s*([^\\n]+)', 'i').exec(blockText(container));
+    return m ? m[1].trim() : null;
+  }
+
+  /* Home page and My Events: one block per event (.djep-singleeventdiv). */
+  function readEventList(root) {
+    root = root || document;
+    return Array.prototype.map.call(root.querySelectorAll('.djep-singleeventdiv'), function (block) {
+      var hidden = block.querySelector('.hidden_event_information');
+      var details = block.querySelector('a.djep-eventdetailsbutton');
+      var id = eventIdFromHref(details && details.getAttribute('href'));
+      return {
+        id: id,
+        employeeId: text(hidden && hidden.querySelector('.primary_employee_id')),
+        date: text(hidden && hidden.querySelector('[class^="event_date_"]')),
+        name: text(hidden && hidden.querySelector('[class^="event_name_"]')),
+        status: text(hidden && hidden.querySelector('[class^="event_status_"]')),
+        type: labelValue(block, 'Event Type'),
+        package: labelValue(block, 'Package'),
+        links: {
+          plan: (block.querySelector('a.djep-planeventbutton') || {}).href || null,
+          details: (details || {}).href || null,
+          payment: (block.querySelector('a.djep-paymentbutton') || {}).href || null
+        },
+        isPhotoBooth: /photo\s*booth/i.test(labelValue(block, 'Event Type') || '')
+      };
+    });
+  }
+
+  /* Event Details page (eventdetails.asp?eventid=ID). */
+  function readEventDetails(root) {
+    root = root || document;
+    var feeBox = root.querySelector('.djep-feedetailsbox');
+    var lines = [];
+    if (feeBox) {
+      Array.prototype.forEach.call(feeBox.querySelectorAll('tr'), function (tr) {
+        var cells = tr.querySelectorAll('td');
+        if (cells.length >= 2) {
+          var price = money(text(cells[cells.length - 1]));
+          var name = text(cells[0]);
+          if (name && price !== null) lines.push({ name: name, price: price });
+        }
+      });
+    }
+    var totals = root.querySelector('.djep-totalfeebox');
+    return {
+      id: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Event ID'),
+      name: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Event Name'),
+      type: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Event Type'),
+      status: labelValue(root.querySelector('.djep-eventdescriptionbox'), 'Booking Status'),
+      date: labelValue(root.querySelector('.djep-eventdatetimesbox'), 'Event Date'),
+      start: labelValue(root.querySelector('.djep-eventdatetimesbox'), 'Start Time'),
+      end: labelValue(root.querySelector('.djep-eventdatetimesbox'), 'End Time'),
+      venue: boxLines(root.querySelector('.djep-venueinfobox'), /^venue information$/i).join(', ') || null,
+      staff: boxLines(root.querySelector('.djep-staffingbox'), /^staffing$|^attire:/i),
+      attire: labelValue(root.querySelector('.djep-staffingbox'), 'Attire'),
+      lines: lines,
+      totalFee: money(labelValue(totals, 'TOTAL FEE')),
+      deposit: money(labelValue(totals, 'DEPOSIT')),
+      payments: money(labelValue(totals, 'Payments')),
+      balanceDue: money(labelValue(totals, 'BALANCE DUE'))
+    };
+  }
+
+  /* Fetch another portal page (same login session) and read it without leaving the current page. */
+  function fetchPage(url) {
+    return fetch(url, { credentials: 'same-origin' })
+      .then(function (r) { return r.text(); })
+      .then(function (html) { return new DOMParser().parseFromString(html, 'text/html'); });
+  }
+
+  function loadEventDetails(eventId) {
+    return fetchPage('/clients/eventdetails.asp?eventid=' + encodeURIComponent(eventId)).then(readEventDetails);
+  }
+
+  return { readEventList: readEventList, readEventDetails: readEventDetails, loadEventDetails: loadEventDetails, fetchPage: fetchPage };
+})();
+
+/* ---- src/model.js ---- */
+/* Turns raw DJEP data (from MQ.reader) into everything the event page needs:
+ * payment schedule, journey steps, add-on options. No DOM work here, so it is easy to test.
+ */
+window.MQ = window.MQ || {};
+
+MQ.model = (function () {
+  var U = MQ.util;
+
+  function team(employeeId) {
+    var t = MQ.config.TEAM[employeeId] || MQ.config.TEAM['43180'];
+    var base = MQ.ASSET_BASE + 'team/';
+    var digits = (t.phone || '').replace(/\D/g, '');
+    return Object.assign({}, t, {
+      photo: base + t.photoFile,
+      logo: base + t.logoFile,
+      tel: digits ? 'tel:+1' + digits : '',
+      sms: digits ? 'sms:+1' + digits : '',
+      mailto: t.email ? 'mailto:' + t.email : '',
+      igUrl: t.instagram ? 'https://www.instagram.com/' + t.instagram + '/' : '',
+      handle: t.instagram ? '@' + t.instagram : ''
+    });
+  }
+
+  /* 25 / 25 / 25 / balance. Paid amount is applied to installments in order. */
+  function schedule(eventDate, total, paid) {
+    var plan = MQ.config.PAYMENT_PLAN;
+    var t = U.today();
+    var running = 0, applied = paid || 0;
+    return plan.map(function (p, i) {
+      var amount = i === plan.length - 1 ? U.round2(total - running) : U.round2(total * p.pct);
+      running = U.round2(running + amount);
+      var due = p.monthsBefore ? U.addMonths(eventDate, -p.monthsBefore) : (p.daysBefore ? U.addDays(eventDate, -p.daysBefore) : null);
+      var covered = Math.min(amount, Math.max(0, applied));
+      applied = U.round2(applied - covered);
+      var left = U.round2(amount - covered);
+      var status;
+      if (left <= 0.005) status = 'paid';
+      else if (!due || U.daysBetween(t, due) <= 0) status = 'due';
+      else status = 'upcoming';
+      return { label: p.label, amount: amount, left: left, due: due, status: status };
+    });
+  }
+
+  /* Which catalog items are already on this event (or covered by a separate photo booth event). */
+  function bookedIds(lines, hasBoothEvent) {
+    var names = lines.map(function (l) { return l.name.toLowerCase(); });
+    return MQ.config.CATALOG.filter(function (c) {
+      if (c.repeatable) return false;
+      if (c.booth && hasBoothEvent) return true;
+      return names.some(function (n) { return n.indexOf(c.match) >= 0; });
+    }).map(function (c) { return c.id; });
+  }
+
+  function addOptions(lines, hasBoothEvent, isBoothEvent) {
+    var booked = bookedIds(lines, hasBoothEvent);
+    var avail = MQ.config.CATALOG.filter(function (c) {
+      if (booked.indexOf(c.id) >= 0) return false;
+      return isBoothEvent ? c.booth : true;
+    });
+    var featured = [];
+    MQ.config.FEATURED.forEach(function (id) {
+      var c = avail.filter(function (a) { return a.id === id; })[0];
+      if (c && featured.length < 4) featured.push(c);
+    });
+    var rest = avail.filter(function (c) { return featured.indexOf(c) < 0; });
+    var groups = [];
+    rest.forEach(function (c) {
+      var g = groups.filter(function (x) { return x.label === c.cat; })[0];
+      if (!g) { g = { label: c.cat, items: [] }; groups.push(g); }
+      g.items.push(c);
+    });
+    return { featured: featured, groups: groups, all: avail };
+  }
+
+  function journey(eventDate, sched, isBooth) {
+    var t = U.today();
+    var cfg = MQ.config;
+    function st(date, endDate) {
+      if (!date) return 'done';
+      var d = U.daysBetween(t, date);
+      if (endDate && d <= 0 && U.daysBetween(t, endDate) >= 0) return 'open';
+      return d <= 0 ? 'past' : 'future';
+    }
+    var creativeFrom = U.addMonths(eventDate, -cfg.CREATIVE_SESSION.fromMonthsBefore);
+    var creativeTo = U.addMonths(eventDate, -cfg.CREATIVE_SESSION.toMonthsBefore);
+    var finalFrom = U.addDays(eventDate, -cfg.FINAL_PLANNING.fromDaysBefore);
+    var finalTo = U.addDays(eventDate, -cfg.FINAL_PLANNING.toDaysBefore);
+
+    function payStep(num, title, p, note) {
+      var status = p.status === 'paid' ? 'Paid' : (p.status === 'due' ? 'Due Now' : 'Upcoming');
+      return {
+        num: num, title: title, date: p.due, when: p.due ? 'Due ' + U.fmtDate(p.due) : 'At booking',
+        note: note, amount: p.status === 'paid' ? U.money(p.amount) + ' paid' : U.money(p.left) + (p.left < p.amount ? ' remaining' : ''),
+        done: p.status === 'paid', status: status, pay: p.status !== 'paid'
+      };
+    }
+
+    var steps = [];
+    var retainer = sched[0];
+    steps.push({ num: '01', title: 'Date Secured', date: null, when: retainer.status === 'paid' ? 'Retainer paid' : 'Retainer ' + U.money(retainer.left) + ' due',
+      note: 'Your date is locked in with Marquee.', done: retainer.status === 'paid', status: retainer.status === 'paid' ? 'Done' : 'Due Now', pay: retainer.status !== 'paid' });
+    if (!isBooth) steps.push({ num: '02', title: 'Planning App', date: null, when: 'Open anytime',
+      note: 'Build your timeline, must-plays and do-not-plays in Vibo.', done: true, status: 'Ready', vibo: true });
+    steps.push(payStep(isBooth ? '02' : '03', '9-Month Payment', sched[1], '25% of your total.'));
+    steps.push(payStep(isBooth ? '03' : '04', '6-Month Payment', sched[2], '25% of your total.'));
+    if (!isBooth) {
+      var cs = st(creativeFrom, creativeTo);
+      steps.push({ num: '05', title: 'Creative Sessions', date: creativeFrom, optional: true,
+        when: U.MONTHS[creativeFrom.getMonth()] + ' to ' + U.fmtDate(creativeTo),
+        note: 'Optional. Love planning together? Book one. Happy in Vibo? You are all set.',
+        done: cs === 'past', status: cs === 'open' ? 'Open' : (cs === 'past' ? 'Window Closed' : 'Optional'), book: 'creative' });
+    }
+    steps.push(payStep(isBooth ? '04' : '06', 'Final Payment', sched[3], 'Balance due 90 days before your event.'));
+    if (!isBooth) {
+      var fs = st(finalFrom, finalTo);
+      steps.push({ num: '07', title: 'Final Planning', date: finalFrom, when: U.fmtDate(finalFrom) + ' to ' + U.fmtDate(finalTo),
+        note: 'Walk through every detail with your headliner, 2 to 4 weeks out.', done: fs === 'past', status: fs === 'open' ? 'Book Now' : (fs === 'past' ? 'Done' : 'Upcoming'), book: 'final' });
+    }
+    var daysOut = U.daysBetween(t, eventDate);
+    var lvl = daysOut <= 0 ? 3 : daysOut <= 7 ? 2 : daysOut <= 30 ? 1 : 0;
+    steps.push({ num: isBooth ? '05' : '08', title: "Let's Dance", date: eventDate, isFinal: true, lvl: lvl,
+      when: U.fmtDateLong(eventDate), away: daysOut === 0 ? 'Tonight' : (daysOut < 0 ? 'What a night' : U.away(daysOut)) });
+
+    steps.forEach(function (s) {
+      if (!s.isFinal && !s.away) s.away = s.done ? (s.status === 'Window Closed' ? 'Closed' : 'Complete') : (s.date ? U.away(U.daysBetween(t, s.date)) : 'Now');
+    });
+    var firstOpen = steps.filter(function (s) { return !s.done && !s.isFinal; })[0];
+    if (firstOpen) firstOpen.next = true;
+
+    /* Progress: steps are spaced evenly; the marker sits between the last reached step and the next by date. */
+    var n = steps.length, idx = 0;
+    var anchor = U.addMonths(eventDate, -12);
+    var dates = steps.map(function (s, i) { return s.date || (i === 0 ? anchor : null); });
+    for (var i = 1; i < n; i++) if (!dates[i]) dates[i] = dates[i - 1];
+    for (i = 0; i < n; i++) if (U.daysBetween(dates[i], t) >= 0) idx = i;
+    var frac = 0;
+    if (idx < n - 1) {
+      var span = U.daysBetween(dates[idx], dates[idx + 1]);
+      frac = span > 0 ? Math.min(1, U.daysBetween(dates[idx], t) / span) : 0;
+    }
+    var pct = Math.max(2, Math.min(100, Math.round(((idx + frac) / (n - 1)) * 100)));
+    if (daysOut <= 0) pct = 100;
+    steps.forEach(function (s, i) { s.left = n > 1 ? (i / (n - 1)) * 100 : 0; s.reached = i <= idx; });
+    return { steps: steps, pct: pct };
+  }
+
+  function build(listItem, details, allEvents) {
+    var eventDate = U.parseDate(details.date || listItem.date);
+    var total = details.totalFee || 0;
+    var balance = details.balanceDue != null ? details.balanceDue : total;
+    var paid = U.round2(total - balance);
+    var isBooth = listItem.isPhotoBooth;
+    var hasBoothEvent = allEvents.some(function (e) { return e.isPhotoBooth; });
+    var sched = schedule(eventDate, total, paid);
+    var next = sched.filter(function (p) { return p.status !== 'paid'; })[0] || null;
+    var couple = U.coupleFromName(listItem.name || details.name, listItem.type || details.type);
+    return {
+      id: listItem.id,
+      list: listItem,
+      details: details,
+      isBooth: isBooth,
+      dj: team(listItem.employeeId),
+      eventDate: eventDate,
+      couple: couple,
+      total: total, paid: paid, balance: balance,
+      schedule: sched, next: next,
+      journey: journey(eventDate, sched, isBooth),
+      options: addOptions(details.lines || [], hasBoothEvent, isBooth),
+      venue: venueShort(details.venue)
+    };
+  }
+
+  /* Just the venue name and city, no street address. */
+  function venueShort(v) {
+    if (!v) return '';
+    var parts = v.split(/,\s*/).filter(function (p) { return !/^\d+\s/.test(p) && !/^\d{5}/.test(p) && !/^(ph|phone)[:\s]/i.test(p); });
+    return parts.slice(0, 2).join(' \u00b7 ');
+  }
+
+  return { build: build, schedule: schedule, team: team, addOptions: addOptions, journey: journey };
+})();
+
+/* ---- src/requests.js ---- */
+/* Request to Add. Sends the couple's picks to Bob through DJEP's own Request Changes form
+ * ("something else" box, field request_change_comments). Nothing is added to the event automatically:
+ * Bob reviews every request in DJEP and adds approved items himself.
+ *
+ * MQ.config.REQUEST_MODE = 'test' builds the exact message but does not send it.
+ */
+window.MQ = window.MQ || {};
+
+MQ.requests = (function () {
+  var U = MQ.util;
+  var KEY = 'mq-pending-';
+
+  function pending(eventId) { return U.store(KEY + eventId) || []; }
+  function setPending(eventId, list) { U.store(KEY + eventId, list); }
+
+  function message(vm, items) {
+    var sum = items.reduce(function (a, c) { return a + c.price; }, 0);
+    var lines = items.map(function (c) { return '- ' + c.name + ' (' + U.money(c.price) + (c.unit ? ' per ' + c.unit : '') + ')'; });
+    return [
+      'ADD-ON REQUEST from the client portal (please review before adding)',
+      'Event: ' + (vm.list.name || '') + ' on ' + U.fmtDate(vm.eventDate),
+      '',
+      lines.join('\n'),
+      '',
+      'Adds: ' + U.money(sum) + '   New total if approved: ' + U.money(vm.total + sum)
+    ].join('\n');
+  }
+
+  /* Finds the form that holds request_change_comments, copies its hidden fields, fills the message. */
+  function buildSubmission(eventId, text) {
+    return MQ.reader.fetchPage('/clients/requestchanges.asp?eventid=' + encodeURIComponent(eventId)).then(function (doc) {
+      var box = doc.querySelector('[name="request_change_comments"]');
+      var form = box && box.closest('form');
+      if (!form) throw new Error('Request form not found (session may have timed out).');
+      var data = new FormData(form);
+      data.set('request_change_comments', text);
+      var submit = form.querySelector('[type=submit][name]');
+      if (submit) data.set(submit.name, submit.value);
+      var action = new URL(form.getAttribute('action') || location.href, location.origin + '/clients/').href;
+      return { action: action, method: (form.method || 'post').toUpperCase(), data: data };
+    });
+  }
+
+  /* Returns a promise of { mode: 'test' | 'sent', text }. */
+  function send(vm, items) {
+    var text = message(vm, items);
+    var live = MQ.config.REQUEST_MODE === 'live';
+    return buildSubmission(vm.id, text).then(function (sub) {
+      if (!live) {
+        console.info('[Marquee portal] TEST MODE request (not sent)', sub.action, text);
+        return { mode: 'test', text: text };
+      }
+      return fetch(sub.action, { method: sub.method, body: sub.data, credentials: 'same-origin' }).then(function (r) {
+        if (!r.ok) throw new Error('DJEP returned ' + r.status);
+        return { mode: 'sent', text: text };
+      });
+    }).then(function (res) {
+      if (res.mode !== 'sent') return res;
+      var list = pending(vm.id);
+      items.forEach(function (c) { if (list.indexOf(c.id) < 0) list.push(c.id); });
+      setPending(vm.id, list);
+      return res;
+    });
+  }
+
+  function cancel(eventId, id) {
+    setPending(eventId, pending(eventId).filter(function (x) { return x !== id; }));
+  }
+
+  return { send: send, pending: pending, cancel: cancel, message: message };
+})();
+
+/* ---- src/reels.js ---- */
+/* Latest Reels from the Behold feed. Only posts that mention @marqueeohio or #marqueeohio show.
+ * Covers on many Reels are black, so each tile shows a frame from inside the video instead.
+ */
+window.MQ = window.MQ || {};
+
+MQ.reels = (function () {
+  var U = MQ.util;
+
+  function load() {
+    return fetch(MQ.config.REELS_FEED).then(function (r) { return r.json(); }).then(function (j) {
+      var posts = Array.isArray(j) ? j : (j.posts || []);
+      var tags = MQ.config.REELS_FILTER.map(function (t) { return t.toLowerCase(); });
+      return posts.filter(function (p) {
+        var hay = [(p.caption || ''), (p.mentions || []).join(' '), (p.hashtags || []).join(' ')].join(' ').toLowerCase();
+        return tags.some(function (t) { return hay.indexOf(t) >= 0; });
+      }).slice(0, 4);
+    });
+  }
+
+  function tile(p) {
+    var video = p.mediaType === 'VIDEO' && p.mediaUrl;
+    var poster = (p.sizes && p.sizes.medium && p.sizes.medium.mediaUrl) || p.thumbnailUrl || '';
+    var media = video
+      ? '<video src="' + U.esc(p.mediaUrl) + '#t=2" muted playsinline preload="metadata"></video>'
+      : '<img src="' + U.esc(poster || p.mediaUrl) + '" alt="" loading="lazy">';
+    return '<a class="mq-reel" href="' + U.esc(p.permalink) + '" target="_blank" rel="noopener" aria-label="Watch on Instagram">' + media +
+      '<span class="sh"></span><span class="pl">' + U.icon('play', 14) + '</span><span class="cp">' + U.esc(p.prunedCaption || '') + '</span></a>';
+  }
+
+  function render(container) {
+    container.innerHTML = '<div class="mq-sechead"><div><span class="mq-eyebrow">Fresh From The Floor</span>' +
+      '<h2 class="mq-h2">Latest Reels <span class="mq-serif">from @marqueeohio.</span></h2></div>' +
+      '<a class="mq-livepill" href="https://www.instagram.com/marqueeohio/" target="_blank" rel="noopener"><i></i>Live Feed</a></div>' +
+      '<div class="mq-reel-grid"></div>';
+    var grid = container.querySelector('.mq-reel-grid');
+    load().then(function (posts) {
+      if (!posts.length) { container.style.display = 'none'; return; }
+      grid.innerHTML = posts.map(tile).join('');
+    }).catch(function () { container.style.display = 'none'; });
+  }
+
+  return { render: render, load: load };
+})();
+
+/* ---- src/shell.js ---- */
+/* Header, footer and the app container. Our header replaces DJEP's on every portal page. */
+window.MQ = window.MQ || {};
+
+MQ.shell = (function () {
+  var U = MQ.util;
+
+  function navLinks() {
+    var path = location.pathname.toLowerCase();
+    var logout = Array.prototype.filter.call(document.querySelectorAll('#djep-navbar a, #djep-header a'), function (a) {
+      return /log\s*out/i.test(a.textContent);
+    })[0];
+    var items = [
+      { label: 'Home', href: '/clients/home.asp', on: /home\.asp|\/clients\/?$/.test(path) },
+      { label: 'My Events', href: '/clients/events.asp', on: /events\.asp|eventdetails|makeapayment|requestchanges/.test(path) },
+      { label: 'My Profile', href: '/clients/profile.asp', on: /profile\.asp/.test(path) },
+      { label: 'Contact', href: '/clients/contact.asp', on: /contact\.asp/.test(path) }
+    ];
+    var html = items.map(function (i) {
+      return '<a href="' + i.href + '"' + (i.on ? ' aria-current="page"' : '') + '>' + i.label + '</a>';
+    }).join('');
+    html += '<a href="#" data-mq-logout>' + U.icon('logout', 14) + 'Logout</a>';
+    return { html: html, logout: logout };
+  }
+
+  function header() {
+    var n = navLinks();
+    var el = document.createElement('header');
+    el.className = 'mq-header';
+    el.innerHTML = '<div class="mq-header-in"><a href="/clients/home.asp" aria-label="Marquee Events home"><img src="' +
+      MQ.ASSET_BASE + 'brand/marquee-logo-white.png" alt="Marquee Events"></a><nav class="mq-nav" aria-label="Client portal">' + n.html + '</nav></div>';
+    var lo = el.querySelector('[data-mq-logout]');
+    lo.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (n.logout) n.logout.click(); else location.href = '/clients/logout.asp';
+    });
+    return el;
+  }
+
+  function footer() {
+    var el = document.createElement('footer');
+    el.className = 'mq-footer';
+    el.innerHTML = '<span>Marquee Events \u00b7 Luxury Wedding Entertainment</span><span class="mq-serif">your night, by design.</span>';
+    return el;
+  }
+
+  /* Puts the Marquee header at the top of every portal page. Returns the app container for takeover pages. */
+  function mount(takeover) {
+    var page = document.getElementById('djep-page') || document.body;
+    var wrap = document.createElement('div');
+    wrap.className = 'mq-app';
+    wrap.id = 'mq-app';
+    wrap.appendChild(header());
+    var main = document.createElement('main');
+    main.className = 'mq-main';
+    if (takeover) wrap.appendChild(main);
+    var content = document.getElementById('djep-content');
+    if (content && content.parentNode === page) page.insertBefore(wrap, content);
+    else page.insertBefore(wrap, page.firstChild);
+    if (takeover) wrap.appendChild(footer());
+    else {
+      var f = document.createElement('div');
+      f.className = 'mq-app';
+      f.appendChild(footer());
+      page.appendChild(f);
+    }
+    if (!MQ.config.LIVE_FOR_EVERYONE) {
+      var b = document.createElement('div');
+      b.className = 'mq-test-banner';
+      b.textContent = 'Marquee preview \u00b7 test mode';
+      wrap.appendChild(b);
+    }
+    return main;
+  }
+
+  return { mount: mount };
+})();
+
+/* ---- src/render-chooser.js ---- */
+/* "Your Events" chooser. Shown only when a couple has 2 or more events (for example DJ + photo booth),
+ * and it only lists the events they actually have.
+ */
+window.MQ = window.MQ || {};
+
+MQ.renderChooser = (function () {
+  var U = MQ.util, esc = U.esc;
+
+  function render(main, events) {
+    var first = U.coupleFromName(events[0].name, events[0].type).first;
+    var cards = events.map(function (e) {
+      var d = U.parseDate(e.date);
+      var dj = MQ.model.team(e.employeeId);
+      var img = e.isPhotoBooth ? MQ.ASSET_BASE + 'events/photo-booth.jpg' : dj.photo;
+      var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : 'Wedding Entertainment';
+      return '<a class="mq-evcard" href="?mqevent=' + e.id + '"><div class="img"><img src="' + esc(img) + '" alt="" style="object-position:center ' + (e.isPhotoBooth ? '70%' : '20%') + '"></div>' +
+        '<div class="bd"><span class="mq-eyebrow">' + U.icon(e.isPhotoBooth ? 'camera' : 'music', 13) + ' ' + esc(e.isPhotoBooth ? 'Photo Booth' : 'DJ & MC') + '</span>' +
+        '<h3>' + esc(label) + '</h3><span class="meta">' + esc(U.fmtDateLong(d)) + (e.isPhotoBooth ? '' : ' \u00b7 with ' + esc(dj.first)) + '</span>' +
+        '<span class="mq-chip mq-chip-ok" style="align-self:flex-start"><span class="mq-dot"></span>' + esc(e.status || 'Booked') + '</span>' +
+        '<span class="go">Open This Event ' + U.icon('arrow', 14) + '</span></div></a>';
+    }).join('');
+    main.innerHTML = '<section class="mq-hero"><span class="mq-eyebrow">Client Portal</span><h1>Welcome back,<br>' + esc(first) + '.</h1>' +
+      '<p class="mq-serif">your night, by design.</p><p>You have ' + events.length + ' events with Marquee. Pick one to see its details, payments and add-ons.</p></section>' +
+      '<section aria-label="Your events"><div class="mq-sechead" style="margin-bottom:16px"><div><span class="mq-eyebrow">Your Events</span><h2 class="mq-h2">Choose Your Event</h2></div></div>' +
+      '<div class="mq-choose">' + cards + '</div></section><section class="mq-reels" data-mq-reels></section>';
+    MQ.reels.render(main.querySelector('[data-mq-reels]'));
+  }
+
+  return { render: render };
+})();
+
+/* ---- src/render-event.js ---- */
+/* The event page: hero, event + headliner card with countdown, journey, planning sessions,
+ * your night + where you stand, add to your night, messages and reels.
+ */
+window.MQ = window.MQ || {};
+
+MQ.renderEvent = (function () {
+  var U = MQ.util, esc = U.esc, icon = U.icon;
+
+  function switcher(vm, events) {
+    if (events.length < 2) return '';
+    var links = events.map(function (e) {
+      var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : 'Wedding Entertainment';
+      return '<a href="?mqevent=' + e.id + '"' + (e.id === vm.id ? ' aria-current="page"' : '') + '>' +
+        icon(e.isPhotoBooth ? 'camera' : 'music', 14) + esc(label) + '</a>';
+    }).join('');
+    return '<nav class="mq-switch" aria-label="Your events">' + links + '<a class="mq-all" href="?mqevent=all">All Events</a></nav>';
+  }
+
+  function hero(vm) {
+    var sub = vm.isBooth
+      ? 'Your photo booth details, payments and add-ons, all in one place.'
+      : 'Track your timeline, payments and every detail of your night, all in one place. Plan your music in Vibo.';
+    return '<section class="mq-hero"><span class="mq-eyebrow">Client Portal</span>' +
+      '<h1>Welcome back,<br>' + esc(vm.couple.first) + '.</h1><p class="mq-serif">your night, by design.</p><p>' + sub + '</p></section>';
+  }
+
+  function miniBars() {
+    return U.wave(64, 3).map(function (h) { return '<span style="height:' + Math.round(6 + h * 38) + 'px"></span>'; }).join('');
+  }
+
+  function eventCard(vm) {
+    var d = vm.eventDate, dj = vm.dj;
+    var next = vm.next;
+    var nextLine = next ? 'Next: ' + U.money(next.left) + (next.due ? (next.status === 'due' ? ' due now' : ' due ' + U.fmtDate(next.due)) : ' due now') : 'Paid in full';
+    var photo = vm.isBooth ? MQ.ASSET_BASE + 'events/photo-booth.jpg' : dj.photo;
+    var contacts = [
+      dj.tel && '<a href="' + dj.tel + '">' + icon('phone') + '<span>' + esc(dj.phone) + '</span></a>',
+      dj.sms && '<a href="' + dj.sms + '">' + icon('chat') + '<span>Send a text</span></a>',
+      dj.mailto && '<a href="' + dj.mailto + '">' + icon('mail') + '<span>' + esc(dj.email) + '</span></a>',
+      dj.igUrl && '<a href="' + dj.igUrl + '" target="_blank" rel="noopener">' + icon('ig') + '<span>' + esc(dj.handle) + '</span></a>'
+    ].filter(Boolean).join('');
+    var links = vm.list.links;
+    var vibo = vm.isBooth ? '' : '<a class="mq-btn mq-btn-ghost" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">' + icon('music', 15) + 'Open Vibo</a>';
+    return '<section class="mq-event" aria-labelledby="mq-ev-title"><div class="mq-event-row">' +
+      '<div class="mq-photo"><img src="' + esc(photo) + '" alt="' + esc(vm.isBooth ? 'Marquee photo booth' : dj.name) + '" style="object-position:' + (vm.isBooth ? 'center 70%' : (dj.pos || 'center 20%')) + '">' +
+      '<div class="mq-fade"></div><div class="mq-edge"></div><div class="mq-mini" aria-hidden="true">' + miniBars() + '</div></div>' +
+      '<div class="mq-event-body">' +
+        '<div class="mq-ev-top">' +
+          '<div class="mq-datetile" aria-label="' + esc(U.fmtDateLong(d)) + '"><div class="m">' + U.MONTHS[d.getMonth()] + '</div><div class="b"><div class="d">' + d.getDate() +
+          '</div><div class="y">' + d.getFullYear() + '</div><div class="w">' + U.DAYS[d.getDay()] + '</div></div></div>' +
+          '<div class="mq-ev-info"><div class="mq-tags"><span class="mq-eyebrow" style="letter-spacing:.28em">Your Upcoming Event</span>' +
+          '<span class="mq-chip mq-chip-ok"><span class="mq-dot"></span>' + esc(vm.list.status || 'Booked') + '</span></div>' +
+          '<h2 id="mq-ev-title">' + esc(vm.couple.couple) + '<br><span>' + esc(vm.list.type || vm.details.type || '') + '</span></h2>' +
+          (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') +
+          '</div></div>' +
+        '<div class="mq-actions">' +
+          '<a class="mq-btn mq-btn-pink mq-pay" href="' + esc(links.payment || '#') + '">' + icon('card', 18) + '<span class="t"><b>Make a Payment</b><i>' + esc(nextLine) + '</i></span></a>' +
+          vibo +
+          '<a class="mq-btn mq-btn-ghost" href="' + esc(links.details || '#') + '">Event Details</a>' +
+        '</div>' +
+        '<div class="mq-headliner"><span class="mq-eyebrow">' + (vm.isBooth ? 'Your Point Of Contact' : 'Your Headliner') + '</span>' +
+          '<div class="mq-hl-row"><img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + ', Marquee Events" style="height:' + dj.logoH + 'px" onerror="this.outerHTML=\'<span class=&quot;mq-hl-name&quot;>' + esc(dj.name) + '</span>\'">' +
+          '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
+          '<span class="mq-role"><b>' + esc(dj.role) + '</b> \u00b7 ' + (vm.isBooth ? 'Your go-to for every photo booth detail.' : 'Your go-to for music, timeline and every big moment of the night.') + '</span>' +
+          (contacts ? '<div class="mq-contacts">' + contacts + '</div>' : '') +
+          '<p class="mq-note">Texts and emails are answered within 24 to 48 hours. Weekends are show days, so replies may come Monday.</p>' +
+        '</div>' +
+      '</div></div>' +
+      '<div class="mq-countdown" role="timer" aria-label="Countdown to your event"><div class="lbl"><span class="mq-live" aria-hidden="true"></span>The Countdown Is On</div>' +
+      '<div class="mq-units" data-mq-countdown></div></div></section>';
+  }
+
+  function startCountdown(root, eventDate) {
+    var box = root.querySelector('[data-mq-countdown]');
+    if (!box) return;
+    var target = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate(), 17, 0, 0);
+    function tick() {
+      var now = MQ.util.overrideToday ? new Date(new Date(MQ.util.overrideToday + 'T12:00:00').getTime() + (Date.now() % 1000)) : new Date();
+      var ms = Math.max(0, target - now);
+      var s = Math.floor(ms / 1000);
+      var vals = [Math.floor(s / 86400), Math.floor(s % 86400 / 3600), Math.floor(s % 3600 / 60), s % 60];
+      var labels = ['Days', 'Hours', 'Minutes', 'Seconds'];
+      box.innerHTML = vals.map(function (v, i) {
+        return '<div class="mq-unit"><b>' + (i ? String(v).padStart(2, '0') : v) + '</b><i>' + labels[i] + '</i></div>' + (i < 3 ? '<span class="mq-sep" aria-hidden="true">:</span>' : '');
+      }).join('');
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  function journey(vm) {
+    var j = vm.journey;
+    var bars = U.wave(120, 7).map(function (h, i) {
+      var on = (i / 119) * 100 <= j.pct;
+      return '<span class="' + (on ? '' : 'off') + '" style="height:' + Math.round(10 + h * 104) + 'px"></span>';
+    }).join('');
+    var pins = j.steps.map(function (s) {
+      return '<div class="mq-pin' + (s.reached ? ' on' : '') + '" style="left:' + s.left + '%"><span>' + s.num + '</span><span></span></div>';
+    }).join('');
+    var cards = j.steps.map(function (s) {
+      if (s.isFinal) {
+        return '<li class="mq-step mq-drop lvl' + s.lvl + '"><div class="top"><span class="num" style="color:#fff">' + s.num + ' \u00b7 The Drop</span><span class="tag">' +
+          (vm.isBooth ? 'Event Night' : 'Wedding Night') + '</span></div><span class="big">Let\'s<br>Dance</span><span class="when" style="color:#fff">' + esc(s.when) +
+          '</span><span class="gd">Trust the Marquee team. Your vision and the party of your dreams come to life.</span><span class="aw">' + esc(s.away) + '</span></li>';
+      }
+      var chip = s.done ? 'mq-chip-ok' : (s.status === 'Due Now' || s.status === 'Open' || s.status === 'Book Now') ? 'mq-chip-pink' : 'mq-chip-dim';
+      var extra = '';
+      if (s.amount) extra += '<span class="amt">' + esc(s.amount) + '</span>';
+      if (s.pay && (s.status === 'Due Now')) extra += '<a class="lnk" href="' + esc(vm.list.links.payment || '#') + '">Pay now</a>';
+      if (s.vibo) extra += '<a class="lnk" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">Open Vibo</a>';
+      return '<li class="mq-step' + (s.done ? ' done' : '') + (s.next ? ' next' : '') + '"><div class="top"><span class="num">' + s.num +
+        '</span><span class="mq-chip ' + chip + '">' + esc(s.status) + '</span></div><span class="ttl">' + esc(s.title) + '</span><span class="when">' + esc(s.when) +
+        '</span><span class="nt">' + esc(s.note) + '</span>' + extra + '<span class="aw">' + esc(s.away) + '</span></li>';
+    }).join('');
+    return '<section class="mq-card mq-journey" aria-labelledby="mq-jr"><div class="mq-sechead"><div><span class="mq-eyebrow">Your Journey</span>' +
+      '<h2 class="mq-h2" id="mq-jr">The Marquee Process <span class="mq-serif">epic, by design.</span></h2></div>' +
+      '<div class="pct">You\'re <b>' + j.pct + '%</b> of the way to the drop.</div></div>' +
+      '<div class="mq-track" aria-hidden="true">' + pins + '<div class="mq-bars">' + bars + '</div><div class="mq-now" style="left:' + j.pct + '%"></div></div>' +
+      '<ol class="mq-steps">' + cards + '</ol></section>';
+  }
+
+  function sessions(vm) {
+    if (vm.isBooth) return '';
+    var dj = vm.dj;
+    var c = MQ.config, t = U.today(), d = vm.eventDate;
+    function link(kind, label) {
+      var url = dj.calendly && dj.calendly[kind];
+      if (url) return '<a class="mq-btn mq-btn-pink" href="' + esc(url) + '" target="_blank" rel="noopener">' + icon('cal', 15) + label + '</a>';
+      if (dj.sms) return '<a class="mq-btn mq-btn-pink" href="' + dj.sms + '?&body=' + encodeURIComponent('Hi ' + dj.first + '! We would love to book our ' + (kind === 'final' ? 'final planning meeting' : 'creative session') + '.') + '">' + icon('chat', 15) + 'Text ' + esc(dj.first) + ' To Book</a>';
+      if (dj.mailto) return '<a class="mq-btn mq-btn-pink" href="' + dj.mailto + '">' + icon('mail', 15) + 'Email ' + esc(dj.first) + ' To Book</a>';
+      return '<span class="soon">Booking link coming soon.</span>';
+    }
+    var cf = U.addMonths(d, -c.CREATIVE_SESSION.fromMonthsBefore), ct = U.addMonths(d, -c.CREATIVE_SESSION.toMonthsBefore);
+    var ff = U.addDays(d, -c.FINAL_PLANNING.fromDaysBefore), ft = U.addDays(d, -c.FINAL_PLANNING.toDaysBefore);
+    function chip(from, to) {
+      if (U.daysBetween(t, to) < 0) return '<span class="mq-chip mq-chip-dim">Window Closed</span>';
+      if (U.daysBetween(t, from) <= 0) return '<span class="mq-chip mq-chip-pink">Open Now</span>';
+      return '<span class="mq-chip mq-chip-dim">Opens ' + U.fmtDate(from) + '</span>';
+    }
+    return '<section class="mq-sessions" aria-labelledby="mq-bk"><div class="mq-sechead"><div><span class="mq-eyebrow">Book With ' + esc(dj.first) + '</span>' +
+      '<h2 class="mq-h2" id="mq-bk">Your Planning Sessions</h2></div></div><div class="mq-sess-grid">' +
+      '<div class="mq-card mq-sess"><div class="top"><span class="mq-ico">' + icon('music', 20) + '</span>' + chip(cf, ct) + '</div>' +
+      '<h3>Creative Session <span class="mq-chip mq-chip-dim" style="vertical-align:middle">Optional</span></h3><p>Love planning together? Sit down with ' + esc(dj.first) +
+      ' to dream up your entrances, first dance and the moments that make your night yours. Happy planning in Vibo? You are all set.</p>' +
+      '<div class="meta"><span><b>Best window:</b> ' + U.MONTHS[cf.getMonth()] + ' ' + cf.getFullYear() + ' to ' + U.MONTHS[ct.getMonth()] + ' ' + ct.getFullYear() + '</span><span>About 60 minutes</span></div>' +
+      link('creative', 'Book Creative Session') + '</div>' +
+      '<div class="mq-card mq-sess"><div class="top"><span class="mq-ico">' + icon('checkbox', 20) + '</span>' + chip(ff, ft) + '</div>' +
+      '<h3>Final Planning</h3><p>Lock every detail: timeline, introductions, special songs and vendor timing, so the night runs like a show.</p>' +
+      '<div class="meta"><span><b>Best window:</b> ' + U.fmtDate(ff) + ' to ' + U.fmtDate(ft) + '</span><span>About 45 minutes</span></div>' +
+      link('final', 'Book Final Planning') + '</div></div></section>';
+  }
+
+  function invest(vm, pending) {
+    var lines = (vm.details.lines || []).map(function (l) {
+      return '<li><span class="ck">' + icon('check', 13) + '</span><span class="nm">' + esc(l.name) + '</span><span class="pr">' + U.money(l.price) + '</span></li>';
+    }).join('');
+    var pend = pending.map(function (c) {
+      return '<li class="pending"><span class="ck">' + icon('clock', 13) + '</span><span class="nm">' + esc(c.name) + '<small>Awaiting Approval</small></span><span class="pr">' + U.money(c.price) + '</span></li>';
+    }).join('');
+    var pct = vm.total ? Math.round(vm.paid / vm.total * 100) : 0;
+    var n = vm.next;
+    var nextBox = n
+      ? '<div class="mq-next"><span>' + (n.status === 'due' ? 'Due Now \u00b7 ' : 'Next Payment \u00b7 ') + esc(n.label) + '</span><b>' + U.money(n.left) + '</b><span>' +
+        (n.due ? (n.status === 'due' ? 'Was due ' : 'Due ') + U.fmtDateLong(n.due) : 'Due now') + '</span></div>'
+      : '<div class="mq-next paid"><span>All Set</span><b>Paid in full</b><span>Thank you! Nothing more is due.</span></div>';
+    var sched = vm.schedule.map(function (p) {
+      var col = p.status === 'paid' ? 'var(--mq-ok)' : p.status === 'due' ? 'var(--mq-pink-soft)' : 'var(--mq-muted)';
+      var lbl = p.status === 'paid' ? 'Paid' : p.status === 'due' ? 'Due' : 'Upcoming';
+      return '<li><span><b>' + esc(p.label) + '</b><i>' + (p.due ? U.fmtDate(p.due) : 'At booking') + '</i></span><span>' + U.money(p.amount) +
+        '<span class="st" style="color:' + col + '">' + lbl + '</span></span></li>';
+    }).join('');
+    var count = (vm.details.lines || []).length;
+    return '<section class="mq-invest" id="mq-payment" aria-labelledby="mq-iv"><div class="mq-sechead"><div><span class="mq-eyebrow">Your Lineup &amp; Investment</span>' +
+      '<h2 class="mq-h2" id="mq-iv">Your Night, <span style="color:var(--mq-pink)">As Booked.</span></h2></div>' +
+      '<span class="mq-chip mq-chip-ok" style="font-size:11px;padding:6px 12px">' + icon('check', 12) + count + (count === 1 ? ' item' : ' items') + ' booked</span></div>' +
+      '<div class="mq-invest-row"><div class="mq-night"><span class="mq-sub">What\'s In Your Night</span><ul class="mq-lines">' + lines + pend + '</ul>' +
+      '<div class="mq-total"><span>Total Investment</span><b>' + U.money(vm.total) + '</b></div>' +
+      (pending.length ? '<span class="mq-small" style="margin-top:8px">Items awaiting approval are not in your total until ' + esc(vm.dj.first) + ' confirms them.</span>' : '') +
+      '<span class="mq-small" style="margin-top:14px">Want to change something? Message your headliner and they\'ll take care of it.</span></div>' +
+      '<div class="mq-stand"><span class="mq-sub">Where You Stand</span><div><div class="mq-meter"><div style="width:' + pct + '%"></div></div>' +
+      '<div class="mq-meter-lbl"><span><b>' + U.money(vm.paid) + '</b> paid</span><span><b>' + U.money(vm.balance) + '</b> remaining</span></div></div>' +
+      nextBox + (n ? '<a class="mq-btn mq-btn-pink" href="' + esc(vm.list.links.payment || '#') + '">' + icon('card', 16) + 'Make a Payment</a>' : '') +
+      '<div><button type="button" class="mq-sched-btn" aria-expanded="false" data-mq-sched>Payment Schedule' + icon('chev', 14) + '</button>' +
+      '<ul class="mq-sched" hidden>' + sched + '</ul></div>' +
+      '<p class="mq-small">25% at booking, 25% at 9 months, 25% at 6 months, balance due 90 days before your event.</p></div></div></section>';
+  }
+
+  function optCard(c, feat, selected) {
+    var on = selected.indexOf(c.id) >= 0;
+    return '<div class="mq-opt' + (feat ? ' feat' : '') + (on ? ' sel' : '') + '"><span class="nm">' + esc(c.name) + '</span><span class="ds">' + esc(c.sub || '') + '</span>' +
+      '<div class="bt"><span class="pr">' + U.money(c.price) + (c.unit ? ' / ' + esc(c.unit) : '') + '</span>' +
+      '<button type="button" data-mq-pick="' + c.id + '" aria-pressed="' + on + '">' + (on ? 'Selected' : 'Select') + '</button></div></div>';
+  }
+
+  /* Add To Your Night has its own state (selection, dropdown, status), so it re-renders on its own. */
+  function addSection(vm, container, refreshInvest) {
+    var state = { selected: [], open: false, status: null, busy: false };
+    function avail() {
+      var p = MQ.requests.pending(vm.id);
+      return { pending: p, list: vm.options.all.filter(function (c) { return p.indexOf(c.id) < 0; }) };
+    }
+    function draw() {
+      var a = avail();
+      var ids = a.list.map(function (c) { return c.id; });
+      state.selected = state.selected.filter(function (id) { return ids.indexOf(id) >= 0; });
+      var feat = vm.options.featured.filter(function (c) { return ids.indexOf(c.id) >= 0; });
+      var groups = vm.options.groups.map(function (g) {
+        return { label: g.label, items: g.items.filter(function (c) { return ids.indexOf(c.id) >= 0; }) };
+      }).filter(function (g) { return g.items.length; });
+      var moreCount = groups.reduce(function (n, g) { return n + g.items.length; }, 0);
+      if (!feat.length && !moreCount && !state.status) { container.innerHTML = ''; container.style.display = 'none'; return; }
+      container.style.display = '';
+      var sel = vm.options.all.filter(function (c) { return state.selected.indexOf(c.id) >= 0; });
+      var sum = sel.reduce(function (n, c) { return n + c.price; }, 0);
+      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">Then We Turn It Up</span><h2 class="mq-h2" id="mq-ad">Add To Your Night <span class="mq-serif">make it unforgettable.</span></h2></div>' +
+        '<span class="intro">Only showing what\'s not already in your lineup. Select what you love and see your new total. Send a request and ' + esc(vm.dj.first) +
+        ' reviews it before anything is added to your event.</span></div>';
+      if (feat.length) html += '<div><div class="mq-rule hot"><span>Couples Love These</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
+      if (moreCount) {
+        html += '<button type="button" class="mq-more" aria-expanded="' + state.open + '" data-mq-more>' + (state.open ? 'Show Less' : 'See All ' + moreCount + ' More Options') + icon('chev', 14) + '</button>';
+        if (state.open) html += '<div class="mq-groups">' + groups.map(function (g) {
+          return '<div><div class="mq-rule"><span>' + esc(g.label) + '</span></div><div class="mq-opts">' + g.items.map(function (c) { return optCard(c, false, state.selected); }).join('') + '</div></div>';
+        }).join('') + '</div>';
+      }
+      if (state.status) {
+        var test = state.status.mode === 'test', err = state.status.mode === 'error';
+        html += '<div class="mq-status' + (test || err ? ' test' : '') + '" role="status"><span class="ic">' + icon(err ? 'alert' : 'check', 16) + '</span><div><b>' +
+          (err ? 'That did not go through.' : test ? 'Test mode: nothing was sent.' : 'Request sent!') + '</b><p>' +
+          esc(err ? state.status.text + ' Please text ' + vm.dj.first + ' instead.' : test ? 'This is exactly what ' + vm.dj.first + ' will receive once requests are switched on:\n\n' + state.status.text
+            : vm.dj.first + ' will review your request and confirm with you. Your total updates once it is approved.') +
+          '</p></div><button type="button" data-mq-dismiss>Got it</button></div>';
+      }
+      if (sel.length) {
+        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid);
+        var dueNow = plan.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0) -
+          vm.schedule.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0);
+        var talk = vm.dj.sms ? vm.dj.sms + '?&body=' + encodeURIComponent('Hi ' + vm.dj.first + '! We are thinking about adding ' + sel.map(function (c) { return c.name; }).join(', ') + '. Can we talk it through?')
+          : (vm.dj.mailto || '#');
+        html += '<div class="mq-tally"><div class="c w"><span>Your Selections \u00b7 ' + sel.length + '</span><b>' + esc(sel.map(function (c) { return c.name; }).join(', ')) + '</b></div>' +
+          '<div class="c"><span>Adds</span><b>' + U.money(sum) + '</b></div>' +
+          '<div class="c"><span>New Total If Approved</span><b>' + U.money(vm.total + sum) + '</b></div>' +
+          '<div class="c"><span>Due Once Approved</span><b style="color:var(--mq-pink-soft)">' + U.money(Math.max(0, U.round2(dueNow))) + '</b><i>' +
+          (dueNow > 0.005 ? 'Catch-up to stay on schedule' : 'Spread across your remaining payments') + '</i></div>' +
+          '<div class="act"><button type="button" class="mq-btn mq-btn-pink" data-mq-send' + (state.busy ? ' disabled' : '') + '>' + icon('send', 16) + (state.busy ? 'Sending...' : 'Request to Add') + '</button>' +
+          '<a class="mq-btn mq-btn-ghost" href="' + esc(talk) + '">' + icon('chat', 14) + 'Talk to ' + esc(vm.dj.first) + ' First</a></div></div>';
+      }
+      container.innerHTML = html;
+    }
+    container.addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      if (b.hasAttribute('data-mq-pick')) {
+        var id = b.getAttribute('data-mq-pick');
+        var i = state.selected.indexOf(id);
+        if (i >= 0) state.selected.splice(i, 1); else state.selected.push(id);
+        state.status = null;
+        draw();
+      } else if (b.hasAttribute('data-mq-more')) { state.open = !state.open; draw(); }
+      else if (b.hasAttribute('data-mq-dismiss')) { state.status = null; draw(); }
+      else if (b.hasAttribute('data-mq-send') && !state.busy) {
+        var items = vm.options.all.filter(function (c) { return state.selected.indexOf(c.id) >= 0; });
+        state.busy = true; draw();
+        MQ.requests.send(vm, items).then(function (res) {
+          state.status = res; state.selected = []; state.busy = false;
+          draw(); refreshInvest();
+        }).catch(function (err) {
+          state.status = { mode: 'error', text: err.message || String(err) }; state.busy = false; draw();
+        });
+      }
+    });
+    draw();
+  }
+
+  function messages() {
+    var box = document.querySelector('.djep-latestemailsbox');
+    var items = box ? Array.prototype.filter.call(box.querySelectorAll('a'), function (a) { return a.textContent.trim(); }) : [];
+    var list = items.slice(0, 4).map(function (a) {
+      return '<li class="mq-row"><span class="mq-live" style="animation:none" aria-hidden="true"></span><span class="nm">' + esc(a.textContent.trim()) +
+        '</span><a class="mq-btn mq-btn-ghost" style="min-height:44px" href="' + esc(a.href) + '">Read</a></li>';
+    }).join('');
+    return '<section class="mq-card mq-msgs" aria-labelledby="mq-em"><div class="hd"><div><span class="mq-ico" style="width:40px;height:40px;border-radius:12px">' + icon('mail', 18) +
+      '</span><h2 id="mq-em">Latest From Your Team</h2></div><span class="mq-small">' + items.length + (items.length === 1 ? ' message' : ' messages') + '</span></div>' +
+      (list ? '<ul>' + list + '</ul>' : '<div class="empty">No messages yet. Updates from your team will land here.</div>') + '</section>';
+  }
+
+  function render(main, vm, events) {
+    main.innerHTML = switcher(vm, events) + hero(vm) + eventCard(vm) + journey(vm) + sessions(vm) +
+      '<div data-mq-invest></div><section class="mq-add" aria-labelledby="mq-ad" data-mq-add></section>' +
+      '<div class="mq-duo">' + messages() + '</div><section class="mq-reels" data-mq-reels></section>';
+    var investBox = main.querySelector('[data-mq-invest]');
+    function drawInvest() {
+      var p = MQ.requests.pending(vm.id);
+      var items = vm.options.all.filter(function (c) { return p.indexOf(c.id) >= 0; });
+      investBox.innerHTML = invest(vm, items);
+    }
+    investBox.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-mq-sched]');
+      if (!b) return;
+      var open = b.getAttribute('aria-expanded') !== 'true';
+      b.setAttribute('aria-expanded', open);
+      b.nextElementSibling.hidden = !open;
+    });
+    drawInvest();
+    addSection(vm, main.querySelector('[data-mq-add]'), drawInvest);
+    startCountdown(main, vm.eventDate);
+    MQ.reels.render(main.querySelector('[data-mq-reels]'));
+  }
+
+  return { render: render };
+})();
+
+/* ---- src/main.js ---- */
+/* Entry point. Runs on every DJEP client portal page via the Custom Scripting box.
+ * Home and My Events are rebuilt in the Marquee design. Every other portal page keeps DJEP's
+ * content and gets the Marquee header and colors.
+ */
+(function () {
+  function isTakeoverPage() {
+    return /\/clients\/(home|events)\.asp/i.test(location.pathname) || /\/clients\/?$/i.test(location.pathname);
+  }
+
+  function upcoming(events) {
+    return events.filter(function (e) { return e.id && !/cancel/i.test(e.status || ''); });
+  }
+
+  function start() {
+    if (!window.MQ || !MQ.gate || !MQ.gate.shouldRun()) return;
+    var html = document.documentElement;
+    html.classList.add('mq-portal');
+    var takeover = isTakeoverPage();
+    var events = takeover ? upcoming(MQ.reader.readEventList()) : [];
+    if (!takeover || !events.length) { MQ.shell.mount(false); return; }
+
+    html.classList.add('mq-takeover', 'mq-loading');
+    var main = MQ.shell.mount(true);
+    var want = new URLSearchParams(location.search).get('mqevent');
+
+    if (events.length > 1 && (!want || want === 'all')) {
+      MQ.renderChooser.render(main, events);
+      html.classList.remove('mq-loading');
+      return;
+    }
+    var pick = events.filter(function (e) { return e.id === want; })[0] || events[0];
+
+    MQ.reader.loadEventDetails(pick.id).then(function (details) {
+      var vm = MQ.model.build(pick, details, events);
+      MQ.renderEvent.render(main, vm, events);
+    }).catch(function (err) {
+      console.error('[Marquee portal] could not build event page', err);
+      html.classList.remove('mq-takeover');
+    }).then(function () { html.classList.remove('mq-loading'); });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();

@@ -1,0 +1,14 @@
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+  const errs = []; p.on('pageerror', e => errs.push(e.message));
+  await p.goto('http://localhost:8787/clients/home.asp?mqevent=435926'); await p.waitForTimeout(1000);
+  await p.evaluate(() => localStorage.clear());
+  await p.click('[data-mq-pick="spark"]'); await p.click('[data-mq-more]'); await p.click('[data-mq-pick="snow"]');
+  await p.locator('.mq-tally').scrollIntoViewIfNeeded(); await p.screenshot({ path: process.argv[2] + '/tally.png' });
+  console.log('tally:', (await p.locator('.mq-tally').innerText()).replace(/\s+/g, ' '));
+  await p.click('[data-mq-send]'); await p.waitForTimeout(800);
+  console.log('status:', (await p.locator('.mq-status').innerText()).replace(/\s+/g, ' ').slice(0, 400));
+  console.log('pending rows:', await p.locator('.mq-lines li.pending').count(), 'spark still offered:', await p.locator('[data-mq-pick="spark"]').count());
+  await p.click('[data-mq-sched]'); console.log('schedule:', (await p.locator('.mq-sched').innerText()).replace(/\s+/g, ' '));
+  await p.locator('.mq-invest').screenshot({ path: process.argv[2] + '/invest-pending.png' });
+  console.log('errors:', errs.join('|') || 'none'); await b.close(); })();

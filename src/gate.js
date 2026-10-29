@@ -18,7 +18,7 @@ MQ.gate = (function () {
   }
 
   function isTestClient() {
-    var text = document.body ? document.body.innerText : '';
+    var text = document.body ? document.body.textContent : '';
     return MQ.config.TEST_CLIENTS.some(function (name) { return text.indexOf(name) >= 0; });
   }
 
