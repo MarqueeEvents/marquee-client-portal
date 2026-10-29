@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T18:02Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T18:27Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -51,25 +51,33 @@ MQ.config = {
   // TODO: fill in IDs, contact info and Calendly links from Bob's checklist.
   TEAM: {
     '43180': {
-      key: 'bob', photoFile: 'bob-photo.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Marquee Luxury', role: 'Owner, Lead DJ & MC', price: 3500,
+      key: 'bob', cardPos: 'center 6%', photoFile: 'bob-photo.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Marquee Luxury', role: 'Owner, Lead DJ & MC', price: 3500,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
     'BRADON_ID': {
-      key: 'bradon', photoFile: 'bradon-photo.jpg', logoFile: 'bradon-logo.png', logoH: 64, name: 'Bradon Smith', first: 'Bradon', tier: 'Executive Headliner', role: 'Lead DJ & MC', price: 2700,
+      key: 'bradon', cardPos: 'center 30%', photoFile: 'bradon-photo.jpg', logoFile: 'bradon-logo.png', logoH: 64, name: 'Bradon Smith', first: 'Bradon', tier: 'Executive Headliner', role: 'Lead DJ & MC', price: 2700,
       phone: '330.432.4143', email: 'bradon@marqueeohio.com', instagram: 'dj_bradon',
       calendly: { creative: '', final: '' }
     },
     'DAN_ID': {
-      key: 'dan', photoFile: 'dan-photo.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
+      key: 'dan', cardPos: 'center 0%', photoFile: 'dan-photo.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
     'JAMES_ID': {
-      key: 'james', photoFile: 'james-photo.jpg', logoFile: 'james-logo.png', logoH: 58, name: 'James Stevenson', first: 'James', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
+      key: 'james', cardPos: 'center 0%', photoFile: 'james-photo.jpg', logoFile: 'james-logo.png', logoH: 58, name: 'James Stevenson', first: 'James', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     }
+  },
+
+  // Photo booth events show this general Marquee contact instead of whoever is staffed on the booth.
+  COMPANY_CONTACT: {
+    key: 'marquee', name: 'Marquee Events', first: 'Bob', tier: 'Photo Booth Team', role: 'Questions about your booth?',
+    note: 'Call or text Bob directly and we will take care of you.',
+    phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'marqueeohio',
+    logoFile: '../brand/marquee-logo-white.png', logoH: 46
   },
 
   // Add-on catalog (2027-2028 wedding guide pricing). TODO: replace with Bob's final options and pricing document.
@@ -435,12 +443,12 @@ window.MQ = window.MQ || {};
 MQ.model = (function () {
   var U = MQ.util;
 
-  function team(employeeId) {
-    var t = MQ.config.TEAM[employeeId] || MQ.config.TEAM['43180'];
+  function team(employeeId, isBooth) {
+    var t = isBooth ? MQ.config.COMPANY_CONTACT : (MQ.config.TEAM[employeeId] || MQ.config.TEAM['43180']);
     var base = MQ.ASSET_BASE + 'team/';
     var digits = (t.phone || '').replace(/\D/g, '');
     return Object.assign({}, t, {
-      photo: base + t.photoFile,
+      photo: t.photoFile ? base + t.photoFile : '',
       logo: base + t.logoFile,
       tel: digits ? 'tel:+1' + digits : '',
       sms: digits ? 'sms:+1' + digits : '',
@@ -588,7 +596,7 @@ MQ.model = (function () {
       list: listItem,
       details: details,
       isBooth: isBooth,
-      dj: team(listItem.employeeId),
+      dj: team(listItem.employeeId, isBooth),
       eventDate: eventDate,
       couple: couple,
       total: total, paid: paid, balance: balance,
@@ -997,7 +1005,7 @@ MQ.renderChooser = (function () {
       var dj = MQ.model.team(e.employeeId);
       var img = e.isPhotoBooth ? MQ.ASSET_BASE + 'events/photo-booth-scrapbook.jpg' : dj.photo;
       var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : 'Wedding Entertainment';
-      return '<a class="mq-evcard" href="?mqevent=' + e.id + '"><div class="img"><img src="' + esc(img) + '" alt="" style="object-position:center ' + (e.isPhotoBooth ? '62%' : '20%') + '"></div>' +
+      return '<a class="mq-evcard" href="?mqevent=' + e.id + '"><div class="img"><img src="' + esc(img) + '" alt="" style="object-position:center ' + (e.isPhotoBooth ? '62%' : (dj.cardPos || 'center 6%').replace('center ', '')) + '"></div>' +
         '<div class="bd"><span class="mq-eyebrow">' + U.icon(e.isPhotoBooth ? 'camera' : 'music', 13) + ' ' + esc(e.isPhotoBooth ? 'Photo Booth' : 'DJ & MC') + '</span>' +
         '<h3>' + esc(label) + '</h3><span class="meta">' + esc(U.fmtDateLong(d)) + (e.isPhotoBooth ? '' : ' \u00b7 with ' + esc(dj.first)) + '</span>' +
         '<span class="mq-chip mq-chip-ok" style="align-self:flex-start"><span class="mq-dot"></span>' + esc(e.status || 'Booked') + '</span>' +
@@ -1076,7 +1084,7 @@ MQ.renderEvent = (function () {
         '<div class="mq-headliner"><span class="mq-eyebrow">' + (vm.isBooth ? 'Your Point Of Contact' : 'Your Headliner') + '</span>' +
           '<div class="mq-hl-row"><img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + ', Marquee Events" style="height:' + dj.logoH + 'px" onerror="this.outerHTML=\'<span class=&quot;mq-hl-name&quot;>' + esc(dj.name) + '</span>\'">' +
           '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
-          '<span class="mq-role"><b>' + esc(dj.role) + '</b> \u00b7 ' + (vm.isBooth ? 'Your go-to for every photo booth detail.' : 'Your go-to for music, timeline and every big moment of the night.') + '</span>' +
+          '<span class="mq-role"><b>' + esc(dj.role) + '</b> \u00b7 ' + (vm.isBooth ? esc(dj.note) : 'Your go-to for music, timeline and every big moment of the night.') + '</span>' +
           (contacts ? '<div class="mq-contacts">' + contacts + '</div>' : '') +
           '<p class="mq-note">Texts and emails are answered within 24 to 48 hours. Weekends are show days, so replies may come Monday.</p>' +
         '</div>' +
@@ -1383,9 +1391,11 @@ MQ.renderDetails = (function () {
       (addons.length ? '<div class="mq-sub" style="margin-top:18px">Add-Ons</div><div class="mq-addchips">' + addons.map(function (a) { return '<span>' + esc(a) + '</span>'; }).join('') + '</div>' : '');
     var team = '<div class="mq-hl-row"><img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + '" style="height:' + Math.round(dj.logoH * 0.8) + 'px">' +
       '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
-      '<ul class="mq-staff">' + (d.staff.length ? d.staff : [dj.name]).map(function (s) { return '<li>' + icon('music', 14) + esc(s) + '</li>'; }).join('') + '</ul>' +
+      (vm.isBooth ? '<p class="mq-body"><b style="color:#fff">' + esc(dj.role) + '</b> ' + esc(dj.note) + '</p>' : '') +
+      '<ul class="mq-staff"' + (vm.isBooth ? ' hidden' : '') + '>' + (d.staff.length ? d.staff : [dj.name]).map(function (s) { return '<li>' + icon('music', 14) + esc(s) + '</li>'; }).join('') + '</ul>' +
       (d.attire ? '<dl class="mq-dl">' + row('Attire', d.attire) + '</dl>' : '') +
       '<div class="mq-contacts mq-contacts-sm">' + [
+        dj.tel && vm.isBooth && '<a href="' + dj.tel + '">' + icon('phone') + '<span>' + esc(dj.phone) + '</span></a>',
         dj.sms && '<a href="' + dj.sms + '">' + icon('chat') + '<span>Text ' + esc(dj.first) + '</span></a>',
         dj.mailto && '<a href="' + dj.mailto + '">' + icon('mail') + '<span>Email ' + esc(dj.first) + '</span></a>'
       ].filter(Boolean).join('') + '</div>' +

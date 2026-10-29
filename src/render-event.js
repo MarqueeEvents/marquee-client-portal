@@ -61,7 +61,7 @@ MQ.renderEvent = (function () {
         '<div class="mq-headliner"><span class="mq-eyebrow">' + (vm.isBooth ? 'Your Point Of Contact' : 'Your Headliner') + '</span>' +
           '<div class="mq-hl-row"><img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + ', Marquee Events" style="height:' + dj.logoH + 'px" onerror="this.outerHTML=\'<span class=&quot;mq-hl-name&quot;>' + esc(dj.name) + '</span>\'">' +
           '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
-          '<span class="mq-role"><b>' + esc(dj.role) + '</b> \u00b7 ' + (vm.isBooth ? 'Your go-to for every photo booth detail.' : 'Your go-to for music, timeline and every big moment of the night.') + '</span>' +
+          '<span class="mq-role"><b>' + esc(dj.role) + '</b> \u00b7 ' + (vm.isBooth ? esc(dj.note) : 'Your go-to for music, timeline and every big moment of the night.') + '</span>' +
           (contacts ? '<div class="mq-contacts">' + contacts + '</div>' : '') +
           '<p class="mq-note">Texts and emails are answered within 24 to 48 hours. Weekends are show days, so replies may come Monday.</p>' +
         '</div>' +

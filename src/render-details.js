@@ -56,9 +56,11 @@ MQ.renderDetails = (function () {
       (addons.length ? '<div class="mq-sub" style="margin-top:18px">Add-Ons</div><div class="mq-addchips">' + addons.map(function (a) { return '<span>' + esc(a) + '</span>'; }).join('') + '</div>' : '');
     var team = '<div class="mq-hl-row"><img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + '" style="height:' + Math.round(dj.logoH * 0.8) + 'px">' +
       '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
-      '<ul class="mq-staff">' + (d.staff.length ? d.staff : [dj.name]).map(function (s) { return '<li>' + icon('music', 14) + esc(s) + '</li>'; }).join('') + '</ul>' +
+      (vm.isBooth ? '<p class="mq-body"><b style="color:#fff">' + esc(dj.role) + '</b> ' + esc(dj.note) + '</p>' : '') +
+      '<ul class="mq-staff"' + (vm.isBooth ? ' hidden' : '') + '>' + (d.staff.length ? d.staff : [dj.name]).map(function (s) { return '<li>' + icon('music', 14) + esc(s) + '</li>'; }).join('') + '</ul>' +
       (d.attire ? '<dl class="mq-dl">' + row('Attire', d.attire) + '</dl>' : '') +
       '<div class="mq-contacts mq-contacts-sm">' + [
+        dj.tel && vm.isBooth && '<a href="' + dj.tel + '">' + icon('phone') + '<span>' + esc(dj.phone) + '</span></a>',
         dj.sms && '<a href="' + dj.sms + '">' + icon('chat') + '<span>Text ' + esc(dj.first) + '</span></a>',
         dj.mailto && '<a href="' + dj.mailto + '">' + icon('mail') + '<span>Email ' + esc(dj.first) + '</span></a>'
       ].filter(Boolean).join('') + '</div>' +

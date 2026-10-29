@@ -48,25 +48,33 @@ MQ.config = {
   // TODO: fill in IDs, contact info and Calendly links from Bob's checklist.
   TEAM: {
     '43180': {
-      key: 'bob', photoFile: 'bob-photo.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Marquee Luxury', role: 'Owner, Lead DJ & MC', price: 3500,
+      key: 'bob', cardPos: 'center 6%', photoFile: 'bob-photo.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Marquee Luxury', role: 'Owner, Lead DJ & MC', price: 3500,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
     'BRADON_ID': {
-      key: 'bradon', photoFile: 'bradon-photo.jpg', logoFile: 'bradon-logo.png', logoH: 64, name: 'Bradon Smith', first: 'Bradon', tier: 'Executive Headliner', role: 'Lead DJ & MC', price: 2700,
+      key: 'bradon', cardPos: 'center 30%', photoFile: 'bradon-photo.jpg', logoFile: 'bradon-logo.png', logoH: 64, name: 'Bradon Smith', first: 'Bradon', tier: 'Executive Headliner', role: 'Lead DJ & MC', price: 2700,
       phone: '330.432.4143', email: 'bradon@marqueeohio.com', instagram: 'dj_bradon',
       calendly: { creative: '', final: '' }
     },
     'DAN_ID': {
-      key: 'dan', photoFile: 'dan-photo.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
+      key: 'dan', cardPos: 'center 0%', photoFile: 'dan-photo.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
     'JAMES_ID': {
-      key: 'james', photoFile: 'james-photo.jpg', logoFile: 'james-logo.png', logoH: 58, name: 'James Stevenson', first: 'James', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
+      key: 'james', cardPos: 'center 0%', photoFile: 'james-photo.jpg', logoFile: 'james-logo.png', logoH: 58, name: 'James Stevenson', first: 'James', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     }
+  },
+
+  // Photo booth events show this general Marquee contact instead of whoever is staffed on the booth.
+  COMPANY_CONTACT: {
+    key: 'marquee', name: 'Marquee Events', first: 'Bob', tier: 'Photo Booth Team', role: 'Questions about your booth?',
+    note: 'Call or text Bob directly and we will take care of you.',
+    phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'marqueeohio',
+    logoFile: '../brand/marquee-logo-white.png', logoH: 46
   },
 
   // Add-on catalog (2027-2028 wedding guide pricing). TODO: replace with Bob's final options and pricing document.

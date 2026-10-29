@@ -6,12 +6,12 @@ window.MQ = window.MQ || {};
 MQ.model = (function () {
   var U = MQ.util;
 
-  function team(employeeId) {
-    var t = MQ.config.TEAM[employeeId] || MQ.config.TEAM['43180'];
+  function team(employeeId, isBooth) {
+    var t = isBooth ? MQ.config.COMPANY_CONTACT : (MQ.config.TEAM[employeeId] || MQ.config.TEAM['43180']);
     var base = MQ.ASSET_BASE + 'team/';
     var digits = (t.phone || '').replace(/\D/g, '');
     return Object.assign({}, t, {
-      photo: base + t.photoFile,
+      photo: t.photoFile ? base + t.photoFile : '',
       logo: base + t.logoFile,
       tel: digits ? 'tel:+1' + digits : '',
       sms: digits ? 'sms:+1' + digits : '',
@@ -159,7 +159,7 @@ MQ.model = (function () {
       list: listItem,
       details: details,
       isBooth: isBooth,
-      dj: team(listItem.employeeId),
+      dj: team(listItem.employeeId, isBooth),
       eventDate: eventDate,
       couple: couple,
       total: total, paid: paid, balance: balance,

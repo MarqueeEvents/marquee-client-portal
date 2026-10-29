@@ -16,8 +16,8 @@ function shell(body) {
 ${['config', 'gate', 'util', 'djep-reader', 'model', 'requests', 'reels', 'skin', 'shell', 'render-chooser', 'render-event', 'render-details', 'main'].map(f => `<script src="/src/${f}.js"></script>`).join('\n')}
 <script>${process.env.TODAY ? `MQ.util.overrideToday='${process.env.TODAY}';` : ''}</script></body></html>`;
 }
-function eventBlock(e) {
-  return `<div class="djep-singleeventdiv"><div class="hidden_event_information" style="display:none"><span class="primary_employee_id">43180</span><span class="event_date_${e.id}">12/30/2028</span><span class="event_name_${e.id}">${NAME} ${e.nameType}</span><span class="event_status_${e.id}">Booked</span></div>
+function eventBlock(e, emp) {
+  return `<div class="djep-singleeventdiv"><div class="hidden_event_information" style="display:none"><span class="primary_employee_id">${emp || '43180'}</span><span class="event_date_${e.id}">12/30/2028</span><span class="event_name_${e.id}">${NAME} ${e.nameType}</span><span class="event_status_${e.id}">Booked</span></div>
 Event Type: ${e.type}<br>Package: ${e.pkg}<br><a class="djep-planeventbutton" href="planmyevent.asp?eventid=${e.id}">Plan</a><a class="djep-eventdetailsbutton" href="eventdetails.asp?eventid=${e.id}">Details</a><a class="djep-paymentbutton" href="makeapayment.asp?action=choose_payment_gateway&eventid=${e.id}">Pay</a></div>`;
 }
 function details(e) {
@@ -45,7 +45,7 @@ http.createServer((req, res) => {
   const id = u.searchParams.get('eventid');
   const ev = EVENTS.find(e => e.id === id);
   const evs = single ? [EVENTS[1]] : EVENTS;
-  if (/\/clients\/(home|events)\.asp$/.test(u.pathname)) return res.end(shell(`<div class="djep-eventlistbox">${evs.map(eventBlock).join('')}</div><div class="djep-latestemailsbox"><p class="djep-titlebarsmall">Latest Emails</p><div>No Emails Found</div></div>`));
+  if (/\/clients\/(home|events)\.asp$/.test(u.pathname)) return res.end(shell(`<div class="djep-eventlistbox">${evs.map(e => eventBlock(e, u.searchParams.get('emp'))).join('')}</div><div class="djep-latestemailsbox"><p class="djep-titlebarsmall">Latest Emails</p><div>No Emails Found</div></div>`));
   if (u.pathname === '/clients/eventdetails.asp' && ev) return res.end(shell(details(ev)));
   if (u.pathname === '/clients/requestchanges.asp') return res.end(shell(`<form method="post" action="requestchanges.asp?eventid=${id}"><input type="hidden" name="eventid" value="${id}"><textarea name="request_change_comments"></textarea><input type="submit" name="submit_other" value="Submit"></form>`));
   if (u.pathname === '/clients/makeapayment.asp') return res.end(shell(`<div class="djep-titlebar">Make a Payment</div><div class="djep-paymentbox">Choose a payment method<br><input type="submit" value="Pay with Card"></div>`));
