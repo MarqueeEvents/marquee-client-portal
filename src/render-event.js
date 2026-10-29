@@ -99,8 +99,8 @@ MQ.renderEvent = (function () {
     }).join('');
     var cards = j.steps.map(function (s) {
       if (s.isFinal) {
-        return '<li class="mq-step mq-drop lvl' + s.lvl + '"><div class="top"><span class="num" style="color:#fff">' + s.num + ' \u00b7 The Drop</span><span class="tag">' +
-          (vm.isBooth ? 'Event Night' : 'Wedding Night') + '</span></div><span class="big">Let\'s<br>Dance</span><span class="when" style="color:#fff">' + esc(s.when) +
+        return '<li class="mq-step mq-drop lvl' + s.lvl + '"><div class="top"><span class="num">' + s.num + ' \u00b7 The Drop</span><span class="tag"><span class="rec"></span>' +
+          (vm.isBooth ? 'Event Night' : 'Wedding Night') + '</span></div><span class="big">Let\'s<br>Dance</span><span class="when">' + esc(s.when) +
           '</span><span class="gd">Trust the Marquee team. Your vision and the party of your dreams come to life.</span><span class="aw">' + esc(s.away) + '</span></li>';
       }
       var chip = s.done ? 'mq-chip-ok' : (s.status === 'Due Now' || s.status === 'Open' || s.status === 'Book Now') ? 'mq-chip-pink' : 'mq-chip-dim';
@@ -180,8 +180,8 @@ MQ.renderEvent = (function () {
       '<div class="mq-stand"><span class="mq-sub">Where You Stand</span><div><div class="mq-meter"><div style="width:' + pct + '%"></div></div>' +
       '<div class="mq-meter-lbl"><span><b>' + U.money(vm.paid) + '</b> paid</span><span><b>' + U.money(vm.balance) + '</b> remaining</span></div></div>' +
       nextBox + (n ? '<a class="mq-btn mq-btn-pink" href="' + esc(vm.list.links.payment || '#') + '">' + icon('card', 16) + 'Make a Payment</a>' : '') +
-      '<div><button type="button" class="mq-sched-btn" aria-expanded="false" data-mq-sched>Payment Schedule' + icon('chev', 14) + '</button>' +
-      '<ul class="mq-sched" hidden>' + sched + '</ul></div>' +
+      '<div><div class="mq-sched-btn">Payment Schedule</div>' +
+      '<ul class="mq-sched">' + sched + '</ul></div>' +
       '<p class="mq-small">25% at booking, 25% at 9 months, 25% at 6 months, balance due 90 days before your event.</p></div></div></section>';
   }
 

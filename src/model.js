@@ -118,7 +118,7 @@ MQ.model = (function () {
         note: 'Walk through every detail with your headliner, 2 to 4 weeks out.', done: fs === 'past', status: fs === 'open' ? 'Book Now' : (fs === 'past' ? 'Done' : 'Upcoming'), book: 'final' });
     }
     var daysOut = U.daysBetween(t, eventDate);
-    var lvl = daysOut <= 0 ? 3 : daysOut <= 7 ? 2 : daysOut <= 30 ? 1 : 0;
+    var lvl = daysOut <= 0 ? 4 : daysOut <= 14 ? 3 : daysOut <= 60 ? 2 : daysOut <= 180 ? 1 : 0;
     steps.push({ num: isBooth ? '05' : '08', title: "Let's Dance", date: eventDate, isFinal: true, lvl: lvl,
       when: U.fmtDateLong(eventDate), away: daysOut === 0 ? 'Tonight' : (daysOut < 0 ? 'What a night' : U.away(daysOut)) });
 

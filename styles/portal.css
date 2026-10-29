@@ -282,18 +282,37 @@ html.mq-portal, .mq-portal body {
 .mq-step .aw { margin-top: auto; padding-top: 4px; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--mq-muted); }
 .mq-step.next .aw, .mq-step.done .aw { color: var(--mq-pink-soft); }
 .mq-step .lnk { font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-.mq-drop { position: relative; overflow: hidden; border: 1px solid rgba(255,46,136,.55); background: linear-gradient(160deg, rgba(255,46,136,.18), rgba(17,17,21,.9) 70%); }
-.mq-drop .big { font-family: var(--mq-head); font-weight: 900; font-size: 30px; line-height: .95; text-transform: uppercase; color: #fff; }
-.mq-drop .tag { font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; padding: 4px 9px; border-radius: 4px; background: var(--mq-pink); color: #fff; box-shadow: 0 0 10px rgba(255,46,136,.6); }
-.mq-drop .gd { color: #f1c6da; font-size: 12px; }
-.mq-drop .aw { color: #fff !important; }
-.mq-drop.lvl1 { border-color: var(--mq-pink); background: linear-gradient(160deg, rgba(255,46,136,.30), rgba(17,17,21,.9) 75%); box-shadow: 0 0 30px rgba(255,46,136,.30); }
-.mq-drop.lvl1 .big { text-shadow: 0 0 18px rgba(255,46,136,.7); }
-.mq-drop.lvl2 { border-color: var(--mq-pink); background: linear-gradient(160deg, rgba(255,46,136,.42), rgba(40,10,26,.95) 80%); box-shadow: 0 0 44px rgba(255,46,136,.5); }
-.mq-drop.lvl2 .big { text-shadow: 0 0 24px rgba(255,46,136,.9); }
-.mq-drop.lvl2 .tag, .mq-drop.lvl3 .tag { animation: mqtag 1.4s ease-in-out infinite; }
-.mq-drop.lvl3 { border-color: #fff; background: linear-gradient(160deg, #ff2e88, #7a0f3f 85%); box-shadow: 0 0 60px rgba(255,46,136,.8); }
-.mq-drop.lvl3 .gd { color: #fff; }
+/* The Drop card warms up as the night gets closer: grey far out, then pink, then a pulsing REC light.
+   lvl0 more than 6 months, lvl1 6 months, lvl2 2 months, lvl3 2 weeks, lvl4 the day of. */
+.mq-drop { position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,.12); background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(17,17,21,.9) 70%); transition: all .6s ease; }
+.mq-drop .big { font-family: var(--mq-head); font-weight: 900; font-size: 30px; line-height: .95; text-transform: uppercase; color: #8a8a92; }
+.mq-drop .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; padding: 4px 9px; border-radius: 4px; background: rgba(255,255,255,.08); color: #8a8a92; }
+.mq-drop .rec { width: 7px; height: 7px; border-radius: 50%; background: #5a5a62; flex: none; }
+.mq-drop .num, .mq-drop .when, .mq-drop .aw { color: #9a9aa2 !important; }
+.mq-drop .gd { color: #707078; font-size: 12px; }
+.mq-drop.lvl1 { border-color: rgba(255,46,136,.45); background: linear-gradient(160deg, rgba(255,46,136,.14), rgba(17,17,21,.9) 70%); }
+.mq-drop.lvl1 .big { color: #f3c2d7; }
+.mq-drop.lvl1 .tag { background: rgba(255,46,136,.22); color: #ffb3d1; }
+.mq-drop.lvl1 .rec { background: var(--mq-pink); opacity: .6; }
+.mq-drop.lvl1 .num, .mq-drop.lvl1 .when, .mq-drop.lvl1 .aw { color: #fff !important; }
+.mq-drop.lvl1 .gd { color: #c99db1; }
+.mq-drop.lvl2, .mq-drop.lvl3, .mq-drop.lvl4 { border-color: var(--mq-pink); }
+.mq-drop.lvl2 .big, .mq-drop.lvl3 .big, .mq-drop.lvl4 .big { color: #fff; }
+.mq-drop.lvl2 .tag, .mq-drop.lvl3 .tag, .mq-drop.lvl4 .tag { background: var(--mq-pink); color: #fff; box-shadow: 0 0 10px rgba(255,46,136,.6); }
+.mq-drop.lvl2 .rec, .mq-drop.lvl3 .rec, .mq-drop.lvl4 .rec { background: #fff; animation: mqrec 1.6s ease-in-out infinite; }
+.mq-drop.lvl2 .num, .mq-drop.lvl2 .when, .mq-drop.lvl2 .aw, .mq-drop.lvl3 .num, .mq-drop.lvl3 .when, .mq-drop.lvl3 .aw, .mq-drop.lvl4 .num, .mq-drop.lvl4 .when, .mq-drop.lvl4 .aw { color: #fff !important; }
+.mq-drop.lvl2 .gd, .mq-drop.lvl3 .gd { color: #f1c6da; }
+.mq-drop.lvl2 { background: linear-gradient(160deg, rgba(255,46,136,.30), rgba(17,17,21,.9) 75%); box-shadow: 0 0 30px rgba(255,46,136,.30); }
+.mq-drop.lvl2 .big { text-shadow: 0 0 18px rgba(255,46,136,.7); }
+.mq-drop.lvl3 { background: linear-gradient(160deg, rgba(255,46,136,.42), rgba(40,10,26,.95) 80%); animation: mqdrop 2s ease-in-out infinite; }
+.mq-drop.lvl3 .big { text-shadow: 0 0 24px rgba(255,46,136,.9); }
+.mq-drop.lvl3 .rec { animation-duration: 1s; }
+.mq-drop.lvl4 { border-color: #fff; background: linear-gradient(160deg, #ff2e88, #7a0f3f 85%); animation: mqdrop 1.2s ease-in-out infinite; }
+.mq-drop.lvl4 .rec { animation-duration: .8s; }
+.mq-drop.lvl4 .gd { color: #fff; }
+@keyframes mqrec { 0%,100% { opacity: 1; box-shadow: 0 0 6px #fff, 0 0 12px rgba(255,46,136,1); } 50% { opacity: .25; box-shadow: none; } }
+@keyframes mqdrop { 0%,100% { box-shadow: 0 0 28px rgba(255,46,136,.35); } 50% { box-shadow: 0 0 60px rgba(255,46,136,.85); } }
+@media (prefers-reduced-motion: reduce) { .mq-drop, .mq-drop .rec { animation: none !important; } }
 
 /* Sessions */
 .mq-sessions { display: flex; flex-direction: column; gap: 16px; }
@@ -406,7 +425,9 @@ html.mq-portal, .mq-portal body {
 .mq-livepill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: var(--mq-pink); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; box-shadow: 0 0 22px rgba(255,46,136,.6); }
 .mq-app a.mq-livepill, .mq-app a.mq-livepill:hover { color: #fff; }
 .mq-livepill i { width: 7px; height: 7px; border-radius: 50%; background: #fff; display: block; animation: mqpulse 1.6s ease-in-out infinite; }
-.mq-reel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.mq-reel-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.mq-reel-grid > .mq-reel { flex: 0 0 calc((100% - 42px) / 4); }
+@media (max-width: 900px) { .mq-reel-grid > .mq-reel { flex-basis: calc((100% - 14px) / 2); } }
 .mq-app a.mq-reel { position: relative; display: block; aspect-ratio: 9 / 16; border-radius: 18px; overflow: hidden; border: 1px solid var(--mq-line); background: var(--mq-deep); color: #fff; }
 .mq-reel video, .mq-reel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s; }
 .mq-reel:hover video, .mq-reel:hover img { transform: scale(1.05); }

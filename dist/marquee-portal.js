@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T19:26Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T19:31Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -175,7 +175,7 @@ MQ.util = (function () {
 
   function today() {
     var o = MQ.util.overrideToday;
-    var d = o ? new Date(o) : new Date();
+    var d = o ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(o) ? o + 'T00:00:00' : o) : new Date();
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
 
@@ -555,7 +555,7 @@ MQ.model = (function () {
         note: 'Walk through every detail with your headliner, 2 to 4 weeks out.', done: fs === 'past', status: fs === 'open' ? 'Book Now' : (fs === 'past' ? 'Done' : 'Upcoming'), book: 'final' });
     }
     var daysOut = U.daysBetween(t, eventDate);
-    var lvl = daysOut <= 0 ? 3 : daysOut <= 7 ? 2 : daysOut <= 30 ? 1 : 0;
+    var lvl = daysOut <= 0 ? 4 : daysOut <= 14 ? 3 : daysOut <= 60 ? 2 : daysOut <= 180 ? 1 : 0;
     steps.push({ num: isBooth ? '05' : '08', title: "Let's Dance", date: eventDate, isFinal: true, lvl: lvl,
       when: U.fmtDateLong(eventDate), away: daysOut === 0 ? 'Tonight' : (daysOut < 0 ? 'What a night' : U.away(daysOut)) });
 
@@ -1126,8 +1126,8 @@ MQ.renderEvent = (function () {
     }).join('');
     var cards = j.steps.map(function (s) {
       if (s.isFinal) {
-        return '<li class="mq-step mq-drop lvl' + s.lvl + '"><div class="top"><span class="num" style="color:#fff">' + s.num + ' \u00b7 The Drop</span><span class="tag">' +
-          (vm.isBooth ? 'Event Night' : 'Wedding Night') + '</span></div><span class="big">Let\'s<br>Dance</span><span class="when" style="color:#fff">' + esc(s.when) +
+        return '<li class="mq-step mq-drop lvl' + s.lvl + '"><div class="top"><span class="num">' + s.num + ' \u00b7 The Drop</span><span class="tag"><span class="rec"></span>' +
+          (vm.isBooth ? 'Event Night' : 'Wedding Night') + '</span></div><span class="big">Let\'s<br>Dance</span><span class="when">' + esc(s.when) +
           '</span><span class="gd">Trust the Marquee team. Your vision and the party of your dreams come to life.</span><span class="aw">' + esc(s.away) + '</span></li>';
       }
       var chip = s.done ? 'mq-chip-ok' : (s.status === 'Due Now' || s.status === 'Open' || s.status === 'Book Now') ? 'mq-chip-pink' : 'mq-chip-dim';
@@ -1207,8 +1207,8 @@ MQ.renderEvent = (function () {
       '<div class="mq-stand"><span class="mq-sub">Where You Stand</span><div><div class="mq-meter"><div style="width:' + pct + '%"></div></div>' +
       '<div class="mq-meter-lbl"><span><b>' + U.money(vm.paid) + '</b> paid</span><span><b>' + U.money(vm.balance) + '</b> remaining</span></div></div>' +
       nextBox + (n ? '<a class="mq-btn mq-btn-pink" href="' + esc(vm.list.links.payment || '#') + '">' + icon('card', 16) + 'Make a Payment</a>' : '') +
-      '<div><button type="button" class="mq-sched-btn" aria-expanded="false" data-mq-sched>Payment Schedule' + icon('chev', 14) + '</button>' +
-      '<ul class="mq-sched" hidden>' + sched + '</ul></div>' +
+      '<div><div class="mq-sched-btn">Payment Schedule</div>' +
+      '<ul class="mq-sched">' + sched + '</ul></div>' +
       '<p class="mq-small">25% at booking, 25% at 9 months, 25% at 6 months, balance due 90 days before your event.</p></div></div></section>';
   }
 

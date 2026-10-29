@@ -27,7 +27,7 @@ MQ.util = (function () {
 
   function today() {
     var o = MQ.util.overrideToday;
-    var d = o ? new Date(o) : new Date();
+    var d = o ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(o) ? o + 'T00:00:00' : o) : new Date();
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
 
