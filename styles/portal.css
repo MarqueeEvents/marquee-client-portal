@@ -101,8 +101,9 @@ html.mq-portal, .mq-portal body {
 .mq-skin #djep-content [class*="col-"] { padding-left: 0 !important; padding-right: 0 !important; }
 @media (max-width: 1180px) { .mq-skin #djep-content { margin-left: 24px !important; margin-right: 24px !important; } }
 @media (max-width: 720px) { .mq-skin #djep-content { margin-left: 16px !important; margin-right: 16px !important; } }
-.mq-skin #djep-content .sq-card-wrapper { background: #fff !important; border-radius: 12px !important; padding: 2px 4px !important; max-width: 560px; }
-.mq-skin #djep-content .sq-card-wrapper * { background-color: initial; }
+.mq-skin #djep-content .sq-card-wrapper { max-width: 560px; margin: 0 auto 8px !important; }
+.mq-skin #djep-content .input-group-addon { background: #1c1c22 !important; color: var(--mq-body) !important; border: 1px solid var(--mq-edge) !important; border-right: 0 !important; border-radius: 12px 0 0 12px !important; padding: 0 12px !important; }
+.mq-skin #djep-content .input-group-addon + input { border-radius: 0 12px 12px 0 !important; }
 @media (min-width: 768px) { .mq-skin #djep-content .col-sm-6 { width: 50% !important; float: left; padding-right: 24px !important; } }
 .mq-skin #djep-content::after { content: ''; display: block; clear: both; }
 .mq-skin-head { display: flex; flex-direction: column; gap: 28px; }
