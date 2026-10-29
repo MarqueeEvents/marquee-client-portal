@@ -32,7 +32,7 @@ MQ.renderEvent = (function () {
     var d = vm.eventDate, dj = vm.dj;
     var next = vm.next;
     var nextLine = next ? 'Next: ' + U.money(next.left) + (next.due ? (next.status === 'due' ? ' due now' : ' due ' + U.fmtDate(next.due)) : ' due now') : 'Paid in full';
-    var photo = vm.isBooth ? MQ.ASSET_BASE + 'events/photo-booth.jpg' : dj.photo;
+    var photo = vm.isBooth ? MQ.ASSET_BASE + 'events/photo-booth-scrapbook.jpg' : dj.photo;
     var contacts = [
       dj.tel && '<a href="' + dj.tel + '">' + icon('phone') + '<span>' + esc(dj.phone) + '</span></a>',
       dj.sms && '<a href="' + dj.sms + '">' + icon('chat') + '<span>Send a text</span></a>',

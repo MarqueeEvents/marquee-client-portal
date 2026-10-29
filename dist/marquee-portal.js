@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T18:01Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T18:02Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -995,7 +995,7 @@ MQ.renderChooser = (function () {
     var cards = events.map(function (e) {
       var d = U.parseDate(e.date);
       var dj = MQ.model.team(e.employeeId);
-      var img = e.isPhotoBooth ? MQ.ASSET_BASE + 'events/photo-booth.jpg' : dj.photo;
+      var img = e.isPhotoBooth ? MQ.ASSET_BASE + 'events/photo-booth-scrapbook.jpg' : dj.photo;
       var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : 'Wedding Entertainment';
       return '<a class="mq-evcard" href="?mqevent=' + e.id + '"><div class="img"><img src="' + esc(img) + '" alt="" style="object-position:center ' + (e.isPhotoBooth ? '62%' : '20%') + '"></div>' +
         '<div class="bd"><span class="mq-eyebrow">' + U.icon(e.isPhotoBooth ? 'camera' : 'music', 13) + ' ' + esc(e.isPhotoBooth ? 'Photo Booth' : 'DJ & MC') + '</span>' +
@@ -1047,7 +1047,7 @@ MQ.renderEvent = (function () {
     var d = vm.eventDate, dj = vm.dj;
     var next = vm.next;
     var nextLine = next ? 'Next: ' + U.money(next.left) + (next.due ? (next.status === 'due' ? ' due now' : ' due ' + U.fmtDate(next.due)) : ' due now') : 'Paid in full';
-    var photo = vm.isBooth ? MQ.ASSET_BASE + 'events/photo-booth.jpg' : dj.photo;
+    var photo = vm.isBooth ? MQ.ASSET_BASE + 'events/photo-booth-scrapbook.jpg' : dj.photo;
     var contacts = [
       dj.tel && '<a href="' + dj.tel + '">' + icon('phone') + '<span>' + esc(dj.phone) + '</span></a>',
       dj.sms && '<a href="' + dj.sms + '">' + icon('chat') + '<span>Send a text</span></a>',

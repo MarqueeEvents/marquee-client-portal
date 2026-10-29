@@ -11,7 +11,7 @@ MQ.renderChooser = (function () {
     var cards = events.map(function (e) {
       var d = U.parseDate(e.date);
       var dj = MQ.model.team(e.employeeId);
-      var img = e.isPhotoBooth ? MQ.ASSET_BASE + 'events/photo-booth.jpg' : dj.photo;
+      var img = e.isPhotoBooth ? MQ.ASSET_BASE + 'events/photo-booth-scrapbook.jpg' : dj.photo;
       var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : 'Wedding Entertainment';
       return '<a class="mq-evcard" href="?mqevent=' + e.id + '"><div class="img"><img src="' + esc(img) + '" alt="" style="object-position:center ' + (e.isPhotoBooth ? '62%' : '20%') + '"></div>' +
         '<div class="bd"><span class="mq-eyebrow">' + U.icon(e.isPhotoBooth ? 'camera' : 'music', 13) + ' ' + esc(e.isPhotoBooth ? 'Photo Booth' : 'DJ & MC') + '</span>' +
