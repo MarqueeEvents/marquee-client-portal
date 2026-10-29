@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T13:29Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T13:30Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -749,13 +749,13 @@ MQ.skin = (function () {
   var U = MQ.util, esc = U.esc, icon = U.icon;
 
   var PAGES = [
-    { test: /makeapayment\.asp/i, eyebrow: 'Payments', title: 'Make a Payment', serif: 'quick, simple, secure.', enhance: payment },
-    { test: /requestchanges\.asp/i, eyebrow: 'Your Event', title: 'Request Changes', serif: 'we\u2019ll take it from here.', enhance: requestChanges,
+    { key: 'payment', test: /makeapayment\.asp/i, eyebrow: 'Payments', title: 'Make a Payment', serif: 'quick, simple, secure.', enhance: payment },
+    { key: 'request', test: /requestchanges\.asp/i, eyebrow: 'Your Event', title: 'Request Changes', serif: 'we\u2019ll take it from here.', enhance: requestChanges,
       intro: 'Pick what you would like to change and send it over. Your headliner reviews every request and confirms with you before anything changes.' },
-    { test: /profile\.asp/i, eyebrow: 'Your Account', title: 'My Profile', serif: 'your info, up to date.', enhance: profile },
-    { test: /contact\.asp/i, eyebrow: 'Get In Touch', title: 'Contact Us', serif: 'we\u2019re here for you.', enhance: contact,
+    { key: 'profile', test: /profile\.asp/i, eyebrow: 'Your Account', title: 'My Profile', serif: 'your info, up to date.', enhance: profile },
+    { key: 'contact', test: /contact\.asp/i, eyebrow: 'Get In Touch', title: 'Contact Us', serif: 'we\u2019re here for you.', enhance: contact,
       intro: 'Send us a message anytime. Texts and emails are answered within 24 to 48 hours. Weekends are show days, so replies may come Monday.' },
-    { test: /planmyevent\.asp/i, eyebrow: 'Planning', title: 'Plan Your Event', serif: 'your night, by design.',
+    { key: 'planner', test: /planmyevent\.asp/i, eyebrow: 'Planning', title: 'Plan Your Event', serif: 'your night, by design.',
       intro: 'Marquee couples plan their music and timeline in the Vibo app.', enhance: planner }
   ];
 
@@ -774,6 +774,7 @@ MQ.skin = (function () {
     var content = document.getElementById('djep-content');
     if (!content) return;
     var page = PAGES.filter(function (p) { return p.test.test(location.pathname); })[0] || {};
+    if (page.key) document.documentElement.classList.add('mq-page-' + page.key);
     var title = page.title || oldTitle(content) || 'Client Portal';
     if (/makeapayment/i.test(location.pathname)) {
       var t = oldTitle(content);
@@ -886,7 +887,7 @@ MQ.skin = (function () {
   function profile(content) { content.classList.add('mq-profile'); }
 
   function contact(content) {
-    var icons = { 'djep-contacttelephone': 'phone', 'djep-contactemail': 'mail', 'djep-contactaddress': 'pin', 'djep-contactwebsite': 'arrow' };
+    var icons = { 'djep-contacttelephone': 'phone', 'djep-contactemail': 'mail', 'djep-contactmail': 'pin', 'djep-contactaddress': 'pin', 'djep-contactwebsite': 'arrow' };
     Array.prototype.forEach.call(content.querySelectorAll('.djep-ourcontactinfobox td[id]'), function (td) {
       var name = icons[td.id] || (/addr/i.test(td.id) ? 'pin' : /web/i.test(td.id) ? 'arrow' : 'chat');
       td.innerHTML = '<span class="mq-ico">' + icon(name, 18) + '</span>';
