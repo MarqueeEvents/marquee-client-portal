@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T19:17Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-29T19:20Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -55,17 +55,17 @@ MQ.config = {
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
-    'BRADON_ID': {
+    '43269': {
       key: 'bradon', cardTier: 'Executive Headliner', cardLogoH: 46, cardPhotoFile: 'bradon-card-4.jpg', cardPos: 'center 0%', photoFile: 'bradon-photo.jpg', logoFile: 'bradon-logo.png', logoH: 64, name: 'Bradon Smith', first: 'Bradon', tier: 'Executive Headliner', role: 'Lead DJ & MC', price: 2700,
       phone: '330.432.4143', email: 'bradon@marqueeohio.com', instagram: 'dj_bradon',
       calendly: { creative: '', final: '' }
     },
-    'DAN_ID': {
+    '43300': {
       key: 'dan', cardTier: 'Headliner', cardLogoH: 56, cardPhotoFile: 'dan-card-5.jpg', cardPos: 'center 0%', photoFile: 'dan-photo-2.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
     },
-    'JAMES_ID': {
+    '43299': {
       key: 'james', cardTier: 'Headliner', cardLogoH: 54, cardPos: 'center 0%', photoFile: 'james-photo.jpg', logoFile: 'james-logo-2.png', logoH: 58, name: 'James Stevenson', first: 'James', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
       phone: '', email: '', instagram: '',
       calendly: { creative: '', final: '' }
