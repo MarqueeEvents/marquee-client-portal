@@ -67,16 +67,27 @@ MQ.config = {
       phone: '330.407.9572', email: 'james@marqueeohio.com', instagram: 'jamessmu',
       calendly: { creative: '', final: '' }
     },
+    '43301': {
+      key: 'jake', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card-2.jpg', cardPos: 'center 0%', photoFile: 'silhouette-2.jpg', logoFile: '', logoH: 58, name: 'Jake', first: 'Jake', tier: 'Headliner', role: 'DJ, Production Assistant',
+      phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'marqueeohio',
+      calendly: { creative: '', final: '' }
+    },
     '43302': {
-      key: 'mike', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card.jpg', cardPos: 'center 0%', photoFile: 'silhouette.jpg', logoFile: '', logoH: 58, name: 'Mike Bishman', first: 'Mike', tier: 'Headliner', role: 'DJ & MC',
-      phone: '740.350.7922', email: 'info@marqueeohio.com', instagram: '',
+      key: 'mike', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card-2.jpg', cardPos: 'center 0%', photoFile: 'silhouette-2.jpg', logoFile: '', logoH: 58, name: 'Mike Bishman', first: 'Mike', tier: 'Headliner', role: 'DJ & MC',
+      phone: '740.350.7922', email: 'info@marqueeohio.com', instagram: 'marqueeohio',
       calendly: { creative: '', final: '' }
     }
   },
 
+  // Booking links used for any DJ whose own Calendly links are not filled in yet (Bob's for now).
+  CALENDLY_DEFAULT: {
+    creative: 'https://calendly.com/marqueedj/wedding-creative-session',
+    final: 'https://calendly.com/marqueedj/wedding-final-planning-meeting'
+  },
+
   // Anyone staffed on a DJ event who is not in TEAM yet (for example Jake, 43301): a neutral Marquee card with Bob's contact info.
   FALLBACK_HEADLINER: {
-    key: 'marquee', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card.jpg', cardPos: 'center 0%', photoFile: 'silhouette.jpg', logoFile: '../brand/marquee-logo-white.png', logoH: 46, cardLogoH: 34,
+    key: 'marquee', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card-2.jpg', cardPos: 'center 0%', photoFile: 'silhouette-2.jpg', logoFile: '../brand/marquee-logo-white.png', logoH: 46, cardLogoH: 34,
     name: 'Your Marquee Headliner', first: 'Marquee', tier: 'Headliner', role: 'DJ & MC',
     phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'marqueeohio',
     calendly: { creative: '', final: '' }

@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T00:50Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T00:55Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -70,16 +70,27 @@ MQ.config = {
       phone: '330.407.9572', email: 'james@marqueeohio.com', instagram: 'jamessmu',
       calendly: { creative: '', final: '' }
     },
+    '43301': {
+      key: 'jake', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card-2.jpg', cardPos: 'center 0%', photoFile: 'silhouette-2.jpg', logoFile: '', logoH: 58, name: 'Jake', first: 'Jake', tier: 'Headliner', role: 'DJ, Production Assistant',
+      phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'marqueeohio',
+      calendly: { creative: '', final: '' }
+    },
     '43302': {
-      key: 'mike', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card.jpg', cardPos: 'center 0%', photoFile: 'silhouette.jpg', logoFile: '', logoH: 58, name: 'Mike Bishman', first: 'Mike', tier: 'Headliner', role: 'DJ & MC',
-      phone: '740.350.7922', email: 'info@marqueeohio.com', instagram: '',
+      key: 'mike', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card-2.jpg', cardPos: 'center 0%', photoFile: 'silhouette-2.jpg', logoFile: '', logoH: 58, name: 'Mike Bishman', first: 'Mike', tier: 'Headliner', role: 'DJ & MC',
+      phone: '740.350.7922', email: 'info@marqueeohio.com', instagram: 'marqueeohio',
       calendly: { creative: '', final: '' }
     }
   },
 
+  // Booking links used for any DJ whose own Calendly links are not filled in yet (Bob's for now).
+  CALENDLY_DEFAULT: {
+    creative: 'https://calendly.com/marqueedj/wedding-creative-session',
+    final: 'https://calendly.com/marqueedj/wedding-final-planning-meeting'
+  },
+
   // Anyone staffed on a DJ event who is not in TEAM yet (for example Jake, 43301): a neutral Marquee card with Bob's contact info.
   FALLBACK_HEADLINER: {
-    key: 'marquee', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card.jpg', cardPos: 'center 0%', photoFile: 'silhouette.jpg', logoFile: '../brand/marquee-logo-white.png', logoH: 46, cardLogoH: 34,
+    key: 'marquee', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card-2.jpg', cardPos: 'center 0%', photoFile: 'silhouette-2.jpg', logoFile: '../brand/marquee-logo-white.png', logoH: 46, cardLogoH: 34,
     name: 'Your Marquee Headliner', first: 'Marquee', tier: 'Headliner', role: 'DJ & MC',
     phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'marqueeohio',
     calendly: { creative: '', final: '' }
@@ -1229,7 +1240,7 @@ MQ.renderEvent = (function () {
     var dj = vm.dj;
     var c = MQ.config, t = U.today(), d = vm.eventDate;
     function link(kind, label) {
-      var url = dj.calendly && dj.calendly[kind];
+      var url = (dj.calendly && dj.calendly[kind]) || (MQ.config.CALENDLY_DEFAULT || {})[kind];
       if (url) return '<a class="mq-btn mq-btn-pink" href="' + esc(url) + '" target="_blank" rel="noopener">' + icon('cal', 15) + label + '</a>';
       if (dj.sms) return '<a class="mq-btn mq-btn-pink" href="' + dj.sms + '?&body=' + encodeURIComponent('Hi ' + dj.first + '! We would love to book our ' + (kind === 'final' ? 'final planning meeting' : 'creative session') + '.') + '">' + icon('chat', 15) + 'Text ' + esc(dj.first) + ' To Book</a>';
       if (dj.mailto) return '<a class="mq-btn mq-btn-pink" href="' + dj.mailto + '">' + icon('mail', 15) + 'Email ' + esc(dj.first) + ' To Book</a>';
@@ -1398,7 +1409,7 @@ MQ.renderEvent = (function () {
       }
       html += '<div class="mq-design"><div class="mq-design-pick"><span class="mq-sub">Step 1 \u00b7 Browse</span>' +
         '<p class="mq-body">See every template we offer and note the name or number of the one you love.</p>' +
-        '<a class="mq-btn mq-btn-ghost" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">' + icon('camera', 15) + 'Browse Templates</a></div>' +
+        '<p class="mq-small">Our template gallery is coming to your portal soon. Until then, text Bob at 330.432.0798 and we will send you the current designs.</p></div>' +
         '<form class="mq-design-form" data-mq-design><span class="mq-sub">Step 2 \u00b7 Tell Us</span>' +
         field('mq-dz-tpl', 'Template name or number', 'Example: Gold Script #12') +
         field('mq-dz-words', 'Wording on your prints', 'Example: Teddi & Kevin \u00b7 12.30.2028') +
