@@ -576,3 +576,6 @@ html.mq-portal, .mq-portal body {
 .mq-blist .pr { font-size: 13px; font-weight: 800; white-space: nowrap; color: #fff; font-variant-numeric: tabular-nums; }
 .mq-bsum { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 12px 14px; border-radius: 14px; background: rgba(255,46,136,.06); border: 1px solid rgba(255,46,136,.3); font-size: 13px; color: var(--mq-body); }
 .mq-bsum b { color: #fff; }
+
+.mq-app .mq-btn-static { cursor: default; }
+.mq-app .mq-btn-static:hover { transform: none; }

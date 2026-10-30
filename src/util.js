@@ -59,6 +59,13 @@ MQ.util = (function () {
     return t;
   }
 
+  /* "Open Vibo" button: a real link when VIBO_URL is set, otherwise the same look with no link. */
+  function viboButton(cls, size) {
+    var url = MQ.config.VIBO_URL, inner = icon('music', size || 15) + 'Open Vibo';
+    return url ? '<a class="' + cls + '" href="' + esc(url) + '" target="_blank" rel="noopener">' + inner + '</a>'
+      : '<span class="' + cls + ' mq-btn-static">' + inner + '</span>';
+  }
+
   function daysBetween(a, b) {
     var ua = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
     var ub = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
@@ -144,7 +151,7 @@ MQ.util = (function () {
   }
 
   return {
-    esc: esc, lineName: lineName, typeName: typeName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
+    esc: esc, viboButton: viboButton, lineName: lineName, typeName: typeName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
     fmtDate: fmtDate, fmtDateLong: fmtDateLong, away: away, money: money, round2: round2, coupleFromName: coupleFromName,
     icon: icon, wave: wave, store: store, MONTHS: MONTHS, DAYS: DAYS
   };

@@ -42,7 +42,8 @@ MQ.config = {
   REELS_FILTER: ['marqueeohio'],
 
   // Vibo planning app
-  VIBO_URL: 'https://web.vibodj.com/',
+  // Empty = the Open Vibo button shows but does not link anywhere (Bob, Oct 29). Put a link back here to turn it on.
+  VIBO_URL: '',
 
   // Team, keyed by DJEP primary employee ID (found in each event block on the portal home page).
   // TODO: fill in IDs, contact info and Calendly links from Bob's checklist.

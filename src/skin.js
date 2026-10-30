@@ -156,7 +156,7 @@ MQ.skin = (function () {
   function planner(content, extra) {
     extra.innerHTML = '<section class="mq-card mq-dcard" style="align-items:flex-start"><span class="mq-eyebrow">Plan In Vibo</span>' +
       '<p class="mq-body">Build your timeline, must-play and do-not-play lists in the Vibo app. Your headliner sees every change.</p>' +
-      '<a class="mq-btn mq-btn-pink" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">' + icon('music', 16) + 'Open Vibo</a></section>';
+      U.viboButton('mq-btn mq-btn-pink', 16) + '</section>';
   }
 
   return { mount: mount };
