@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T01:48Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T01:55Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -25,7 +25,7 @@ MQ.config = {
 
   // REQUESTS. 'test' = Request to Add shows exactly what would be sent but sends nothing.
   // 'live' = sends the request to Bob through DJEP's Request Changes form. Nothing is ever added to an event automatically.
-  REQUEST_MODE: 'live',
+  REQUEST_MODE: 'test',
 
 
   // Payment schedule: 25% at booking, 25% at 9 months, 25% at 6 months, balance 90 days out.
