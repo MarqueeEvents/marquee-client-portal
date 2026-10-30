@@ -294,7 +294,9 @@ MQ.renderEvent = (function () {
       }
       html += '<div class="mq-design"><div class="mq-design-pick"><span class="mq-sub">Step 1 \u00b7 Browse</span>' +
         '<p class="mq-body">See every template we offer and note the name or number of the one you love.</p>' +
-        '<p class="mq-small">Our template gallery is coming to your portal soon. Until then, text Bob at 330.432.0798 and we will send you the current designs.</p></div>' +
+        (MQ.config.PRINT_TEMPLATES_URL
+          ? '<a class="mq-btn mq-btn-ghost" href="' + esc(MQ.config.PRINT_TEMPLATES_URL) + '" target="_blank" rel="noopener">' + icon('camera', 15) + 'Browse Templates</a>'
+          : '<p class="mq-small">Our template gallery is coming to your portal soon. Until then, text Bob at 330.432.0798 and we will send you the current designs.</p>') + '</div>' +
         '<form class="mq-design-form" data-mq-design><span class="mq-sub">Step 2 \u00b7 Tell Us</span>' +
         field('mq-dz-tpl', 'Template name or number', 'Example: Gold Script #12') +
         field('mq-dz-words', 'Wording on your prints', 'Example: Teddi & Kevin \u00b7 12.30.2028') +

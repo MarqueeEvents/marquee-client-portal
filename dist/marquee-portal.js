@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T00:57Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T00:59Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -106,6 +106,8 @@ MQ.config = {
 
   // Photo booth print design: when couples should send their template choice and wording.
   PRINT_DESIGN_DAYS_BEFORE: 30,
+  // Link to the photo booth template examples (Bob's Dropbox) until the built-in designer exists. Empty = "coming soon" note.
+  PRINT_TEMPLATES_URL: '',
 
   // Photo booth events show this general Marquee contact instead of whoever is staffed on the booth.
   COMPANY_CONTACT: {
@@ -1409,7 +1411,9 @@ MQ.renderEvent = (function () {
       }
       html += '<div class="mq-design"><div class="mq-design-pick"><span class="mq-sub">Step 1 \u00b7 Browse</span>' +
         '<p class="mq-body">See every template we offer and note the name or number of the one you love.</p>' +
-        '<p class="mq-small">Our template gallery is coming to your portal soon. Until then, text Bob at 330.432.0798 and we will send you the current designs.</p></div>' +
+        (MQ.config.PRINT_TEMPLATES_URL
+          ? '<a class="mq-btn mq-btn-ghost" href="' + esc(MQ.config.PRINT_TEMPLATES_URL) + '" target="_blank" rel="noopener">' + icon('camera', 15) + 'Browse Templates</a>'
+          : '<p class="mq-small">Our template gallery is coming to your portal soon. Until then, text Bob at 330.432.0798 and we will send you the current designs.</p>') + '</div>' +
         '<form class="mq-design-form" data-mq-design><span class="mq-sub">Step 2 \u00b7 Tell Us</span>' +
         field('mq-dz-tpl', 'Template name or number', 'Example: Gold Script #12') +
         field('mq-dz-words', 'Wording on your prints', 'Example: Teddi & Kevin \u00b7 12.30.2028') +

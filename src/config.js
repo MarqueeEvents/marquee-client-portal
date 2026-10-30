@@ -103,6 +103,8 @@ MQ.config = {
 
   // Photo booth print design: when couples should send their template choice and wording.
   PRINT_DESIGN_DAYS_BEFORE: 30,
+  // Link to the photo booth template examples (Bob's Dropbox) until the built-in designer exists. Empty = "coming soon" note.
+  PRINT_TEMPLATES_URL: '',
 
   // Photo booth events show this general Marquee contact instead of whoever is staffed on the booth.
   COMPANY_CONTACT: {
