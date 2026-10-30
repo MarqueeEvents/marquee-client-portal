@@ -40,6 +40,17 @@ MQ.util = (function () {
   function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
 
   /* Whole calendar days from a to b. */
+  /* Client-friendly fee line name (see LINE_NAMES in config). */
+  function lineName(name) {
+    var c = MQ.config, n = String(name || '').trim();
+    (c.LINE_NAME_PREFIXES || []).some(function (p) {
+      var re = new RegExp('^' + p + "('s)?\\s+", 'i');
+      if (re.test(n) && n.replace(re, '').length > 3) { n = n.replace(re, ''); return true; }
+      return false;
+    });
+    return (c.LINE_NAMES || {})[n] || n;
+  }
+
   function daysBetween(a, b) {
     var ua = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
     var ub = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
@@ -125,7 +136,7 @@ MQ.util = (function () {
   }
 
   return {
-    esc: esc, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
+    esc: esc, lineName: lineName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
     fmtDate: fmtDate, fmtDateLong: fmtDateLong, away: away, money: money, round2: round2, coupleFromName: coupleFromName,
     icon: icon, wave: wave, store: store, MONTHS: MONTHS, DAYS: DAYS
   };

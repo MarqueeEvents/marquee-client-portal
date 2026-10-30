@@ -7,13 +7,13 @@ MQ.model = (function () {
   var U = MQ.util;
 
   function team(employeeId, isBooth) {
-    var t = isBooth ? MQ.config.COMPANY_CONTACT : (MQ.config.TEAM[employeeId] || MQ.config.TEAM['43180']);
+    var t = isBooth ? MQ.config.COMPANY_CONTACT : (MQ.config.TEAM[employeeId] || MQ.config.FALLBACK_HEADLINER);
     var base = MQ.ASSET_BASE + 'team/';
     var digits = (t.phone || '').replace(/\D/g, '');
     return Object.assign({}, t, {
       photo: t.photoFile ? base + t.photoFile : '',
       cardPhoto: base + (t.cardPhotoFile || t.photoFile),
-      logo: base + t.logoFile,
+      logo: t.logoFile ? base + t.logoFile : '',
       tel: digits ? 'tel:+1' + digits : '',
       sms: digits ? 'sms:+1' + digits : '',
       mailto: t.email ? 'mailto:' + t.email : '',
@@ -73,7 +73,7 @@ MQ.model = (function () {
     return { featured: featured, groups: groups, all: avail };
   }
 
-  function journey(eventDate, sched, isBooth, signed) {
+  function journey(eventDate, sched, isBooth, signed, designSent) {
     var t = U.today();
     var cfg = MQ.config;
     function st(date, endDate) {
@@ -121,9 +121,15 @@ MQ.model = (function () {
       steps.push({ num: '07', title: 'Final Planning', date: finalFrom, when: U.fmtDate(finalFrom) + ' to ' + U.fmtDate(finalTo),
         note: 'Walk through every detail with your headliner, 2 to 4 weeks out.', done: fs === 'past', status: fs === 'open' ? 'Book Now' : (fs === 'past' ? 'Done' : 'Upcoming'), book: 'final' });
     }
+    if (isBooth) {
+      var dd = U.addDays(eventDate, -(cfg.PRINT_DESIGN_DAYS_BEFORE || 30));
+      steps.push({ num: '05', title: 'Print Design', date: dd, when: 'Send by ' + U.fmtDate(dd),
+        note: 'Pick your template and send us your wording and any changes.', done: !!designSent,
+        status: designSent ? 'Sent' : 'Open', design: !designSent, noAway: !!designSent });
+    }
     var daysOut = U.daysBetween(t, eventDate);
     var lvl = daysOut <= 0 ? 4 : daysOut <= 14 ? 3 : daysOut <= 60 ? 2 : daysOut <= 180 ? 1 : 0;
-    steps.push({ num: isBooth ? '05' : '08', title: "Let's Dance", date: eventDate, isFinal: true, lvl: lvl,
+    steps.push({ num: isBooth ? '06' : '08', title: "Let's Dance", date: eventDate, isFinal: true, lvl: lvl,
       when: U.fmtDateLong(eventDate), away: daysOut === 0 ? 'Tonight' : (daysOut < 0 ? 'What a night' : U.away(daysOut)) });
 
     steps.forEach(function (s) {
@@ -184,7 +190,7 @@ MQ.model = (function () {
       couple: couple,
       total: total, paid: paid, balance: balance,
       schedule: sched, next: next,
-      journey: journey(eventDate, sched, isBooth, signedDate(details.history)),
+      journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id)),
       options: addOptions(details.lines || [], hasBoothEvent, isBooth),
       venue: venueShort(details.venue)
     };

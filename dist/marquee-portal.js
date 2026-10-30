@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T00:30Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T00:50Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -52,7 +52,7 @@ MQ.config = {
   TEAM: {
     '43180': {
       key: 'bob', cardTier: 'Luxury Headliner', cardLogoH: 58, cardPhotoFile: 'bob-card-2.jpg', cardPos: 'center 8%', photoFile: 'bob-photo-2.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Luxury Headliner', role: 'Founder, DJ & MC', price: 3500,
-      phone: '', email: '', instagram: '',
+      phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'bob_hickman',
       calendly: { creative: '', final: '' }
     },
     '43269': {
@@ -62,15 +62,39 @@ MQ.config = {
     },
     '43300': {
       key: 'dan', cardTier: 'Headliner', cardLogoH: 56, cardPhotoFile: 'dan-card-5.jpg', cardPos: 'center 0%', photoFile: 'dan-photo-2.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
-      phone: '', email: '', instagram: '',
+      phone: '330.440.5509', email: 'daniel@marqueeohio.com', instagram: 'dj_sanatore',
       calendly: { creative: '', final: '' }
     },
     '43299': {
       key: 'james', cardTier: 'Headliner', cardLogoH: 54, cardPos: 'center 0%', photoFile: 'james-photo.jpg', logoFile: 'james-logo-2.png', logoH: 58, name: 'James Stevenson', first: 'James', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
-      phone: '', email: '', instagram: '',
+      phone: '330.407.9572', email: 'james@marqueeohio.com', instagram: 'jamessmu',
+      calendly: { creative: '', final: '' }
+    },
+    '43302': {
+      key: 'mike', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card.jpg', cardPos: 'center 0%', photoFile: 'silhouette.jpg', logoFile: '', logoH: 58, name: 'Mike Bishman', first: 'Mike', tier: 'Headliner', role: 'DJ & MC',
+      phone: '740.350.7922', email: 'info@marqueeohio.com', instagram: '',
       calendly: { creative: '', final: '' }
     }
   },
+
+  // Anyone staffed on a DJ event who is not in TEAM yet (for example Jake, 43301): a neutral Marquee card with Bob's contact info.
+  FALLBACK_HEADLINER: {
+    key: 'marquee', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card.jpg', cardPos: 'center 0%', photoFile: 'silhouette.jpg', logoFile: '../brand/marquee-logo-white.png', logoH: 46, cardLogoH: 34,
+    name: 'Your Marquee Headliner', first: 'Marquee', tier: 'Headliner', role: 'DJ & MC',
+    phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'marqueeohio',
+    calendly: { creative: '', final: '' }
+  },
+
+  // Client-friendly names for DJEP fee lines. A DJ's first name at the start of a line is dropped first,
+  // then any exact match below is renamed. Lines not listed show as written in DJEP.
+  LINE_NAMES: {
+    'Wedding Talent Fee': 'Wedding Entertainment Package',
+    'Ceremony Package w/o Rehearsal': 'Ceremony Package'
+  },
+  LINE_NAME_PREFIXES: ['Bob', 'Bradon', 'Dan', 'Daniel', 'James', 'Mike', 'Jake'],
+
+  // Photo booth print design: when couples should send their template choice and wording.
+  PRINT_DESIGN_DAYS_BEFORE: 30,
 
   // Photo booth events show this general Marquee contact instead of whoever is staffed on the booth.
   COMPANY_CONTACT: {
@@ -188,6 +212,17 @@ MQ.util = (function () {
   function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
 
   /* Whole calendar days from a to b. */
+  /* Client-friendly fee line name (see LINE_NAMES in config). */
+  function lineName(name) {
+    var c = MQ.config, n = String(name || '').trim();
+    (c.LINE_NAME_PREFIXES || []).some(function (p) {
+      var re = new RegExp('^' + p + "('s)?\\s+", 'i');
+      if (re.test(n) && n.replace(re, '').length > 3) { n = n.replace(re, ''); return true; }
+      return false;
+    });
+    return (c.LINE_NAMES || {})[n] || n;
+  }
+
   function daysBetween(a, b) {
     var ua = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
     var ub = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
@@ -273,7 +308,7 @@ MQ.util = (function () {
   }
 
   return {
-    esc: esc, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
+    esc: esc, lineName: lineName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
     fmtDate: fmtDate, fmtDateLong: fmtDateLong, away: away, money: money, round2: round2, coupleFromName: coupleFromName,
     icon: icon, wave: wave, store: store, MONTHS: MONTHS, DAYS: DAYS
   };
@@ -444,13 +479,13 @@ MQ.model = (function () {
   var U = MQ.util;
 
   function team(employeeId, isBooth) {
-    var t = isBooth ? MQ.config.COMPANY_CONTACT : (MQ.config.TEAM[employeeId] || MQ.config.TEAM['43180']);
+    var t = isBooth ? MQ.config.COMPANY_CONTACT : (MQ.config.TEAM[employeeId] || MQ.config.FALLBACK_HEADLINER);
     var base = MQ.ASSET_BASE + 'team/';
     var digits = (t.phone || '').replace(/\D/g, '');
     return Object.assign({}, t, {
       photo: t.photoFile ? base + t.photoFile : '',
       cardPhoto: base + (t.cardPhotoFile || t.photoFile),
-      logo: base + t.logoFile,
+      logo: t.logoFile ? base + t.logoFile : '',
       tel: digits ? 'tel:+1' + digits : '',
       sms: digits ? 'sms:+1' + digits : '',
       mailto: t.email ? 'mailto:' + t.email : '',
@@ -510,7 +545,7 @@ MQ.model = (function () {
     return { featured: featured, groups: groups, all: avail };
   }
 
-  function journey(eventDate, sched, isBooth, signed) {
+  function journey(eventDate, sched, isBooth, signed, designSent) {
     var t = U.today();
     var cfg = MQ.config;
     function st(date, endDate) {
@@ -558,9 +593,15 @@ MQ.model = (function () {
       steps.push({ num: '07', title: 'Final Planning', date: finalFrom, when: U.fmtDate(finalFrom) + ' to ' + U.fmtDate(finalTo),
         note: 'Walk through every detail with your headliner, 2 to 4 weeks out.', done: fs === 'past', status: fs === 'open' ? 'Book Now' : (fs === 'past' ? 'Done' : 'Upcoming'), book: 'final' });
     }
+    if (isBooth) {
+      var dd = U.addDays(eventDate, -(cfg.PRINT_DESIGN_DAYS_BEFORE || 30));
+      steps.push({ num: '05', title: 'Print Design', date: dd, when: 'Send by ' + U.fmtDate(dd),
+        note: 'Pick your template and send us your wording and any changes.', done: !!designSent,
+        status: designSent ? 'Sent' : 'Open', design: !designSent, noAway: !!designSent });
+    }
     var daysOut = U.daysBetween(t, eventDate);
     var lvl = daysOut <= 0 ? 4 : daysOut <= 14 ? 3 : daysOut <= 60 ? 2 : daysOut <= 180 ? 1 : 0;
-    steps.push({ num: isBooth ? '05' : '08', title: "Let's Dance", date: eventDate, isFinal: true, lvl: lvl,
+    steps.push({ num: isBooth ? '06' : '08', title: "Let's Dance", date: eventDate, isFinal: true, lvl: lvl,
       when: U.fmtDateLong(eventDate), away: daysOut === 0 ? 'Tonight' : (daysOut < 0 ? 'What a night' : U.away(daysOut)) });
 
     steps.forEach(function (s) {
@@ -621,7 +662,7 @@ MQ.model = (function () {
       couple: couple,
       total: total, paid: paid, balance: balance,
       schedule: sched, next: next,
-      journey: journey(eventDate, sched, isBooth, signedDate(details.history)),
+      journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id)),
       options: addOptions(details.lines || [], hasBoothEvent, isBooth),
       venue: venueShort(details.venue)
     };
@@ -703,11 +744,26 @@ MQ.requests = (function () {
     });
   }
 
+  /* Any other message from the portal (for example the photo booth print design). Same test/live switch. */
+  function sendText(vm, text) {
+    var live = MQ.config.REQUEST_MODE === 'live';
+    return buildSubmission(vm.id, text).then(function (sub) {
+      if (!live) {
+        console.info('[Marquee portal] TEST MODE message (not sent)', sub.action, text);
+        return { mode: 'test', text: text };
+      }
+      return fetch(sub.action, { method: sub.method, body: sub.data, credentials: 'same-origin' }).then(function (r) {
+        if (!r.ok) throw new Error('DJEP returned ' + r.status);
+        return { mode: 'sent', text: text };
+      });
+    });
+  }
+
   function cancel(eventId, id) {
     setPending(eventId, pending(eventId).filter(function (x) { return x !== id; }));
   }
 
-  return { send: send, pending: pending, cancel: cancel, message: message };
+  return { send: send, sendText: sendText, pending: pending, cancel: cancel, message: message };
 })();
 
 /* ---- src/reels.js ---- */
@@ -1031,8 +1087,10 @@ MQ.renderChooser = (function () {
         '<span class="mq-chip mq-chip-ok" style="align-self:flex-start"><span class="mq-dot"></span>' + esc(e.status || 'Booked') + '</span>' +
         '<span class="go">Open This Event ' + U.icon('arrow', 14) + '</span>' +
         '<span class="mq-evbrand">' + (e.isPhotoBooth ? '' : '<span class="mq-tier">' + esc(dj.cardTier || dj.tier) + '</span>') +
-        '<img class="mq-evlogo" src="' + esc(e.isPhotoBooth ? MQ.ASSET_BASE + 'brand/marquee-logo-white.png' : dj.logo) + '" alt="" style="height:' +
-        (e.isPhotoBooth ? 34 : (dj.cardLogoH || Math.round((dj.logoH || 58) * 0.78))) + 'px" onerror="this.remove()"></span></div></a>';
+        (e.isPhotoBooth || dj.logo
+          ? '<img class="mq-evlogo" src="' + esc(e.isPhotoBooth ? MQ.ASSET_BASE + 'brand/marquee-logo-white.png' : dj.logo) + '" alt="" style="height:' +
+            (e.isPhotoBooth ? 34 : (dj.cardLogoH || Math.round((dj.logoH || 58) * 0.78))) + 'px" onerror="this.remove()">'
+          : '<span class="mq-evname">' + esc(dj.name) + '</span>') + '</span></div></a>';
     }).join('');
     main.innerHTML = '<section class="mq-hero"><span class="mq-eyebrow">Client Portal</span><h1>Welcome back,<br>' + esc(first) + '.</h1>' +
       '<p class="mq-serif">your night, by design.</p><p>You have ' + events.length + ' events with Marquee. Pick one to see its details, payments and add-ons.</p></section>' +
@@ -1105,7 +1163,7 @@ MQ.renderEvent = (function () {
           '<a class="mq-btn mq-btn-ghost" href="' + esc(links.details || '#') + '">Event Details</a>' +
         '</div>' +
         '<div class="mq-headliner"><span class="mq-eyebrow">' + (vm.isBooth ? 'Your Point Of Contact' : 'Your Headliner') + '</span>' +
-          '<div class="mq-hl-row"><img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + ', Marquee Events" style="height:' + dj.logoH + 'px" onerror="this.outerHTML=\'<span class=&quot;mq-hl-name&quot;>' + esc(dj.name) + '</span>\'">' +
+          '<div class="mq-hl-row">' + (dj.logo ? '<img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + ', Marquee Events" style="height:' + dj.logoH + 'px" onerror="this.outerHTML=\'<span class=&quot;mq-hl-name&quot;>' + esc(dj.name) + '</span>\'">' : '<span class="mq-hl-name">' + esc(dj.name) + '</span>') +
           '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
           '<span class="mq-role"><b>' + esc(dj.role) + '</b> \u00b7 ' + (vm.isBooth ? esc(dj.note) : 'Your go-to for music, timeline and every big moment of the night.') + '</span>' +
           (contacts ? '<div class="mq-contacts">' + contacts + '</div>' : '') +
@@ -1153,6 +1211,7 @@ MQ.renderEvent = (function () {
       var extra = '';
       if (s.amount) extra += '<span class="amt">' + esc(s.amount) + '</span>';
       if (s.pay && (s.status === 'Due Now')) extra += '<a class="lnk" href="' + esc(vm.list.links.payment || '#') + '">Pay now</a>';
+      if (s.design) extra += '<a class="lnk" href="#mq-design">Choose your design</a>';
       if (s.vibo) extra += '<a class="lnk" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">Open Vibo</a>';
       return '<li class="mq-step' + (s.done ? ' done' : '') + (s.next ? ' next' : '') + (s.lit ? ' lit' : '') + '"><div class="top"><span class="num">' + s.num +
         '</span><span class="mq-chip ' + chip + '">' + esc(s.status) + '</span></div><span class="ttl">' + esc(s.title) + '</span>' +
@@ -1198,7 +1257,7 @@ MQ.renderEvent = (function () {
 
   function invest(vm, pending) {
     var lines = (vm.details.lines || []).map(function (l) {
-      return '<li><span class="ck">' + icon('check', 13) + '</span><span class="nm">' + esc(l.name) + '</span><span class="pr">' + U.money(l.price) + '</span></li>';
+      return '<li><span class="ck">' + icon('check', 13) + '</span><span class="nm">' + esc(U.lineName(l.name)) + '</span><span class="pr">' + U.money(l.price) + '</span></li>';
     }).join('');
     var pend = pending.map(function (c) {
       return '<li class="pending"><span class="ck">' + icon('clock', 13) + '</span><span class="nm">' + esc(c.name) + '<small>Awaiting Approval</small></span><span class="pr">' + U.money(c.price) + '</span></li>';
@@ -1222,7 +1281,7 @@ MQ.renderEvent = (function () {
       '<div class="mq-invest-row"><div class="mq-night"><span class="mq-sub">What\'s In Your Night</span><ul class="mq-lines">' + lines + pend + '</ul>' +
       '<div class="mq-total"><span>Total Investment</span><b>' + U.money(vm.total) + '</b></div>' +
       (pending.length ? '<span class="mq-small" style="margin-top:8px">Items awaiting approval are not in your total until ' + esc(vm.dj.first) + ' confirms them.</span>' : '') +
-      '<span class="mq-small" style="margin-top:14px">Want to change something? Message your headliner and they\'ll take care of it.</span></div>' +
+      '<span class="mq-small" style="margin-top:14px">' + (vm.isBooth ? 'Want to change something? Message the Marquee team and we\'ll take care of it.' : 'Want to change something? Message your headliner and they\'ll take care of it.') + '</span></div>' +
       '<div class="mq-stand"><span class="mq-sub">Where You Stand</span><div><div class="mq-meter"><div style="width:' + pct + '%"></div></div>' +
       '<div class="mq-meter-lbl"><span><b>' + U.money(vm.paid) + '</b> paid</span><span><b>' + U.money(vm.balance) + '</b> remaining</span></div></div>' +
       nextBox + (n ? '<a class="mq-btn mq-btn-pink" href="' + esc(vm.list.links.payment || '#') + '">' + icon('card', 16) + 'Make a Payment</a>' : '') +
@@ -1317,9 +1376,75 @@ MQ.renderEvent = (function () {
     draw();
   }
 
+  /* Photo booth: pick a print template and send wording and changes. Goes to Bob through DJEP's Request Changes form. */
+  function designSection(vm, container) {
+    var key = 'mq-design-' + vm.id;
+    var saved = U.store(key);
+    var upgraded = (vm.details.lines || []).some(function (l) { return /4\s*x\s*6|print upgrade/i.test(l.name); });
+    var format = upgraded ? '4x6 prints, portrait or landscape' : '2x6 photo strips';
+    var state = { status: null, busy: false };
+    function field(id, label, ph, area) {
+      return '<label class="mq-field" for="' + id + '"><span>' + label + '</span>' + (area
+        ? '<textarea id="' + id + '" rows="4" placeholder="' + esc(ph) + '"></textarea>'
+        : '<input id="' + id + '" type="text" placeholder="' + esc(ph) + '">') + '</label>';
+    }
+    function draw() {
+      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">Your Print Design</span><h2 class="mq-h2" id="mq-dz">Select Your Photo Booth Template <span class="mq-serif">make it yours.</span></h2></div>' +
+        '<span class="intro">Browse the templates, pick your favorite, then tell us the wording and any changes you want. Your prints: ' + esc(format) + '.</span></div>';
+      if (saved && !state.status) {
+        html += '<div class="mq-status" role="status"><span class="ic">' + icon('check', 16) + '</span><div><b>Design choice sent.</b><p>' + esc(saved.text || '') +
+          '</p></div><button type="button" data-mq-redo>Send a change</button></div>';
+        container.innerHTML = html; return;
+      }
+      html += '<div class="mq-design"><div class="mq-design-pick"><span class="mq-sub">Step 1 \u00b7 Browse</span>' +
+        '<p class="mq-body">See every template we offer and note the name or number of the one you love.</p>' +
+        '<a class="mq-btn mq-btn-ghost" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">' + icon('camera', 15) + 'Browse Templates</a></div>' +
+        '<form class="mq-design-form" data-mq-design><span class="mq-sub">Step 2 \u00b7 Tell Us</span>' +
+        field('mq-dz-tpl', 'Template name or number', 'Example: Gold Script #12') +
+        field('mq-dz-words', 'Wording on your prints', 'Example: Teddi & Kevin \u00b7 12.30.2028') +
+        field('mq-dz-notes', 'Changes and notes', 'Colors, fonts, a hashtag, a logo, anything you want changed.', true) +
+        '<button type="submit" class="mq-btn mq-btn-pink"' + (state.busy ? ' disabled' : '') + '>' + icon('send', 16) + (state.busy ? 'Sending...' : 'Send My Design') + '</button></form></div>';
+      if (state.status) {
+        var test = state.status.mode === 'test', err = state.status.mode === 'error';
+        html += '<div class="mq-status' + (test || err ? ' test' : '') + '" role="status"><span class="ic">' + icon(err ? 'alert' : 'check', 16) + '</span><div><b>' +
+          (err ? 'That did not go through.' : test ? 'Test mode: nothing was sent.' : 'Design choice sent!') + '</b><p>' +
+          esc(err ? state.status.text + ' Please text Bob instead.' : test ? 'This is exactly what Bob will receive once requests are switched on:\n\n' + state.status.text
+            : 'We will review it and reach out if we have any questions.') + '</p></div><button type="button" data-mq-dismiss>Got it</button></div>';
+      }
+      container.innerHTML = html;
+    }
+    container.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (state.busy) return;
+      var v = function (id) { var el = container.querySelector('#' + id); return el ? el.value.trim() : ''; };
+      var tpl = v('mq-dz-tpl');
+      if (!tpl) { var t = container.querySelector('#mq-dz-tpl'); t.focus(); t.setAttribute('aria-invalid', 'true'); return; }
+      var text = ['PHOTO BOOTH PRINT DESIGN from the client portal',
+        'Event: ' + (vm.list.name || '') + ' on ' + U.fmtDate(vm.eventDate),
+        'Print format: ' + format, '',
+        'Template: ' + tpl,
+        'Wording: ' + (v('mq-dz-words') || '(none given)'),
+        'Changes and notes: ' + (v('mq-dz-notes') || '(none)')].join('\n');
+      state.busy = true; draw();
+      MQ.requests.sendText(vm, text).then(function (res) {
+        state.busy = false; state.status = res;
+        if (res.mode === 'sent') { saved = { text: text }; U.store(key, saved); }
+        draw();
+      }).catch(function (err) { state.busy = false; state.status = { mode: 'error', text: err.message || String(err) }; draw(); });
+    });
+    container.addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      if (b.hasAttribute('data-mq-dismiss')) { state.status = null; draw(); }
+      else if (b.hasAttribute('data-mq-redo')) { saved = null; draw(); }
+    });
+    draw();
+  }
+
   function messages() {
     var box = document.querySelector('.djep-latestemailsbox');
     var items = box ? Array.prototype.filter.call(box.querySelectorAll('a'), function (a) { return a.textContent.trim(); }) : [];
+    if (!items.length) return '';
     var list = items.slice(0, 4).map(function (a) {
       return '<li class="mq-row"><span class="mq-live" style="animation:none" aria-hidden="true"></span><span class="nm">' + esc(a.textContent.trim()) +
         '</span><a class="mq-btn mq-btn-ghost" style="min-height:44px" href="' + esc(a.href) + '">Read</a></li>';
@@ -1331,8 +1456,9 @@ MQ.renderEvent = (function () {
 
   function render(main, vm, events) {
     main.innerHTML = switcher(vm, events) + hero(vm) + eventCard(vm) + journey(vm) + sessions(vm) +
+      (vm.isBooth ? '<section class="mq-card mq-designsec" id="mq-design" aria-labelledby="mq-dz" data-mq-design-sec></section>' : '') +
       '<div data-mq-invest></div><section class="mq-add" aria-labelledby="mq-ad" data-mq-add></section>' +
-      '<div class="mq-duo">' + messages() + '</div><section class="mq-reels" data-mq-reels></section>';
+      (function () { var m = messages(); return m ? '<div class="mq-duo">' + m + '</div>' : ''; })() + '<section class="mq-reels" data-mq-reels></section>';
     var investBox = main.querySelector('[data-mq-invest]');
     function drawInvest() {
       var p = MQ.requests.pending(vm.id);
@@ -1348,6 +1474,7 @@ MQ.renderEvent = (function () {
     });
     drawInvest();
     addSection(vm, main.querySelector('[data-mq-add]'), drawInvest);
+    if (vm.isBooth) designSection(vm, main.querySelector('[data-mq-design-sec]'));
     startCountdown(main, vm.eventDate);
     MQ.reels.render(main.querySelector('[data-mq-reels]'));
   }
@@ -1412,7 +1539,7 @@ MQ.renderDetails = (function () {
     var pkg = (svcName ? '<div class="mq-pkg-name">' + esc(svcName) + '</div>' : '') +
       (included.length ? '<ul class="mq-incl">' + included.map(function (l) { return '<li><span class="ck">' + icon('check', 12) + '</span>' + esc(l) + '</li>'; }).join('') + '</ul>' : '') +
       (addons.length ? '<div class="mq-sub" style="margin-top:18px">Add-Ons</div><div class="mq-addchips">' + addons.map(function (a) { return '<span>' + esc(a) + '</span>'; }).join('') + '</div>' : '');
-    var team = '<div class="mq-hl-row"><img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + '" style="height:' + Math.round(dj.logoH * 0.8) + 'px">' +
+    var team = '<div class="mq-hl-row">' + (dj.logo ? '<img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + '" style="height:' + Math.round(dj.logoH * 0.8) + 'px">' : '<span class="mq-hl-name">' + esc(dj.name) + '</span>') +
       '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
       (vm.isBooth ? '<p class="mq-body"><b style="color:#fff">' + esc(dj.role) + '</b> ' + esc(dj.note) + '</p>' : '') +
       '<ul class="mq-staff"' + (vm.isBooth ? ' hidden' : '') + '>' + (d.staff.length ? d.staff : [dj.name]).map(function (s) { return '<li>' + icon('music', 14) + esc(s) + '</li>'; }).join('') + '</ul>' +
@@ -1436,7 +1563,7 @@ MQ.renderDetails = (function () {
     });
     var fees = groups.map(function (g) {
       return '<div class="mq-sub" style="margin-top:14px">' + esc(g.name === 'Addons' ? 'Add-Ons' : g.name) + '</div><ul class="mq-feelist">' +
-        g.items.map(function (l) { return '<li><span>' + esc(l.name) + '</span><b>' + U.money(l.price, true) + '</b></li>'; }).join('') + '</ul>';
+        g.items.map(function (l) { return '<li><span>' + esc(U.lineName(l.name)) + '</span><b>' + U.money(l.price, true) + '</b></li>'; }).join('') + '</ul>';
     }).join('');
     var totals = '<dl class="mq-totals">' +
       (d.subtotal != null && d.subtotal !== d.totalFee ? row('Subtotal', U.money(d.subtotal, true)) : '') +

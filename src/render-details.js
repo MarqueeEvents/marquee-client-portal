@@ -54,7 +54,7 @@ MQ.renderDetails = (function () {
     var pkg = (svcName ? '<div class="mq-pkg-name">' + esc(svcName) + '</div>' : '') +
       (included.length ? '<ul class="mq-incl">' + included.map(function (l) { return '<li><span class="ck">' + icon('check', 12) + '</span>' + esc(l) + '</li>'; }).join('') + '</ul>' : '') +
       (addons.length ? '<div class="mq-sub" style="margin-top:18px">Add-Ons</div><div class="mq-addchips">' + addons.map(function (a) { return '<span>' + esc(a) + '</span>'; }).join('') + '</div>' : '');
-    var team = '<div class="mq-hl-row"><img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + '" style="height:' + Math.round(dj.logoH * 0.8) + 'px">' +
+    var team = '<div class="mq-hl-row">' + (dj.logo ? '<img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + '" style="height:' + Math.round(dj.logoH * 0.8) + 'px">' : '<span class="mq-hl-name">' + esc(dj.name) + '</span>') +
       '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
       (vm.isBooth ? '<p class="mq-body"><b style="color:#fff">' + esc(dj.role) + '</b> ' + esc(dj.note) + '</p>' : '') +
       '<ul class="mq-staff"' + (vm.isBooth ? ' hidden' : '') + '>' + (d.staff.length ? d.staff : [dj.name]).map(function (s) { return '<li>' + icon('music', 14) + esc(s) + '</li>'; }).join('') + '</ul>' +
@@ -78,7 +78,7 @@ MQ.renderDetails = (function () {
     });
     var fees = groups.map(function (g) {
       return '<div class="mq-sub" style="margin-top:14px">' + esc(g.name === 'Addons' ? 'Add-Ons' : g.name) + '</div><ul class="mq-feelist">' +
-        g.items.map(function (l) { return '<li><span>' + esc(l.name) + '</span><b>' + U.money(l.price, true) + '</b></li>'; }).join('') + '</ul>';
+        g.items.map(function (l) { return '<li><span>' + esc(U.lineName(l.name)) + '</span><b>' + U.money(l.price, true) + '</b></li>'; }).join('') + '</ul>';
     }).join('');
     var totals = '<dl class="mq-totals">' +
       (d.subtotal != null && d.subtotal !== d.totalFee ? row('Subtotal', U.money(d.subtotal, true)) : '') +

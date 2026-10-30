@@ -63,9 +63,24 @@ MQ.requests = (function () {
     });
   }
 
+  /* Any other message from the portal (for example the photo booth print design). Same test/live switch. */
+  function sendText(vm, text) {
+    var live = MQ.config.REQUEST_MODE === 'live';
+    return buildSubmission(vm.id, text).then(function (sub) {
+      if (!live) {
+        console.info('[Marquee portal] TEST MODE message (not sent)', sub.action, text);
+        return { mode: 'test', text: text };
+      }
+      return fetch(sub.action, { method: sub.method, body: sub.data, credentials: 'same-origin' }).then(function (r) {
+        if (!r.ok) throw new Error('DJEP returned ' + r.status);
+        return { mode: 'sent', text: text };
+      });
+    });
+  }
+
   function cancel(eventId, id) {
     setPending(eventId, pending(eventId).filter(function (x) { return x !== id; }));
   }
 
-  return { send: send, pending: pending, cancel: cancel, message: message };
+  return { send: send, sendText: sendText, pending: pending, cancel: cancel, message: message };
 })();

@@ -59,7 +59,7 @@ MQ.renderEvent = (function () {
           '<a class="mq-btn mq-btn-ghost" href="' + esc(links.details || '#') + '">Event Details</a>' +
         '</div>' +
         '<div class="mq-headliner"><span class="mq-eyebrow">' + (vm.isBooth ? 'Your Point Of Contact' : 'Your Headliner') + '</span>' +
-          '<div class="mq-hl-row"><img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + ', Marquee Events" style="height:' + dj.logoH + 'px" onerror="this.outerHTML=\'<span class=&quot;mq-hl-name&quot;>' + esc(dj.name) + '</span>\'">' +
+          '<div class="mq-hl-row">' + (dj.logo ? '<img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + ', Marquee Events" style="height:' + dj.logoH + 'px" onerror="this.outerHTML=\'<span class=&quot;mq-hl-name&quot;>' + esc(dj.name) + '</span>\'">' : '<span class="mq-hl-name">' + esc(dj.name) + '</span>') +
           '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
           '<span class="mq-role"><b>' + esc(dj.role) + '</b> \u00b7 ' + (vm.isBooth ? esc(dj.note) : 'Your go-to for music, timeline and every big moment of the night.') + '</span>' +
           (contacts ? '<div class="mq-contacts">' + contacts + '</div>' : '') +
@@ -107,6 +107,7 @@ MQ.renderEvent = (function () {
       var extra = '';
       if (s.amount) extra += '<span class="amt">' + esc(s.amount) + '</span>';
       if (s.pay && (s.status === 'Due Now')) extra += '<a class="lnk" href="' + esc(vm.list.links.payment || '#') + '">Pay now</a>';
+      if (s.design) extra += '<a class="lnk" href="#mq-design">Choose your design</a>';
       if (s.vibo) extra += '<a class="lnk" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">Open Vibo</a>';
       return '<li class="mq-step' + (s.done ? ' done' : '') + (s.next ? ' next' : '') + (s.lit ? ' lit' : '') + '"><div class="top"><span class="num">' + s.num +
         '</span><span class="mq-chip ' + chip + '">' + esc(s.status) + '</span></div><span class="ttl">' + esc(s.title) + '</span>' +
@@ -152,7 +153,7 @@ MQ.renderEvent = (function () {
 
   function invest(vm, pending) {
     var lines = (vm.details.lines || []).map(function (l) {
-      return '<li><span class="ck">' + icon('check', 13) + '</span><span class="nm">' + esc(l.name) + '</span><span class="pr">' + U.money(l.price) + '</span></li>';
+      return '<li><span class="ck">' + icon('check', 13) + '</span><span class="nm">' + esc(U.lineName(l.name)) + '</span><span class="pr">' + U.money(l.price) + '</span></li>';
     }).join('');
     var pend = pending.map(function (c) {
       return '<li class="pending"><span class="ck">' + icon('clock', 13) + '</span><span class="nm">' + esc(c.name) + '<small>Awaiting Approval</small></span><span class="pr">' + U.money(c.price) + '</span></li>';
@@ -176,7 +177,7 @@ MQ.renderEvent = (function () {
       '<div class="mq-invest-row"><div class="mq-night"><span class="mq-sub">What\'s In Your Night</span><ul class="mq-lines">' + lines + pend + '</ul>' +
       '<div class="mq-total"><span>Total Investment</span><b>' + U.money(vm.total) + '</b></div>' +
       (pending.length ? '<span class="mq-small" style="margin-top:8px">Items awaiting approval are not in your total until ' + esc(vm.dj.first) + ' confirms them.</span>' : '') +
-      '<span class="mq-small" style="margin-top:14px">Want to change something? Message your headliner and they\'ll take care of it.</span></div>' +
+      '<span class="mq-small" style="margin-top:14px">' + (vm.isBooth ? 'Want to change something? Message the Marquee team and we\'ll take care of it.' : 'Want to change something? Message your headliner and they\'ll take care of it.') + '</span></div>' +
       '<div class="mq-stand"><span class="mq-sub">Where You Stand</span><div><div class="mq-meter"><div style="width:' + pct + '%"></div></div>' +
       '<div class="mq-meter-lbl"><span><b>' + U.money(vm.paid) + '</b> paid</span><span><b>' + U.money(vm.balance) + '</b> remaining</span></div></div>' +
       nextBox + (n ? '<a class="mq-btn mq-btn-pink" href="' + esc(vm.list.links.payment || '#') + '">' + icon('card', 16) + 'Make a Payment</a>' : '') +
@@ -271,9 +272,75 @@ MQ.renderEvent = (function () {
     draw();
   }
 
+  /* Photo booth: pick a print template and send wording and changes. Goes to Bob through DJEP's Request Changes form. */
+  function designSection(vm, container) {
+    var key = 'mq-design-' + vm.id;
+    var saved = U.store(key);
+    var upgraded = (vm.details.lines || []).some(function (l) { return /4\s*x\s*6|print upgrade/i.test(l.name); });
+    var format = upgraded ? '4x6 prints, portrait or landscape' : '2x6 photo strips';
+    var state = { status: null, busy: false };
+    function field(id, label, ph, area) {
+      return '<label class="mq-field" for="' + id + '"><span>' + label + '</span>' + (area
+        ? '<textarea id="' + id + '" rows="4" placeholder="' + esc(ph) + '"></textarea>'
+        : '<input id="' + id + '" type="text" placeholder="' + esc(ph) + '">') + '</label>';
+    }
+    function draw() {
+      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">Your Print Design</span><h2 class="mq-h2" id="mq-dz">Select Your Photo Booth Template <span class="mq-serif">make it yours.</span></h2></div>' +
+        '<span class="intro">Browse the templates, pick your favorite, then tell us the wording and any changes you want. Your prints: ' + esc(format) + '.</span></div>';
+      if (saved && !state.status) {
+        html += '<div class="mq-status" role="status"><span class="ic">' + icon('check', 16) + '</span><div><b>Design choice sent.</b><p>' + esc(saved.text || '') +
+          '</p></div><button type="button" data-mq-redo>Send a change</button></div>';
+        container.innerHTML = html; return;
+      }
+      html += '<div class="mq-design"><div class="mq-design-pick"><span class="mq-sub">Step 1 \u00b7 Browse</span>' +
+        '<p class="mq-body">See every template we offer and note the name or number of the one you love.</p>' +
+        '<a class="mq-btn mq-btn-ghost" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">' + icon('camera', 15) + 'Browse Templates</a></div>' +
+        '<form class="mq-design-form" data-mq-design><span class="mq-sub">Step 2 \u00b7 Tell Us</span>' +
+        field('mq-dz-tpl', 'Template name or number', 'Example: Gold Script #12') +
+        field('mq-dz-words', 'Wording on your prints', 'Example: Teddi & Kevin \u00b7 12.30.2028') +
+        field('mq-dz-notes', 'Changes and notes', 'Colors, fonts, a hashtag, a logo, anything you want changed.', true) +
+        '<button type="submit" class="mq-btn mq-btn-pink"' + (state.busy ? ' disabled' : '') + '>' + icon('send', 16) + (state.busy ? 'Sending...' : 'Send My Design') + '</button></form></div>';
+      if (state.status) {
+        var test = state.status.mode === 'test', err = state.status.mode === 'error';
+        html += '<div class="mq-status' + (test || err ? ' test' : '') + '" role="status"><span class="ic">' + icon(err ? 'alert' : 'check', 16) + '</span><div><b>' +
+          (err ? 'That did not go through.' : test ? 'Test mode: nothing was sent.' : 'Design choice sent!') + '</b><p>' +
+          esc(err ? state.status.text + ' Please text Bob instead.' : test ? 'This is exactly what Bob will receive once requests are switched on:\n\n' + state.status.text
+            : 'We will review it and reach out if we have any questions.') + '</p></div><button type="button" data-mq-dismiss>Got it</button></div>';
+      }
+      container.innerHTML = html;
+    }
+    container.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (state.busy) return;
+      var v = function (id) { var el = container.querySelector('#' + id); return el ? el.value.trim() : ''; };
+      var tpl = v('mq-dz-tpl');
+      if (!tpl) { var t = container.querySelector('#mq-dz-tpl'); t.focus(); t.setAttribute('aria-invalid', 'true'); return; }
+      var text = ['PHOTO BOOTH PRINT DESIGN from the client portal',
+        'Event: ' + (vm.list.name || '') + ' on ' + U.fmtDate(vm.eventDate),
+        'Print format: ' + format, '',
+        'Template: ' + tpl,
+        'Wording: ' + (v('mq-dz-words') || '(none given)'),
+        'Changes and notes: ' + (v('mq-dz-notes') || '(none)')].join('\n');
+      state.busy = true; draw();
+      MQ.requests.sendText(vm, text).then(function (res) {
+        state.busy = false; state.status = res;
+        if (res.mode === 'sent') { saved = { text: text }; U.store(key, saved); }
+        draw();
+      }).catch(function (err) { state.busy = false; state.status = { mode: 'error', text: err.message || String(err) }; draw(); });
+    });
+    container.addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      if (b.hasAttribute('data-mq-dismiss')) { state.status = null; draw(); }
+      else if (b.hasAttribute('data-mq-redo')) { saved = null; draw(); }
+    });
+    draw();
+  }
+
   function messages() {
     var box = document.querySelector('.djep-latestemailsbox');
     var items = box ? Array.prototype.filter.call(box.querySelectorAll('a'), function (a) { return a.textContent.trim(); }) : [];
+    if (!items.length) return '';
     var list = items.slice(0, 4).map(function (a) {
       return '<li class="mq-row"><span class="mq-live" style="animation:none" aria-hidden="true"></span><span class="nm">' + esc(a.textContent.trim()) +
         '</span><a class="mq-btn mq-btn-ghost" style="min-height:44px" href="' + esc(a.href) + '">Read</a></li>';
@@ -285,8 +352,9 @@ MQ.renderEvent = (function () {
 
   function render(main, vm, events) {
     main.innerHTML = switcher(vm, events) + hero(vm) + eventCard(vm) + journey(vm) + sessions(vm) +
+      (vm.isBooth ? '<section class="mq-card mq-designsec" id="mq-design" aria-labelledby="mq-dz" data-mq-design-sec></section>' : '') +
       '<div data-mq-invest></div><section class="mq-add" aria-labelledby="mq-ad" data-mq-add></section>' +
-      '<div class="mq-duo">' + messages() + '</div><section class="mq-reels" data-mq-reels></section>';
+      (function () { var m = messages(); return m ? '<div class="mq-duo">' + m + '</div>' : ''; })() + '<section class="mq-reels" data-mq-reels></section>';
     var investBox = main.querySelector('[data-mq-invest]');
     function drawInvest() {
       var p = MQ.requests.pending(vm.id);
@@ -302,6 +370,7 @@ MQ.renderEvent = (function () {
     });
     drawInvest();
     addSection(vm, main.querySelector('[data-mq-add]'), drawInvest);
+    if (vm.isBooth) designSection(vm, main.querySelector('[data-mq-design-sec]'));
     startCountdown(main, vm.eventDate);
     MQ.reels.render(main.querySelector('[data-mq-reels]'));
   }

@@ -49,7 +49,7 @@ MQ.config = {
   TEAM: {
     '43180': {
       key: 'bob', cardTier: 'Luxury Headliner', cardLogoH: 58, cardPhotoFile: 'bob-card-2.jpg', cardPos: 'center 8%', photoFile: 'bob-photo-2.jpg', logoFile: 'bob-logo.png', logoH: 58, name: 'Bob Hickman', first: 'Bob', tier: 'Luxury Headliner', role: 'Founder, DJ & MC', price: 3500,
-      phone: '', email: '', instagram: '',
+      phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'bob_hickman',
       calendly: { creative: '', final: '' }
     },
     '43269': {
@@ -59,15 +59,39 @@ MQ.config = {
     },
     '43300': {
       key: 'dan', cardTier: 'Headliner', cardLogoH: 56, cardPhotoFile: 'dan-card-5.jpg', cardPos: 'center 0%', photoFile: 'dan-photo-2.jpg', logoFile: 'dan-logo.png', logoH: 58, name: 'Daniel Sanatore', first: 'Dan', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
-      phone: '', email: '', instagram: '',
+      phone: '330.440.5509', email: 'daniel@marqueeohio.com', instagram: 'dj_sanatore',
       calendly: { creative: '', final: '' }
     },
     '43299': {
       key: 'james', cardTier: 'Headliner', cardLogoH: 54, cardPos: 'center 0%', photoFile: 'james-photo.jpg', logoFile: 'james-logo-2.png', logoH: 58, name: 'James Stevenson', first: 'James', tier: 'Headliner', role: 'Lead DJ & MC', price: 2200,
-      phone: '', email: '', instagram: '',
+      phone: '330.407.9572', email: 'james@marqueeohio.com', instagram: 'jamessmu',
+      calendly: { creative: '', final: '' }
+    },
+    '43302': {
+      key: 'mike', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card.jpg', cardPos: 'center 0%', photoFile: 'silhouette.jpg', logoFile: '', logoH: 58, name: 'Mike Bishman', first: 'Mike', tier: 'Headliner', role: 'DJ & MC',
+      phone: '740.350.7922', email: 'info@marqueeohio.com', instagram: '',
       calendly: { creative: '', final: '' }
     }
   },
+
+  // Anyone staffed on a DJ event who is not in TEAM yet (for example Jake, 43301): a neutral Marquee card with Bob's contact info.
+  FALLBACK_HEADLINER: {
+    key: 'marquee', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card.jpg', cardPos: 'center 0%', photoFile: 'silhouette.jpg', logoFile: '../brand/marquee-logo-white.png', logoH: 46, cardLogoH: 34,
+    name: 'Your Marquee Headliner', first: 'Marquee', tier: 'Headliner', role: 'DJ & MC',
+    phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'marqueeohio',
+    calendly: { creative: '', final: '' }
+  },
+
+  // Client-friendly names for DJEP fee lines. A DJ's first name at the start of a line is dropped first,
+  // then any exact match below is renamed. Lines not listed show as written in DJEP.
+  LINE_NAMES: {
+    'Wedding Talent Fee': 'Wedding Entertainment Package',
+    'Ceremony Package w/o Rehearsal': 'Ceremony Package'
+  },
+  LINE_NAME_PREFIXES: ['Bob', 'Bradon', 'Dan', 'Daniel', 'James', 'Mike', 'Jake'],
+
+  // Photo booth print design: when couples should send their template choice and wording.
+  PRINT_DESIGN_DAYS_BEFORE: 30,
 
   // Photo booth events show this general Marquee contact instead of whoever is staffed on the booth.
   COMPANY_CONTACT: {
