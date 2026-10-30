@@ -546,7 +546,8 @@ html.mq-portal, .mq-portal body {
 }
 
 /* Photo booth print design */
-.mq-designsec { display: flex; flex-direction: column; gap: 20px; }
+.mq-designsec { display: flex; flex-direction: column; gap: 20px; padding: 30px 28px 28px; }
+@media (max-width: 720px) { .mq-designsec { padding: 24px 16px 18px; } }
 .mq-design { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 20px; align-items: start; }
 .mq-design-pick, .mq-design-form { display: flex; flex-direction: column; gap: 14px; padding: 22px; border: 1px solid var(--mq-line); border-radius: 18px; background: rgba(255,255,255,.02); min-width: 0; }
 .mq-design-pick { background: linear-gradient(160deg, rgba(255,46,136,.12), rgba(17,17,21,.6) 70%); border-color: rgba(255,46,136,.35); }
