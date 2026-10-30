@@ -25,7 +25,11 @@ MQ.renderEvent = (function () {
   }
 
   function miniBars() {
-    return U.wave(64, 3).map(function (h) { return '<span style="height:' + Math.round(6 + h * 38) + 'px"></span>'; }).join('');
+    /* Each bar gets its own speed and start point so the motion feels like music, not a marching row. */
+    return U.wave(64, 3).map(function (h, i) {
+      var dur = (1.6 + ((i * 37) % 11) / 10).toFixed(1), delay = (-((i * 53) % 23) / 10).toFixed(1);
+      return '<span style="height:' + Math.round(6 + h * 38) + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's"></span>';
+    }).join('');
   }
 
   function eventCard(vm) {

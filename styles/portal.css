@@ -209,6 +209,8 @@ html.mq-portal, .mq-portal body {
 .mq-photo .mq-fade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(17,17,21,0) 62%, rgba(17,17,21,.96) 100%), linear-gradient(180deg, rgba(17,17,21,0) 72%, rgba(17,17,21,.85) 100%); }
 .mq-photo .mq-edge { position: absolute; top: 0; right: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, rgba(255,46,136,0), #ff2e88 30%, #ff2e88 70%, rgba(255,46,136,0)); box-shadow: 0 0 18px 2px rgba(255,46,136,.55); }
 .mq-mini { position: absolute; left: 18px; right: 22px; bottom: 16px; height: 44px; display: flex; align-items: center; gap: 2px; opacity: .85; }
+.mq-mini span { transform-origin: center; animation: mqwave 2s ease-in-out infinite alternate; will-change: transform; }
+@keyframes mqwave { 0% { transform: scaleY(.45); } 50% { transform: scaleY(1); } 100% { transform: scaleY(.7); } }
 .mq-mini span, .mq-bars span { flex: 1 1 0; min-width: 1px; border-radius: 2px; display: block; background: var(--mq-pink-bar); box-shadow: 0 0 6px rgba(255,46,136,.7); }
 .mq-event-body { flex: 999 1 520px; min-width: 0; padding: clamp(28px, 3.4vw, 44px); display: flex; flex-direction: column; gap: 32px; }
 .mq-ev-top { display: flex; flex-wrap: wrap; align-items: center; gap: 24px 28px; }
@@ -315,7 +317,7 @@ html.mq-portal, .mq-portal body {
 .mq-drop.lvl4 .gd { color: #fff; }
 @keyframes mqrec { 0%,100% { opacity: 1; box-shadow: 0 0 6px #fff, 0 0 12px rgba(255,46,136,1); } 50% { opacity: .25; box-shadow: none; } }
 @keyframes mqdrop { 0%,100% { box-shadow: 0 0 28px rgba(255,46,136,.35); } 50% { box-shadow: 0 0 60px rgba(255,46,136,.85); } }
-@media (prefers-reduced-motion: reduce) { .mq-drop, .mq-drop .rec { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .mq-drop, .mq-drop .rec, .mq-mini span { animation: none !important; } }
 
 /* Sessions */
 .mq-sessions { display: flex; flex-direction: column; gap: 16px; }
