@@ -100,8 +100,8 @@ MQ.model = (function () {
     var retainer = sched[0];
     steps.push({ num: '01', title: 'Date Secured', date: null, when: retainer.status === 'paid' ? 'Retainer paid' : 'Retainer ' + U.money(retainer.left) + ' due',
       note: 'Your date is locked in with Marquee.', done: retainer.status === 'paid', status: retainer.status === 'paid' ? 'Done' : 'Due Now', pay: retainer.status !== 'paid' });
-    if (!isBooth) steps.push({ num: '02', title: 'Planning App', date: null, when: 'Open anytime',
-      note: 'Build your timeline, must-plays and do-not-plays in Vibo.', done: true, status: 'Ready', vibo: true });
+    if (!isBooth) steps.push({ num: '02', title: 'Planning App', date: null, when: '',
+      note: 'To be completed with your headliner.', done: false, status: 'With Headliner', noAway: true });
     steps.push(payStep(isBooth ? '02' : '03', '9-Month Payment', sched[1], '25% of your total.'));
     steps.push(payStep(isBooth ? '03' : '04', '6-Month Payment', sched[2], '25% of your total.'));
     if (!isBooth) {

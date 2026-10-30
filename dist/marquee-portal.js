@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-29T19:31Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T00:28Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -537,8 +537,8 @@ MQ.model = (function () {
     var retainer = sched[0];
     steps.push({ num: '01', title: 'Date Secured', date: null, when: retainer.status === 'paid' ? 'Retainer paid' : 'Retainer ' + U.money(retainer.left) + ' due',
       note: 'Your date is locked in with Marquee.', done: retainer.status === 'paid', status: retainer.status === 'paid' ? 'Done' : 'Due Now', pay: retainer.status !== 'paid' });
-    if (!isBooth) steps.push({ num: '02', title: 'Planning App', date: null, when: 'Open anytime',
-      note: 'Build your timeline, must-plays and do-not-plays in Vibo.', done: true, status: 'Ready', vibo: true });
+    if (!isBooth) steps.push({ num: '02', title: 'Planning App', date: null, when: '',
+      note: 'To be completed with your headliner.', done: false, status: 'With Headliner', noAway: true });
     steps.push(payStep(isBooth ? '02' : '03', '9-Month Payment', sched[1], '25% of your total.'));
     steps.push(payStep(isBooth ? '03' : '04', '6-Month Payment', sched[2], '25% of your total.'));
     if (!isBooth) {
@@ -1136,8 +1136,8 @@ MQ.renderEvent = (function () {
       if (s.pay && (s.status === 'Due Now')) extra += '<a class="lnk" href="' + esc(vm.list.links.payment || '#') + '">Pay now</a>';
       if (s.vibo) extra += '<a class="lnk" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">Open Vibo</a>';
       return '<li class="mq-step' + (s.done ? ' done' : '') + (s.next ? ' next' : '') + '"><div class="top"><span class="num">' + s.num +
-        '</span><span class="mq-chip ' + chip + '">' + esc(s.status) + '</span></div><span class="ttl">' + esc(s.title) + '</span><span class="when">' + esc(s.when) +
-        '</span><span class="nt">' + esc(s.note) + '</span>' + extra + '<span class="aw">' + esc(s.away) + '</span></li>';
+        '</span><span class="mq-chip ' + chip + '">' + esc(s.status) + '</span></div><span class="ttl">' + esc(s.title) + '</span>' +
+        (s.when ? '<span class="when">' + esc(s.when) + '</span>' : '') + '<span class="nt">' + esc(s.note) + '</span>' + extra + (s.noAway ? '' : '<span class="aw">' + esc(s.away) + '</span>') + '</li>';
     }).join('');
     return '<section class="mq-card mq-journey" aria-labelledby="mq-jr"><div class="mq-sechead"><div><span class="mq-eyebrow">Your Journey</span>' +
       '<h2 class="mq-h2" id="mq-jr">The Marquee Process <span class="mq-serif">epic, by design.</span></h2></div>' +

@@ -109,8 +109,8 @@ MQ.renderEvent = (function () {
       if (s.pay && (s.status === 'Due Now')) extra += '<a class="lnk" href="' + esc(vm.list.links.payment || '#') + '">Pay now</a>';
       if (s.vibo) extra += '<a class="lnk" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">Open Vibo</a>';
       return '<li class="mq-step' + (s.done ? ' done' : '') + (s.next ? ' next' : '') + '"><div class="top"><span class="num">' + s.num +
-        '</span><span class="mq-chip ' + chip + '">' + esc(s.status) + '</span></div><span class="ttl">' + esc(s.title) + '</span><span class="when">' + esc(s.when) +
-        '</span><span class="nt">' + esc(s.note) + '</span>' + extra + '<span class="aw">' + esc(s.away) + '</span></li>';
+        '</span><span class="mq-chip ' + chip + '">' + esc(s.status) + '</span></div><span class="ttl">' + esc(s.title) + '</span>' +
+        (s.when ? '<span class="when">' + esc(s.when) + '</span>' : '') + '<span class="nt">' + esc(s.note) + '</span>' + extra + (s.noAway ? '' : '<span class="aw">' + esc(s.away) + '</span>') + '</li>';
     }).join('');
     return '<section class="mq-card mq-journey" aria-labelledby="mq-jr"><div class="mq-sechead"><div><span class="mq-eyebrow">Your Journey</span>' +
       '<h2 class="mq-h2" id="mq-jr">The Marquee Process <span class="mq-serif">epic, by design.</span></h2></div>' +
