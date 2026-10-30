@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T01:58Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T02:04Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -723,17 +723,18 @@ MQ.requests = (function () {
   function pending(eventId) { return U.store(KEY + eventId) || []; }
   function setPending(eventId, list) { U.store(KEY + eventId, list); }
 
+  /* Header used on every request so Bob's Gmail filter can find them ("MARQUEE PORTAL REQUEST"). */
+  function header(vm, kind) {
+    var what = vm.isBooth ? (vm.list.package || 'Photo Booth') : U.typeName(vm.list.type || vm.details.type);
+    return ['MARQUEE PORTAL REQUEST: ' + kind, vm.couple.couple, what + ', ' + U.fmtDate(vm.eventDate)].join('\n');
+  }
+
   function message(vm, items) {
     var sum = items.reduce(function (a, c) { return a + c.price; }, 0);
-    var lines = items.map(function (c) { return '- ' + c.name + ' (' + U.money(c.price) + (c.unit ? ' per ' + c.unit : '') + ')'; });
-    return [
-      'ADD-ON REQUEST from the client portal (please review before adding)',
-      'Event: ' + (vm.list.name || '') + ' on ' + U.fmtDate(vm.eventDate),
-      '',
-      lines.join('\n'),
-      '',
-      'Adds: ' + U.money(sum) + '   New total if approved: ' + U.money(vm.total + sum)
-    ].join('\n');
+    var lines = items.map(function (c) { return '- ' + c.name + ' (' + U.money(c.price) + (c.unit ? '/' + c.unit : '') + ')'; });
+    return [header(vm, 'ADD-ONS'), lines.join('\n'),
+      'Adds ' + U.money(sum) + ' | New total ' + U.money(vm.total + sum),
+      'Review in DJEP before adding.'].join('\n');
   }
 
   /* DJEP has one form per change type (venue, time, date, other). We use the "other" form
@@ -810,7 +811,7 @@ MQ.requests = (function () {
     setPending(eventId, pending(eventId).filter(function (x) { return x !== id; }));
   }
 
-  return { send: send, sendText: sendText, pending: pending, cancel: cancel, message: message };
+  return { send: send, sendText: sendText, header: header, pending: pending, cancel: cancel, message: message };
 })();
 
 /* ---- src/reels.js ---- */
@@ -1469,12 +1470,10 @@ MQ.renderEvent = (function () {
       var v = function (id) { var el = container.querySelector('#' + id); return el ? el.value.trim() : ''; };
       var tpl = v('mq-dz-tpl');
       if (!tpl) { var t = container.querySelector('#mq-dz-tpl'); t.focus(); t.setAttribute('aria-invalid', 'true'); return; }
-      var text = ['PHOTO BOOTH PRINT DESIGN from the client portal',
-        'Event: ' + (vm.list.name || '') + ' on ' + U.fmtDate(vm.eventDate),
-        'Print format: ' + format, '',
+      var text = [MQ.requests.header(vm, 'PRINT DESIGN') + ' (' + format + ')',
         'Template: ' + tpl,
         'Wording: ' + (v('mq-dz-words') || '(none given)'),
-        'Changes and notes: ' + (v('mq-dz-notes') || '(none)')].join('\n');
+        'Notes: ' + (v('mq-dz-notes') || '(none)')].join('\n');
       state.busy = true; draw();
       MQ.requests.sendText(vm, text).then(function (res) {
         state.busy = false; state.status = res;
@@ -1536,9 +1535,12 @@ MQ.renderEvent = (function () {
       } else if (b.hasAttribute('data-mq-bdismiss')) { state.status = null; draw(); }
       else if (b.hasAttribute('data-mq-bsend') && !state.busy) {
         var sel = list.filter(function (a) { return state.sel.indexOf(a.id) >= 0; });
-        var text = ['PHOTO BOOTH ADD-ON REQUEST from the client portal (please review before adding)',
-          'Event: ' + (vm.list.name || '') + ' on ' + U.fmtDate(vm.eventDate), '',
-          sel.map(function (a) { return '- ' + a.name + ' (' + price(a) + ')'; }).join('\n')].join('\n');
+        var known = sel.every(function (a) { return a.price != null; });
+        var sum = sel.reduce(function (n, a) { return n + (a.price || 0); }, 0);
+        var text = [MQ.requests.header(vm, 'BOOTH ADD-ONS'),
+          sel.map(function (a) { return '- ' + a.name + ' (' + price(a) + ')'; }).join('\n'),
+          known ? 'Adds ' + U.money(sum) + ' | New total ' + U.money(vm.total + sum) : 'Pricing to confirm with the couple.',
+          'Review in DJEP before adding.'].join('\n');
         state.busy = true; draw();
         MQ.requests.sendText(vm, text).then(function (res) { state.busy = false; state.status = res; if (res.mode === 'sent') state.sel = []; draw(); })
           .catch(function (err) { state.busy = false; state.status = { mode: 'error', text: err.message || String(err) }; draw(); });

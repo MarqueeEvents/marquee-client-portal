@@ -13,17 +13,18 @@ MQ.requests = (function () {
   function pending(eventId) { return U.store(KEY + eventId) || []; }
   function setPending(eventId, list) { U.store(KEY + eventId, list); }
 
+  /* Header used on every request so Bob's Gmail filter can find them ("MARQUEE PORTAL REQUEST"). */
+  function header(vm, kind) {
+    var what = vm.isBooth ? (vm.list.package || 'Photo Booth') : U.typeName(vm.list.type || vm.details.type);
+    return ['MARQUEE PORTAL REQUEST: ' + kind, vm.couple.couple, what + ', ' + U.fmtDate(vm.eventDate)].join('\n');
+  }
+
   function message(vm, items) {
     var sum = items.reduce(function (a, c) { return a + c.price; }, 0);
-    var lines = items.map(function (c) { return '- ' + c.name + ' (' + U.money(c.price) + (c.unit ? ' per ' + c.unit : '') + ')'; });
-    return [
-      'ADD-ON REQUEST from the client portal (please review before adding)',
-      'Event: ' + (vm.list.name || '') + ' on ' + U.fmtDate(vm.eventDate),
-      '',
-      lines.join('\n'),
-      '',
-      'Adds: ' + U.money(sum) + '   New total if approved: ' + U.money(vm.total + sum)
-    ].join('\n');
+    var lines = items.map(function (c) { return '- ' + c.name + ' (' + U.money(c.price) + (c.unit ? '/' + c.unit : '') + ')'; });
+    return [header(vm, 'ADD-ONS'), lines.join('\n'),
+      'Adds ' + U.money(sum) + ' | New total ' + U.money(vm.total + sum),
+      'Review in DJEP before adding.'].join('\n');
   }
 
   /* DJEP has one form per change type (venue, time, date, other). We use the "other" form
@@ -100,5 +101,5 @@ MQ.requests = (function () {
     setPending(eventId, pending(eventId).filter(function (x) { return x !== id; }));
   }
 
-  return { send: send, sendText: sendText, pending: pending, cancel: cancel, message: message };
+  return { send: send, sendText: sendText, header: header, pending: pending, cancel: cancel, message: message };
 })();

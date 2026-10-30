@@ -318,12 +318,10 @@ MQ.renderEvent = (function () {
       var v = function (id) { var el = container.querySelector('#' + id); return el ? el.value.trim() : ''; };
       var tpl = v('mq-dz-tpl');
       if (!tpl) { var t = container.querySelector('#mq-dz-tpl'); t.focus(); t.setAttribute('aria-invalid', 'true'); return; }
-      var text = ['PHOTO BOOTH PRINT DESIGN from the client portal',
-        'Event: ' + (vm.list.name || '') + ' on ' + U.fmtDate(vm.eventDate),
-        'Print format: ' + format, '',
+      var text = [MQ.requests.header(vm, 'PRINT DESIGN') + ' (' + format + ')',
         'Template: ' + tpl,
         'Wording: ' + (v('mq-dz-words') || '(none given)'),
-        'Changes and notes: ' + (v('mq-dz-notes') || '(none)')].join('\n');
+        'Notes: ' + (v('mq-dz-notes') || '(none)')].join('\n');
       state.busy = true; draw();
       MQ.requests.sendText(vm, text).then(function (res) {
         state.busy = false; state.status = res;
@@ -385,9 +383,12 @@ MQ.renderEvent = (function () {
       } else if (b.hasAttribute('data-mq-bdismiss')) { state.status = null; draw(); }
       else if (b.hasAttribute('data-mq-bsend') && !state.busy) {
         var sel = list.filter(function (a) { return state.sel.indexOf(a.id) >= 0; });
-        var text = ['PHOTO BOOTH ADD-ON REQUEST from the client portal (please review before adding)',
-          'Event: ' + (vm.list.name || '') + ' on ' + U.fmtDate(vm.eventDate), '',
-          sel.map(function (a) { return '- ' + a.name + ' (' + price(a) + ')'; }).join('\n')].join('\n');
+        var known = sel.every(function (a) { return a.price != null; });
+        var sum = sel.reduce(function (n, a) { return n + (a.price || 0); }, 0);
+        var text = [MQ.requests.header(vm, 'BOOTH ADD-ONS'),
+          sel.map(function (a) { return '- ' + a.name + ' (' + price(a) + ')'; }).join('\n'),
+          known ? 'Adds ' + U.money(sum) + ' | New total ' + U.money(vm.total + sum) : 'Pricing to confirm with the couple.',
+          'Review in DJEP before adding.'].join('\n');
         state.busy = true; draw();
         MQ.requests.sendText(vm, text).then(function (res) { state.busy = false; state.status = res; if (res.mode === 'sent') state.sel = []; draw(); })
           .catch(function (err) { state.busy = false; state.status = { mode: 'error', text: err.message || String(err) }; draw(); });
