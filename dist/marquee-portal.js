@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T00:55Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T00:57Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -71,7 +71,7 @@ MQ.config = {
       calendly: { creative: '', final: '' }
     },
     '43301': {
-      key: 'jake', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card-2.jpg', cardPos: 'center 0%', photoFile: 'silhouette-2.jpg', logoFile: '', logoH: 58, name: 'Jake', first: 'Jake', tier: 'Headliner', role: 'DJ, Production Assistant',
+      key: 'jake', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card-2.jpg', cardPos: 'center 0%', photoFile: 'silhouette-2.jpg', logoFile: '', logoH: 58, name: 'Jake Kinsey', first: 'Jake', tier: 'Headliner', role: 'DJ, Production Assistant',
       phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'marqueeohio',
       calendly: { creative: '', final: '' }
     },

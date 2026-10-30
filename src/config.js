@@ -68,7 +68,7 @@ MQ.config = {
       calendly: { creative: '', final: '' }
     },
     '43301': {
-      key: 'jake', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card-2.jpg', cardPos: 'center 0%', photoFile: 'silhouette-2.jpg', logoFile: '', logoH: 58, name: 'Jake', first: 'Jake', tier: 'Headliner', role: 'DJ, Production Assistant',
+      key: 'jake', cardTier: 'Headliner', cardPhotoFile: 'silhouette-card-2.jpg', cardPos: 'center 0%', photoFile: 'silhouette-2.jpg', logoFile: '', logoH: 58, name: 'Jake Kinsey', first: 'Jake', tier: 'Headliner', role: 'DJ, Production Assistant',
       phone: '330.432.0798', email: 'bob@marqueeohio.com', instagram: 'marqueeohio',
       calendly: { creative: '', final: '' }
     },
