@@ -32,7 +32,7 @@ MQ.renderDetails = (function () {
       '</div><div class="b"><div class="d">' + date.getDate() + '</div><div class="y">' + date.getFullYear() + '</div><div class="w">' + U.DAYS[date.getDay()] + '</div></div></div>' +
       '<div class="mq-dsum-info"><div class="mq-tags"><span class="mq-chip mq-chip-ok"><span class="mq-dot"></span>' + esc(d.status || vm.list.status || 'Booked') + '</span>' +
       '<span class="mq-chip mq-chip-dim">Event #' + esc(d.id || vm.id) + '</span></div>' +
-      '<h2>' + esc(d.type || vm.list.type || '') + '</h2>' +
+      '<h2>' + esc(vm.isBooth ? (vm.list.package || U.typeName(d.type || vm.list.type)) : U.typeName(d.type || vm.list.type)) + '</h2>' +
       (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') + '</div>' +
       '<div class="mq-dsum-act"><a class="mq-btn mq-btn-pink" href="' + esc(payHref) + '">' + icon('card', 16) + 'Make a Payment</a>' +
       (vm.isBooth ? '' : '<a class="mq-btn mq-btn-ghost" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">' + icon('music', 15) + 'Open Vibo</a>') + '</div></section>';

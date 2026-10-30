@@ -110,8 +110,8 @@ MQ.model = (function () {
     steps.push(payStep(isBooth ? '03' : '04', '6-Month Payment', sched[2], '25% of your total.'));
     if (!isBooth) {
       var cs = st(creativeFrom, creativeTo);
-      steps.push({ num: '05', title: 'Creative Sessions', date: creativeFrom, optional: true,
-        when: U.MONTHS[creativeFrom.getMonth()] + ' to ' + U.fmtDate(creativeTo),
+      steps.push({ num: '05', title: 'Creative Session', date: creativeFrom, optional: true,
+        when: U.fmtDate(creativeFrom) + ' to ' + U.fmtDate(creativeTo),
         note: 'Optional. Love planning together? Book one. Happy in Vibo? You are all set.',
         done: cs === 'past', status: cs === 'open' ? 'Open' : (cs === 'past' ? 'Window Closed' : 'Optional'), book: 'creative' });
     }

@@ -50,7 +50,7 @@ MQ.renderEvent = (function () {
           '</div><div class="y">' + d.getFullYear() + '</div><div class="w">' + U.DAYS[d.getDay()] + '</div></div></div>' +
           '<div class="mq-ev-info"><div class="mq-tags"><span class="mq-eyebrow" style="letter-spacing:.28em">Your Upcoming Event</span>' +
           '<span class="mq-chip mq-chip-ok"><span class="mq-dot"></span>' + esc(vm.list.status || 'Booked') + '</span></div>' +
-          '<h2 id="mq-ev-title">' + esc(vm.couple.couple) + '<br><span>' + esc(vm.list.type || vm.details.type || '') + '</span></h2>' +
+          '<h2 id="mq-ev-title">' + esc(vm.couple.couple) + '<br><span>' + esc(vm.isBooth ? (vm.list.package || U.typeName(vm.list.type || vm.details.type)) : U.typeName(vm.list.type || vm.details.type)) + '</span></h2>' +
           (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') +
           '</div></div>' +
         '<div class="mq-actions">' +
@@ -143,7 +143,7 @@ MQ.renderEvent = (function () {
       '<div class="mq-card mq-sess"><div class="top"><span class="mq-ico">' + icon('music', 20) + '</span>' + chip(cf, ct) + '</div>' +
       '<h3>Creative Session <span class="mq-chip mq-chip-dim" style="vertical-align:middle">Optional</span></h3><p>Love planning together? Sit down with ' + esc(dj.first) +
       ' to dream up your entrances, first dance and the moments that make your night yours. Happy planning in Vibo? You are all set.</p>' +
-      '<div class="meta"><span><b>Best window:</b> ' + U.MONTHS[cf.getMonth()] + ' ' + cf.getFullYear() + ' to ' + U.MONTHS[ct.getMonth()] + ' ' + ct.getFullYear() + '</span><span>About 60 minutes</span></div>' +
+      '<div class="meta"><span><b>Best window:</b> ' + U.fmtDate(cf) + ' to ' + U.fmtDate(ct) + '</span><span>About 60 minutes</span></div>' +
       link('creative', 'Book Creative Session') + '</div>' +
       '<div class="mq-card mq-sess"><div class="top"><span class="mq-ico">' + icon('checkbox', 20) + '</span>' + chip(ff, ft) + '</div>' +
       '<h3>Final Planning</h3><p>Lock every detail: timeline, introductions, special songs and vendor timing, so the night runs like a show.</p>' +

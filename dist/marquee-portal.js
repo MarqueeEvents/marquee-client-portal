@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T01:00Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T01:20Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -236,6 +236,14 @@ MQ.util = (function () {
     return (c.LINE_NAMES || {})[n] || n;
   }
 
+  /* Client-friendly event type: drops the "Marquee Test" prefix, shows weddings as Wedding Entertainment. */
+  function typeName(type) {
+    var t = String(type || '').replace(/^marquee test\s+/i, '').trim();
+    if (/photo\s*booth/i.test(t)) return 'Photo Booth';
+    if (/wedding/i.test(t)) return 'Wedding Entertainment';
+    return t;
+  }
+
   function daysBetween(a, b) {
     var ua = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
     var ub = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
@@ -321,7 +329,7 @@ MQ.util = (function () {
   }
 
   return {
-    esc: esc, lineName: lineName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
+    esc: esc, lineName: lineName, typeName: typeName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
     fmtDate: fmtDate, fmtDateLong: fmtDateLong, away: away, money: money, round2: round2, coupleFromName: coupleFromName,
     icon: icon, wave: wave, store: store, MONTHS: MONTHS, DAYS: DAYS
   };
@@ -595,8 +603,8 @@ MQ.model = (function () {
     steps.push(payStep(isBooth ? '03' : '04', '6-Month Payment', sched[2], '25% of your total.'));
     if (!isBooth) {
       var cs = st(creativeFrom, creativeTo);
-      steps.push({ num: '05', title: 'Creative Sessions', date: creativeFrom, optional: true,
-        when: U.MONTHS[creativeFrom.getMonth()] + ' to ' + U.fmtDate(creativeTo),
+      steps.push({ num: '05', title: 'Creative Session', date: creativeFrom, optional: true,
+        when: U.fmtDate(creativeFrom) + ' to ' + U.fmtDate(creativeTo),
         note: 'Optional. Love planning together? Book one. Happy in Vibo? You are all set.',
         done: cs === 'past', status: cs === 'open' ? 'Open' : (cs === 'past' ? 'Window Closed' : 'Optional'), book: 'creative' });
     }
@@ -941,7 +949,7 @@ MQ.skin = (function () {
       var next = sched.filter(function (p) { return p.status !== 'paid'; })[0];
       var pct = total ? Math.round((total - bal) / total * 100) : 0;
       extra.innerHTML = '<section class="mq-card mq-paysum"><div class="c"><span class="mq-sub">' + esc(U.coupleFromName(d.name, d.type).couple) + '</span>' +
-        '<b class="t">' + esc(d.type || '') + ' \u00b7 ' + esc(U.fmtDateLong(date)) + '</b>' +
+        '<b class="t">' + esc(U.typeName(d.type)) + ' \u00b7 ' + esc(U.fmtDateLong(date)) + '</b>' +
         '<div class="mq-meter" style="margin-top:14px"><div style="width:' + pct + '%"></div></div>' +
         '<div class="mq-meter-lbl"><span><b>' + U.money(total - bal, true) + '</b> paid</span><span><b>' + U.money(bal, true) + '</b> remaining</span></div></div>' +
         (next ? '<div class="mq-next"><span>' + (next.status === 'due' ? 'Due Now \u00b7 ' : 'Next Payment \u00b7 ') + esc(next.label) + '</span><b>' + U.money(next.left) +
@@ -1167,7 +1175,7 @@ MQ.renderEvent = (function () {
           '</div><div class="y">' + d.getFullYear() + '</div><div class="w">' + U.DAYS[d.getDay()] + '</div></div></div>' +
           '<div class="mq-ev-info"><div class="mq-tags"><span class="mq-eyebrow" style="letter-spacing:.28em">Your Upcoming Event</span>' +
           '<span class="mq-chip mq-chip-ok"><span class="mq-dot"></span>' + esc(vm.list.status || 'Booked') + '</span></div>' +
-          '<h2 id="mq-ev-title">' + esc(vm.couple.couple) + '<br><span>' + esc(vm.list.type || vm.details.type || '') + '</span></h2>' +
+          '<h2 id="mq-ev-title">' + esc(vm.couple.couple) + '<br><span>' + esc(vm.isBooth ? (vm.list.package || U.typeName(vm.list.type || vm.details.type)) : U.typeName(vm.list.type || vm.details.type)) + '</span></h2>' +
           (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') +
           '</div></div>' +
         '<div class="mq-actions">' +
@@ -1260,7 +1268,7 @@ MQ.renderEvent = (function () {
       '<div class="mq-card mq-sess"><div class="top"><span class="mq-ico">' + icon('music', 20) + '</span>' + chip(cf, ct) + '</div>' +
       '<h3>Creative Session <span class="mq-chip mq-chip-dim" style="vertical-align:middle">Optional</span></h3><p>Love planning together? Sit down with ' + esc(dj.first) +
       ' to dream up your entrances, first dance and the moments that make your night yours. Happy planning in Vibo? You are all set.</p>' +
-      '<div class="meta"><span><b>Best window:</b> ' + U.MONTHS[cf.getMonth()] + ' ' + cf.getFullYear() + ' to ' + U.MONTHS[ct.getMonth()] + ' ' + ct.getFullYear() + '</span><span>About 60 minutes</span></div>' +
+      '<div class="meta"><span><b>Best window:</b> ' + U.fmtDate(cf) + ' to ' + U.fmtDate(ct) + '</span><span>About 60 minutes</span></div>' +
       link('creative', 'Book Creative Session') + '</div>' +
       '<div class="mq-card mq-sess"><div class="top"><span class="mq-ico">' + icon('checkbox', 20) + '</span>' + chip(ff, ft) + '</div>' +
       '<h3>Final Planning</h3><p>Lock every detail: timeline, introductions, special songs and vendor timing, so the night runs like a show.</p>' +
@@ -1532,7 +1540,7 @@ MQ.renderDetails = (function () {
       '</div><div class="b"><div class="d">' + date.getDate() + '</div><div class="y">' + date.getFullYear() + '</div><div class="w">' + U.DAYS[date.getDay()] + '</div></div></div>' +
       '<div class="mq-dsum-info"><div class="mq-tags"><span class="mq-chip mq-chip-ok"><span class="mq-dot"></span>' + esc(d.status || vm.list.status || 'Booked') + '</span>' +
       '<span class="mq-chip mq-chip-dim">Event #' + esc(d.id || vm.id) + '</span></div>' +
-      '<h2>' + esc(d.type || vm.list.type || '') + '</h2>' +
+      '<h2>' + esc(vm.isBooth ? (vm.list.package || U.typeName(d.type || vm.list.type)) : U.typeName(d.type || vm.list.type)) + '</h2>' +
       (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') + '</div>' +
       '<div class="mq-dsum-act"><a class="mq-btn mq-btn-pink" href="' + esc(payHref) + '">' + icon('card', 16) + 'Make a Payment</a>' +
       (vm.isBooth ? '' : '<a class="mq-btn mq-btn-ghost" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">' + icon('music', 15) + 'Open Vibo</a>') + '</div></section>';

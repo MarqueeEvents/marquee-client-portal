@@ -51,6 +51,14 @@ MQ.util = (function () {
     return (c.LINE_NAMES || {})[n] || n;
   }
 
+  /* Client-friendly event type: drops the "Marquee Test" prefix, shows weddings as Wedding Entertainment. */
+  function typeName(type) {
+    var t = String(type || '').replace(/^marquee test\s+/i, '').trim();
+    if (/photo\s*booth/i.test(t)) return 'Photo Booth';
+    if (/wedding/i.test(t)) return 'Wedding Entertainment';
+    return t;
+  }
+
   function daysBetween(a, b) {
     var ua = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
     var ub = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
@@ -136,7 +144,7 @@ MQ.util = (function () {
   }
 
   return {
-    esc: esc, lineName: lineName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
+    esc: esc, lineName: lineName, typeName: typeName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
     fmtDate: fmtDate, fmtDateLong: fmtDateLong, away: away, money: money, round2: round2, coupleFromName: coupleFromName,
     icon: icon, wave: wave, store: store, MONTHS: MONTHS, DAYS: DAYS
   };

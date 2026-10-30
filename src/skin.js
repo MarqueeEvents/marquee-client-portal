@@ -114,7 +114,7 @@ MQ.skin = (function () {
       var next = sched.filter(function (p) { return p.status !== 'paid'; })[0];
       var pct = total ? Math.round((total - bal) / total * 100) : 0;
       extra.innerHTML = '<section class="mq-card mq-paysum"><div class="c"><span class="mq-sub">' + esc(U.coupleFromName(d.name, d.type).couple) + '</span>' +
-        '<b class="t">' + esc(d.type || '') + ' \u00b7 ' + esc(U.fmtDateLong(date)) + '</b>' +
+        '<b class="t">' + esc(U.typeName(d.type)) + ' \u00b7 ' + esc(U.fmtDateLong(date)) + '</b>' +
         '<div class="mq-meter" style="margin-top:14px"><div style="width:' + pct + '%"></div></div>' +
         '<div class="mq-meter-lbl"><span><b>' + U.money(total - bal, true) + '</b> paid</span><span><b>' + U.money(bal, true) + '</b> remaining</span></div></div>' +
         (next ? '<div class="mq-next"><span>' + (next.status === 'due' ? 'Due Now \u00b7 ' : 'Next Payment \u00b7 ') + esc(next.label) + '</span><b>' + U.money(next.left) +
