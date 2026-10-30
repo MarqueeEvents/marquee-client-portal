@@ -10,7 +10,12 @@
   function isDetailsPage() { return /\/clients\/eventdetails\.asp/i.test(location.pathname); }
 
   function upcoming(events) {
-    return events.filter(function (e) { return e.id && !/cancel/i.test(e.status || ''); });
+    /* DJ events first, then photo booth; by date inside each group; otherwise keep DJEP's order. */
+    var list = events.filter(function (e) { return e.id && !/cancel/i.test(e.status || ''); });
+    var t = function (e) { var d = MQ.util.parseDate(e.date); return d ? d.getTime() : Infinity; };
+    return list.map(function (e, i) { return { e: e, i: i }; }).sort(function (a, b) {
+      return (a.e.isPhotoBooth ? 1 : 0) - (b.e.isPhotoBooth ? 1 : 0) || (t(a.e) - t(b.e)) || (a.i - b.i);
+    }).map(function (x) { return x.e; });
   }
 
   function start() {
