@@ -272,6 +272,9 @@ html.mq-portal, .mq-portal body {
 .mq-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
 .mq-step { padding: 14px; border-radius: 14px; border: 1px solid var(--mq-line); background: rgba(8,8,10,.4); display: flex; flex-direction: column; gap: 6px; }
 .mq-step.done { border-color: rgba(255,46,136,.35); background: rgba(255,46,136,.05); }
+/* Planning App step once it is unlocked (30 days after signing). */
+.mq-step.lit { border-color: var(--mq-pink); background: linear-gradient(160deg, rgba(255,46,136,.22), rgba(17,17,21,.9) 75%); box-shadow: 0 0 28px rgba(255,46,136,.35); }
+.mq-step.lit .ttl { text-shadow: 0 0 14px rgba(255,46,136,.6); }
 .mq-step.next { border-color: var(--mq-pink); background: rgba(255,46,136,.09); box-shadow: 0 0 24px rgba(255,46,136,.18); }
 .mq-step .top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .mq-step .num { font-family: var(--mq-head); font-weight: 900; font-size: 13px; color: var(--mq-pink); }

@@ -103,12 +103,12 @@ MQ.renderEvent = (function () {
           (vm.isBooth ? 'Event Night' : 'Wedding Night') + '</span></div><span class="big">Let\'s<br>Dance</span><span class="when">' + esc(s.when) +
           '</span><span class="gd">Trust the Marquee team. Your vision and the party of your dreams come to life.</span><span class="aw">' + esc(s.away) + '</span></li>';
       }
-      var chip = s.done ? 'mq-chip-ok' : (s.status === 'Due Now' || s.status === 'Open' || s.status === 'Book Now') ? 'mq-chip-pink' : 'mq-chip-dim';
+      var chip = s.done ? 'mq-chip-ok' : (s.lit || s.status === 'Due Now' || s.status === 'Open' || s.status === 'Book Now') ? 'mq-chip-pink' : 'mq-chip-dim';
       var extra = '';
       if (s.amount) extra += '<span class="amt">' + esc(s.amount) + '</span>';
       if (s.pay && (s.status === 'Due Now')) extra += '<a class="lnk" href="' + esc(vm.list.links.payment || '#') + '">Pay now</a>';
       if (s.vibo) extra += '<a class="lnk" href="' + MQ.config.VIBO_URL + '" target="_blank" rel="noopener">Open Vibo</a>';
-      return '<li class="mq-step' + (s.done ? ' done' : '') + (s.next ? ' next' : '') + '"><div class="top"><span class="num">' + s.num +
+      return '<li class="mq-step' + (s.done ? ' done' : '') + (s.next ? ' next' : '') + (s.lit ? ' lit' : '') + '"><div class="top"><span class="num">' + s.num +
         '</span><span class="mq-chip ' + chip + '">' + esc(s.status) + '</span></div><span class="ttl">' + esc(s.title) + '</span>' +
         (s.when ? '<span class="when">' + esc(s.when) + '</span>' : '') + '<span class="nt">' + esc(s.note) + '</span>' + extra + (s.noAway ? '' : '<span class="aw">' + esc(s.away) + '</span>') + '</li>';
     }).join('');

@@ -73,7 +73,7 @@ MQ.model = (function () {
     return { featured: featured, groups: groups, all: avail };
   }
 
-  function journey(eventDate, sched, isBooth) {
+  function journey(eventDate, sched, isBooth, signed) {
     var t = U.today();
     var cfg = MQ.config;
     function st(date, endDate) {
@@ -100,8 +100,12 @@ MQ.model = (function () {
     var retainer = sched[0];
     steps.push({ num: '01', title: 'Date Secured', date: null, when: retainer.status === 'paid' ? 'Retainer paid' : 'Retainer ' + U.money(retainer.left) + ' due',
       note: 'Your date is locked in with Marquee.', done: retainer.status === 'paid', status: retainer.status === 'paid' ? 'Done' : 'Due Now', pay: retainer.status !== 'paid' });
-    if (!isBooth) steps.push({ num: '02', title: 'Planning App', date: null, when: '',
-      note: 'To be completed with your headliner.', done: false, status: 'With Headliner', noAway: true });
+    if (!isBooth) {
+      /* Lights up pink 30 days after signing. Signing = first payment (the retainer is paid when the contract is signed). */
+      var lit = signed && U.daysBetween(U.addDays(signed, 30), t) >= 0;
+      steps.push({ num: '02', title: 'Planning App', date: null, when: '',
+        note: 'To be completed with your headliner.', done: false, status: lit ? 'Ready' : 'With Headliner', lit: lit, noAway: true, planApp: true });
+    }
     steps.push(payStep(isBooth ? '02' : '03', '9-Month Payment', sched[1], '25% of your total.'));
     steps.push(payStep(isBooth ? '03' : '04', '6-Month Payment', sched[2], '25% of your total.'));
     if (!isBooth) {
@@ -125,7 +129,7 @@ MQ.model = (function () {
     steps.forEach(function (s) {
       if (!s.isFinal && !s.away) s.away = s.done ? (s.status === 'Window Closed' ? 'Closed' : 'Complete') : (s.date ? U.away(U.daysBetween(t, s.date)) : 'Now');
     });
-    var firstOpen = steps.filter(function (s) { return !s.done && !s.isFinal; })[0];
+    var firstOpen = steps.filter(function (s) { return !s.done && !s.isFinal && !s.planApp; })[0];
     if (firstOpen) firstOpen.next = true;
 
     /* Progress: steps are spaced evenly; the marker sits between the last reached step and the next by date. */
@@ -143,6 +147,21 @@ MQ.model = (function () {
     if (daysOut <= 0) pct = 100;
     steps.forEach(function (s, i) { s.left = n > 1 ? (i / (n - 1)) * 100 : 0; s.reached = i <= idx; });
     return { steps: steps, pct: pct };
+  }
+
+  /* Earliest payment date in DJEP's payment history, used as the contract signing date. */
+  function signedDate(history) {
+    var best = null;
+    (history || []).forEach(function (cells) {
+      cells.some(function (c) {
+        var m = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/.exec(c);
+        if (!m) return false;
+        var d = new Date(+m[3], +m[1] - 1, +m[2]);
+        if (!best || d < best) best = d;
+        return true;
+      });
+    });
+    return best;
   }
 
   function build(listItem, details, allEvents) {
@@ -165,7 +184,7 @@ MQ.model = (function () {
       couple: couple,
       total: total, paid: paid, balance: balance,
       schedule: sched, next: next,
-      journey: journey(eventDate, sched, isBooth),
+      journey: journey(eventDate, sched, isBooth, signedDate(details.history)),
       options: addOptions(details.lines || [], hasBoothEvent, isBooth),
       venue: venueShort(details.venue)
     };
