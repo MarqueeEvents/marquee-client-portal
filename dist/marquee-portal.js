@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T01:20Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T01:45Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -135,6 +135,14 @@ MQ.config = {
     { id: 'sax', cat: 'Live Music', name: 'Saxy Rob', price: 1800, match: 'sax', sub: 'Live sax over the DJ set.' },
     { id: 'ceremony', cat: 'Ceremony & More Time', name: 'Ceremony Package', price: 400, match: 'ceremony', sub: 'Sound, mics and music for your ceremony.' },
     { id: 'hour', cat: 'Ceremony & More Time', name: 'Additional Hour', price: 500, match: 'additional hour', repeatable: true, sub: 'Keep the party going an extra hour.' }
+  ],
+
+  // Photo booth add-ons, shown under Total Investment on photo booth pages. price: null shows "Price on request".
+  // TODO: Bob to confirm prices for additional time and the 4x6 upgrade.
+  BOOTH_ADDONS: [
+    { id: 'bhour', name: 'Additional Time', price: null, unit: 'hour', match: 'additional (time|hour)', sub: 'Keep the booth running longer.' },
+    { id: 'bscrap', name: 'Keepsake Scrapbook', price: 150, match: 'scrapbook', sub: 'Guests add a strip and sign a book you keep.' },
+    { id: 'b4x6', name: '4x6 Print Upgrade', price: null, match: '4\\s*x\\s*6|print upgrade', classicOnly: true, sub: 'Go from 2x6 strips to larger 4x6 prints, portrait or landscape.' }
   ],
 
   // The "Couples Love These" picks, in order. Anything already booked is skipped and the next item fills in.
@@ -1302,6 +1310,7 @@ MQ.renderEvent = (function () {
       '<div class="mq-invest-row"><div class="mq-night"><span class="mq-sub">What\'s In Your Night</span><ul class="mq-lines">' + lines + pend + '</ul>' +
       '<div class="mq-total"><span>Total Investment</span><b>' + U.money(vm.total) + '</b></div>' +
       (pending.length ? '<span class="mq-small" style="margin-top:8px">Items awaiting approval are not in your total until ' + esc(vm.dj.first) + ' confirms them.</span>' : '') +
+      (vm.isBooth ? '<div class="mq-boothadd" data-mq-boothadd></div>' : '') +
       '<span class="mq-small" style="margin-top:14px">' + (vm.isBooth ? 'Want to change something? Message the Marquee team and we\'ll take care of it.' : 'Want to change something? Message your headliner and they\'ll take care of it.') + '</span></div>' +
       '<div class="mq-stand"><span class="mq-sub">Where You Stand</span><div><div class="mq-meter"><div style="width:' + pct + '%"></div></div>' +
       '<div class="mq-meter-lbl"><span><b>' + U.money(vm.paid) + '</b> paid</span><span><b>' + U.money(vm.balance) + '</b> remaining</span></div></div>' +
@@ -1464,6 +1473,62 @@ MQ.renderEvent = (function () {
     draw();
   }
 
+  /* Photo booth add-ons: a short list under Total Investment. Requests go to Bob for review, like DJ add-ons. */
+  function boothAddons(vm, box) {
+    if (!box) return;
+    var booked = (vm.details.lines || []).map(function (l) { return l.name; }).join(' | ');
+    var isClassic = /classic/i.test(vm.list.package || booked);
+    var list = (MQ.config.BOOTH_ADDONS || []).filter(function (a) {
+      if (a.classicOnly && !isClassic) return false;
+      return a.unit === 'hour' || !new RegExp(a.match, 'i').test(booked);
+    });
+    if (!list.length) { box.remove(); return; }
+    var state = { sel: [], busy: false, status: null };
+    function price(a) { return a.price == null ? 'Price on request' : U.money(a.price) + (a.unit ? ' / ' + a.unit : ''); }
+    function draw() {
+      var sel = list.filter(function (a) { return state.sel.indexOf(a.id) >= 0; });
+      var known = sel.every(function (a) { return a.price != null; });
+      var sum = sel.reduce(function (n, a) { return n + (a.price || 0); }, 0);
+      var html = '<span class="mq-sub">Add To Your Booth</span><ul class="mq-blist">' + list.map(function (a) {
+        var on = state.sel.indexOf(a.id) >= 0;
+        return '<li' + (on ? ' class="on"' : '') + '><button type="button" data-mq-bpick="' + a.id + '" aria-pressed="' + on + '"><span class="bx">' + (on ? icon('check', 12) : '') + '</span>' +
+          '<span class="tx"><b>' + esc(a.name) + '</b><i>' + esc(a.sub) + '</i></span><span class="pr">' + esc(price(a)) + '</span></button></li>';
+      }).join('') + '</ul>';
+      if (sel.length) {
+        html += '<div class="mq-bsum"><span>' + (known ? 'Adds <b>' + U.money(sum) + '</b> \u00b7 New total if approved <b>' + U.money(vm.total + sum) + '</b>'
+          : 'We will confirm pricing before anything is added.') + '</span>' +
+          '<button type="button" class="mq-btn mq-btn-pink" data-mq-bsend' + (state.busy ? ' disabled' : '') + '>' + icon('send', 15) + (state.busy ? 'Sending...' : 'Request to Add') + '</button></div>';
+      }
+      if (state.status) {
+        var test = state.status.mode === 'test', err = state.status.mode === 'error';
+        html += '<div class="mq-status' + (test || err ? ' test' : '') + '" role="status"><span class="ic">' + icon(err ? 'alert' : 'check', 16) + '</span><div><b>' +
+          (err ? 'That did not go through.' : test ? 'Test mode: nothing was sent.' : 'Request sent!') + '</b><p>' +
+          esc(err ? state.status.text + ' Please text Bob instead.' : test ? 'This is exactly what Bob will receive once requests are switched on:\n\n' + state.status.text
+            : 'We will review your request and confirm with you before anything is added.') + '</p></div><button type="button" data-mq-bdismiss>Got it</button></div>';
+      }
+      box.innerHTML = html;
+    }
+    box.addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      if (b.hasAttribute('data-mq-bpick')) {
+        var id = b.getAttribute('data-mq-bpick'), i = state.sel.indexOf(id);
+        if (i >= 0) state.sel.splice(i, 1); else state.sel.push(id);
+        state.status = null; draw();
+      } else if (b.hasAttribute('data-mq-bdismiss')) { state.status = null; draw(); }
+      else if (b.hasAttribute('data-mq-bsend') && !state.busy) {
+        var sel = list.filter(function (a) { return state.sel.indexOf(a.id) >= 0; });
+        var text = ['PHOTO BOOTH ADD-ON REQUEST from the client portal (please review before adding)',
+          'Event: ' + (vm.list.name || '') + ' on ' + U.fmtDate(vm.eventDate), '',
+          sel.map(function (a) { return '- ' + a.name + ' (' + price(a) + ')'; }).join('\n')].join('\n');
+        state.busy = true; draw();
+        MQ.requests.sendText(vm, text).then(function (res) { state.busy = false; state.status = res; if (res.mode === 'sent') state.sel = []; draw(); })
+          .catch(function (err) { state.busy = false; state.status = { mode: 'error', text: err.message || String(err) }; draw(); });
+      }
+    });
+    draw();
+  }
+
   function messages() {
     var box = document.querySelector('.djep-latestemailsbox');
     var items = box ? Array.prototype.filter.call(box.querySelectorAll('a'), function (a) { return a.textContent.trim(); }) : [];
@@ -1496,6 +1561,7 @@ MQ.renderEvent = (function () {
       b.nextElementSibling.hidden = !open;
     });
     drawInvest();
+    if (vm.isBooth) boothAddons(vm, main.querySelector('[data-mq-boothadd]'));
     addSection(vm, main.querySelector('[data-mq-add]'), drawInvest);
     if (vm.isBooth) designSection(vm, main.querySelector('[data-mq-design-sec]'));
     startCountdown(main, vm.eventDate);

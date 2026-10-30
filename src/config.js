@@ -134,6 +134,14 @@ MQ.config = {
     { id: 'hour', cat: 'Ceremony & More Time', name: 'Additional Hour', price: 500, match: 'additional hour', repeatable: true, sub: 'Keep the party going an extra hour.' }
   ],
 
+  // Photo booth add-ons, shown under Total Investment on photo booth pages. price: null shows "Price on request".
+  // TODO: Bob to confirm prices for additional time and the 4x6 upgrade.
+  BOOTH_ADDONS: [
+    { id: 'bhour', name: 'Additional Time', price: null, unit: 'hour', match: 'additional (time|hour)', sub: 'Keep the booth running longer.' },
+    { id: 'bscrap', name: 'Keepsake Scrapbook', price: 150, match: 'scrapbook', sub: 'Guests add a strip and sign a book you keep.' },
+    { id: 'b4x6', name: '4x6 Print Upgrade', price: null, match: '4\\s*x\\s*6|print upgrade', classicOnly: true, sub: 'Go from 2x6 strips to larger 4x6 prints, portrait or landscape.' }
+  ],
+
   // The "Couples Love These" picks, in order. Anything already booked is skipped and the next item fills in.
   FEATURED: ['clouds', 'spark', 'co2', 'amono', 'astera', 'sax']
 };
