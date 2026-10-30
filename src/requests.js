@@ -46,14 +46,14 @@ MQ.requests = (function () {
 
   /* DJEP's comments box holds 250 characters, so longer messages go as numbered parts. */
   function chunks(text) {
-    var max = 240, out = [], rest = text.replace(/\n{2,}/g, '\n').trim();
+    var max = 215, out = [], rest = text.trim();
     if (rest.length <= 250) return [rest];
     while (rest.length) {
-      var cut = rest.length <= max ? rest.length : Math.max(rest.lastIndexOf('\n', max), rest.lastIndexOf(' ', max));
+      var cut = rest.length <= max ? rest.length : Math.max(rest.lastIndexOf(' | ', max), rest.lastIndexOf(' ', max));
       if (cut < 60) cut = max;
       out.push(rest.slice(0, cut).trim()); rest = rest.slice(cut).trim();
     }
-    return out.map(function (c, i) { return '(' + (i + 1) + '/' + out.length + ') ' + c; });
+    return out.map(function (c, i) { return (i ? 'MARQUEE PORTAL REQUEST (' + (i + 1) + '/' + out.length + ' continued) ' : '(1/' + out.length + ') ') + c; });
   }
 
   /* Posts one part as a normal form (DJEP's classic ASP pages cannot read multipart uploads)
@@ -70,7 +70,14 @@ MQ.requests = (function () {
     });
   }
 
+  /* DJEP silently skips its notification email when the comment has line breaks (and possibly "&"),
+   * so every request goes as one line with " | " between parts. */
+  function oneLine(text) {
+    return String(text).replace(/&/g, 'and').replace(/\s*\n+\s*/g, ' | ').replace(/\s{2,}/g, ' ').trim();
+  }
+
   function deliver(vm, text) {
+    text = oneLine(text);
     var live = MQ.config.REQUEST_MODE === 'live';
     return buildSubmission(vm.id).then(function (sub) {
       if (!live) {
