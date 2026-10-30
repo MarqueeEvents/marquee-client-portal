@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T02:41Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T02:49Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -776,7 +776,12 @@ MQ.requests = (function () {
       if (!r.ok) throw new Error('DJEP returned ' + r.status + '.');
       return r.text();
     }).then(function (t) {
-      if (!/has been submitted/i.test(t)) throw new Error(/logonform/i.test(t) ? 'You were logged out. Please log in again and resend.' : 'DJEP did not confirm the request.');
+      if (/has been submitted/i.test(t)) return;
+      if (/logonform/i.test(t)) throw new Error('You were logged out. Please log in again and resend.');
+      /* DJEP answers an exact repeat of an earlier request with an empty page: it already has it. */
+      var doc = new DOMParser().parseFromString(t, 'text/html'), c = doc.getElementById('djep-content');
+      if (c && !c.textContent.trim()) return;
+      throw new Error('DJEP did not confirm the request.');
     });
   }
 
