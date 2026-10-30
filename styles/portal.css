@@ -529,8 +529,16 @@ html.mq-portal, .mq-portal body {
   .mq-nav { flex-wrap: nowrap; gap: 0; justify-content: center; }
   .mq-app .mq-nav a { padding: 10px 8px; letter-spacing: .1em; font-size: 10px; white-space: nowrap; }
   .mq-hide-sm { display: none; }
-  .mq-evbrand { position: static; align-self: flex-end; max-width: 100%; margin-top: 2px; }
-  .mq-evcard .mq-evlogo { max-height: 40px; }
+  .mq-choose { gap: 16px; }
+  .mq-app a.mq-evcard { min-height: 0; border-radius: 20px; }
+  .mq-evcard .img { flex: 0 0 auto; height: 230px; min-height: 0; }
+  .mq-evcard .bd { padding: 0 20px 20px; margin-top: -36px; gap: 8px; }
+  .mq-evcard h3 { font-size: 26px; }
+  .mq-evcard .go { margin-top: 4px; }
+  .mq-evbrand { position: static; order: 9; max-width: 100%; margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--mq-line); flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; }
+  .mq-evbrand:empty { display: none; }
+  .mq-evbrand .mq-tier { font-size: 9px; padding: 6px 10px; letter-spacing: .16em; white-space: nowrap; }
+  .mq-evcard .mq-evlogo { max-height: 34px; max-width: 55%; margin-left: auto; }
   .mq-photo { min-height: 340px; }
   .mq-photo .mq-edge { top: auto; left: 0; width: auto; height: 2px; background: linear-gradient(90deg, rgba(255,46,136,0), #ff2e88 30%, #ff2e88 70%, rgba(255,46,136,0)); }
   .mq-countdown { padding: 18px 16px; }
