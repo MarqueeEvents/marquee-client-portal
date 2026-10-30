@@ -22,7 +22,7 @@ MQ.config = {
 
   // REQUESTS. 'test' = Request to Add shows exactly what would be sent but sends nothing.
   // 'live' = sends the request to Bob through DJEP's Request Changes form. Nothing is ever added to an event automatically.
-  REQUEST_MODE: 'test',
+  REQUEST_MODE: 'live',
 
 
   // Payment schedule: 25% at booking, 25% at 9 months, 25% at 6 months, balance 90 days out.

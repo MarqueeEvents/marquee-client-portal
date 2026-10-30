@@ -26,39 +26,65 @@ MQ.requests = (function () {
     ].join('\n');
   }
 
-  /* Finds the form that holds request_change_comments, copies its hidden fields, fills the message. */
-  function buildSubmission(eventId, text) {
+  /* DJEP has one form per change type (venue, time, date, other). We use the "other" form
+   * (action ...?action=request_change&change_type=other). */
+  function buildSubmission(eventId) {
     return MQ.reader.fetchPage('/clients/requestchanges.asp?eventid=' + encodeURIComponent(eventId)).then(function (doc) {
-      /* DJEP has one form per change type (location, time, date, other). Use the "other" form:
-       * the one whose only field is the comments box. */
       var forms = Array.prototype.filter.call(doc.querySelectorAll('form'), function (f) { return f.querySelector('[name="request_change_comments"]'); });
-      var form = forms.filter(function (f) {
-        return Array.prototype.every.call(f.elements, function (e) { return !e.name || e.name === 'request_change_comments' || e.type === 'hidden' || e.type === 'submit'; });
-      })[0] || null;
-      if (!form) throw new Error('Request form not found (session may have timed out).');
-      var data = new FormData(form);
-      data.set('request_change_comments', text);
-      var submit = form.querySelector('[type=submit][name]');
-      if (submit) data.set(submit.name, submit.value);
+      var form = forms.filter(function (f) { return /change_type=other/i.test(f.getAttribute('action') || ''); })[0] ||
+        forms.filter(function (f) {
+          return Array.prototype.every.call(f.elements, function (e) { return !e.name || e.name === 'request_change_comments' || e.type === 'hidden' || e.type === 'submit'; });
+        })[0] || null;
+      if (!form) throw new Error('Request form not found (you may have been logged out).');
       var action = new URL(form.getAttribute('action') || location.href, location.origin + '/clients/').href;
-      return { action: action, method: (form.method || 'post').toUpperCase(), data: data };
+      var hidden = {};
+      Array.prototype.forEach.call(form.querySelectorAll('input[type=hidden][name]'), function (h) { hidden[h.name] = h.value; });
+      return { action: action, hidden: hidden };
+    });
+  }
+
+  /* DJEP's comments box holds 250 characters, so longer messages go as numbered parts. */
+  function chunks(text) {
+    var max = 240, out = [], rest = text.replace(/\n{2,}/g, '\n').trim();
+    if (rest.length <= 250) return [rest];
+    while (rest.length) {
+      var cut = rest.length <= max ? rest.length : Math.max(rest.lastIndexOf('\n', max), rest.lastIndexOf(' ', max));
+      if (cut < 60) cut = max;
+      out.push(rest.slice(0, cut).trim()); rest = rest.slice(cut).trim();
+    }
+    return out.map(function (c, i) { return '(' + (i + 1) + '/' + out.length + ') ' + c; });
+  }
+
+  /* Posts one part as a normal form (DJEP's classic ASP pages cannot read multipart uploads)
+   * and only counts it as sent when DJEP replies "has been submitted". */
+  function post(sub, part) {
+    var body = new URLSearchParams();
+    Object.keys(sub.hidden).forEach(function (k) { body.set(k, sub.hidden[k]); });
+    body.set('request_change_comments', part);
+    return fetch(sub.action, { method: 'POST', body: body, credentials: 'same-origin' }).then(function (r) {
+      if (!r.ok) throw new Error('DJEP returned ' + r.status + '.');
+      return r.text();
+    }).then(function (t) {
+      if (!/has been submitted/i.test(t)) throw new Error(/logonform/i.test(t) ? 'You were logged out. Please log in again and resend.' : 'DJEP did not confirm the request.');
+    });
+  }
+
+  function deliver(vm, text) {
+    var live = MQ.config.REQUEST_MODE === 'live';
+    return buildSubmission(vm.id).then(function (sub) {
+      if (!live) {
+        console.info('[Marquee portal] TEST MODE (not sent)', text);
+        return { mode: 'test', text: text };
+      }
+      return chunks(text).reduce(function (p, part) { return p.then(function () { return post(sub, part); }); }, Promise.resolve())
+        .then(function () { return { mode: 'sent', text: text }; });
     });
   }
 
   /* Returns a promise of { mode: 'test' | 'sent', text }. */
   function send(vm, items) {
     var text = message(vm, items);
-    var live = MQ.config.REQUEST_MODE === 'live';
-    return buildSubmission(vm.id, text).then(function (sub) {
-      if (!live) {
-        console.info('[Marquee portal] TEST MODE request (not sent)', sub.action, text);
-        return { mode: 'test', text: text };
-      }
-      return fetch(sub.action, { method: sub.method, body: sub.data, credentials: 'same-origin' }).then(function (r) {
-        if (!r.ok) throw new Error('DJEP returned ' + r.status);
-        return { mode: 'sent', text: text };
-      });
-    }).then(function (res) {
+    return deliver(vm, text).then(function (res) {
       if (res.mode !== 'sent') return res;
       var list = pending(vm.id);
       items.forEach(function (c) { if (list.indexOf(c.id) < 0) list.push(c.id); });
@@ -68,19 +94,7 @@ MQ.requests = (function () {
   }
 
   /* Any other message from the portal (for example the photo booth print design). Same test/live switch. */
-  function sendText(vm, text) {
-    var live = MQ.config.REQUEST_MODE === 'live';
-    return buildSubmission(vm.id, text).then(function (sub) {
-      if (!live) {
-        console.info('[Marquee portal] TEST MODE message (not sent)', sub.action, text);
-        return { mode: 'test', text: text };
-      }
-      return fetch(sub.action, { method: sub.method, body: sub.data, credentials: 'same-origin' }).then(function (r) {
-        if (!r.ok) throw new Error('DJEP returned ' + r.status);
-        return { mode: 'sent', text: text };
-      });
-    });
-  }
+  function sendText(vm, text) { return deliver(vm, text); }
 
   function cancel(eventId, id) {
     setPending(eventId, pending(eventId).filter(function (x) { return x !== id; }));
