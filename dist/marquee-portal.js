@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T01:47Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T01:48Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -739,8 +739,12 @@ MQ.requests = (function () {
   /* Finds the form that holds request_change_comments, copies its hidden fields, fills the message. */
   function buildSubmission(eventId, text) {
     return MQ.reader.fetchPage('/clients/requestchanges.asp?eventid=' + encodeURIComponent(eventId)).then(function (doc) {
-      var box = doc.querySelector('[name="request_change_comments"]');
-      var form = box && box.closest('form');
+      /* DJEP has one form per change type (location, time, date, other). Use the "other" form:
+       * the one whose only field is the comments box. */
+      var forms = Array.prototype.filter.call(doc.querySelectorAll('form'), function (f) { return f.querySelector('[name="request_change_comments"]'); });
+      var form = forms.filter(function (f) {
+        return Array.prototype.every.call(f.elements, function (e) { return !e.name || e.name === 'request_change_comments' || e.type === 'hidden' || e.type === 'submit'; });
+      })[0] || null;
       if (!form) throw new Error('Request form not found (session may have timed out).');
       var data = new FormData(form);
       data.set('request_change_comments', text);
