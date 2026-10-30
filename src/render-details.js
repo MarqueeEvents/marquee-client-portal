@@ -48,11 +48,11 @@ MQ.renderDetails = (function () {
 
     /* Package + Team */
     var svc = d.service || {};
-    var svcName = (svc.service || [])[0] || '';
+    var svcName = U.lineName((svc.service || [])[0] || '');
     var included = svc.description || [];
-    var addons = (svc.addons || []).join(', ').split(/\s*,\s*/).filter(Boolean);
+    var addons = (svc.addons || []).join(', ').split(/\s*,\s*/).filter(Boolean).map(U.lineName);
     var pkg = (svcName ? '<div class="mq-pkg-name">' + esc(svcName) + '</div>' : '') +
-      (included.length ? '<ul class="mq-incl">' + included.map(function (l) { return '<li><span class="ck">' + icon('check', 12) + '</span>' + esc(l) + '</li>'; }).join('') + '</ul>' : '') +
+      (included.length ? '<ul class="mq-incl">' + included.map(function (l) { return '<li><span class="ck">' + icon('check', 12) + '</span>' + esc(U.lineName(l)) + '</li>'; }).join('') + '</ul>' : '') +
       (addons.length ? '<div class="mq-sub" style="margin-top:18px">Add-Ons</div><div class="mq-addchips">' + addons.map(function (a) { return '<span>' + esc(a) + '</span>'; }).join('') + '</div>' : '');
     var team = '<div class="mq-hl-row">' + (dj.logo ? '<img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + '" style="height:' + Math.round(dj.logoH * 0.8) + 'px">' : '<span class="mq-hl-name">' + esc(dj.name) + '</span>') +
       '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +

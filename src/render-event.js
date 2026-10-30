@@ -54,7 +54,7 @@ MQ.renderEvent = (function () {
           (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') +
           '</div></div>' +
         '<div class="mq-actions">' +
-          '<a class="mq-btn mq-btn-pink mq-pay" href="' + esc(links.payment || '#') + '">' + icon('card', 18) + '<span class="t"><b>Make a Payment</b><i>' + esc(nextLine) + '</i></span></a>' +
+          '<a class="mq-btn ' + (next ? 'mq-btn-pink' : 'mq-btn-ghost') + ' mq-pay" href="' + esc(links.payment || '#') + '">' + icon('card', 18) + '<span class="t"><b>' + (next ? 'Make a Payment' : 'Paid in Full') + '</b><i>' + esc(next ? nextLine : 'Thank you! View payments')  + '</i></span></a>' +
           vibo +
           '<a class="mq-btn mq-btn-ghost" href="' + esc(links.details || '#') + '">Event Details</a>' +
         '</div>' +

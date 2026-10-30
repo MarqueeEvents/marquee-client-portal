@@ -86,7 +86,7 @@ MQ.util = (function () {
   function money(n, cents) {
     if (n == null || isNaN(n)) return '';
     var withCents = cents || Math.round(n) !== n;
-    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: withCents ? 2 : 0, maximumFractionDigits: withCents ? 2 : 0 });
+    return (n < 0 ? '-$' : '$') + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: withCents ? 2 : 0, maximumFractionDigits: withCents ? 2 : 0 });
   }
 
   function round2(n) { return Math.round(n * 100) / 100; }

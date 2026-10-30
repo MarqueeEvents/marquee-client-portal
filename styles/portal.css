@@ -494,7 +494,8 @@ html.mq-portal, .mq-portal body {
 .mq-staff li { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-weight: 700; }
 .mq-staff svg { color: var(--mq-pink); }
 .mq-contacts-sm:empty { display: none; }
-.mq-contacts-sm { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top: 0; }
+.mq-contacts-sm { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-top: 0; }
+.mq-app .mq-contacts-sm a span { overflow: visible; text-overflow: clip; white-space: nowrap; }
 .mq-app .mq-contacts-sm a { min-height: 48px; }
 .mq-feelist li { display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--mq-line-2); font-size: 15px; }
 .mq-feelist li span { font-weight: 600; color: var(--mq-ink); }

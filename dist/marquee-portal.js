@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T02:54Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-10-30T03:05Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -280,7 +280,7 @@ MQ.util = (function () {
   function money(n, cents) {
     if (n == null || isNaN(n)) return '';
     var withCents = cents || Math.round(n) !== n;
-    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: withCents ? 2 : 0, maximumFractionDigits: withCents ? 2 : 0 });
+    return (n < 0 ? '-$' : '$') + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: withCents ? 2 : 0, maximumFractionDigits: withCents ? 2 : 0 });
   }
 
   function round2(n) { return Math.round(n * 100) / 100; }
@@ -1226,7 +1226,7 @@ MQ.renderEvent = (function () {
           (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') +
           '</div></div>' +
         '<div class="mq-actions">' +
-          '<a class="mq-btn mq-btn-pink mq-pay" href="' + esc(links.payment || '#') + '">' + icon('card', 18) + '<span class="t"><b>Make a Payment</b><i>' + esc(nextLine) + '</i></span></a>' +
+          '<a class="mq-btn ' + (next ? 'mq-btn-pink' : 'mq-btn-ghost') + ' mq-pay" href="' + esc(links.payment || '#') + '">' + icon('card', 18) + '<span class="t"><b>' + (next ? 'Make a Payment' : 'Paid in Full') + '</b><i>' + esc(next ? nextLine : 'Thank you! View payments')  + '</i></span></a>' +
           vibo +
           '<a class="mq-btn mq-btn-ghost" href="' + esc(links.details || '#') + '">Event Details</a>' +
         '</div>' +
@@ -1661,11 +1661,11 @@ MQ.renderDetails = (function () {
 
     /* Package + Team */
     var svc = d.service || {};
-    var svcName = (svc.service || [])[0] || '';
+    var svcName = U.lineName((svc.service || [])[0] || '');
     var included = svc.description || [];
-    var addons = (svc.addons || []).join(', ').split(/\s*,\s*/).filter(Boolean);
+    var addons = (svc.addons || []).join(', ').split(/\s*,\s*/).filter(Boolean).map(U.lineName);
     var pkg = (svcName ? '<div class="mq-pkg-name">' + esc(svcName) + '</div>' : '') +
-      (included.length ? '<ul class="mq-incl">' + included.map(function (l) { return '<li><span class="ck">' + icon('check', 12) + '</span>' + esc(l) + '</li>'; }).join('') + '</ul>' : '') +
+      (included.length ? '<ul class="mq-incl">' + included.map(function (l) { return '<li><span class="ck">' + icon('check', 12) + '</span>' + esc(U.lineName(l)) + '</li>'; }).join('') + '</ul>' : '') +
       (addons.length ? '<div class="mq-sub" style="margin-top:18px">Add-Ons</div><div class="mq-addchips">' + addons.map(function (a) { return '<span>' + esc(a) + '</span>'; }).join('') + '</div>' : '');
     var team = '<div class="mq-hl-row">' + (dj.logo ? '<img src="' + esc(dj.logo) + '" alt="' + esc(dj.name) + '" style="height:' + Math.round(dj.logoH * 0.8) + 'px">' : '<span class="mq-hl-name">' + esc(dj.name) + '</span>') +
       '<span class="mq-tier">' + esc(dj.tier) + '</span></div>' +
