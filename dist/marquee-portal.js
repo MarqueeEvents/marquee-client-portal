@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-10-30T22:45Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-11-02T20:09Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -100,8 +100,9 @@ MQ.config = {
   // Client-friendly names for DJEP fee lines. A DJ's first name at the start of a line is dropped first,
   // then any exact match below is renamed. Lines not listed show as written in DJEP.
   LINE_NAMES: {
-    'Wedding Talent Fee': 'Wedding Entertainment Package',
-    'Ceremony Package w/o Rehearsal': 'Ceremony Package'
+    'Wedding Talent Fee': 'Headliner Talent Fee',
+    'Ceremony Package w/o Rehearsal': 'Ceremony Sound & Music',
+    'Ceremony Package': 'Ceremony Sound & Music'
   },
   LINE_NAME_PREFIXES: ['Bob', 'Bradon', 'Dan', 'Daniel', 'James', 'Mike', 'Jake'],
 
@@ -118,36 +119,46 @@ MQ.config = {
     logoFile: '../brand/marquee-logo-white.png', logoH: 46
   },
 
-  // Add-on catalog (2027-2028 wedding guide pricing). TODO: replace with Bob's final options and pricing document.
-  // match: words that identify this item on a DJEP fee line, so already-booked items are hidden.
+  // Add-on catalog: the approved 2027-2028 pricing (Marquee Pricing Export, Nov 2, 2026), items marked Portal = Yes.
+  // match: a case-insensitive pattern for this item on a DJEP fee line, so already-booked items are hidden.
+  // bobPrice: the price when Bob is the headliner.
   CATALOG: [
-    { id: 'clouds', cat: 'Atmosphere & Effects', name: 'Dancing on the Clouds', price: 350, match: 'clouds', sub: 'Low-lying cloud effect for your first dance.' },
-    { id: 'spark', cat: 'Atmosphere & Effects', name: 'Sparkler Fountains', price: 395, unit: 'pair', match: 'sparkler', sub: 'Cold spark fountains for the big moments.' },
-    { id: 'co2', cat: 'Atmosphere & Effects', name: 'CO2 Cryo Jets', price: 450, unit: 'pair', match: 'cryo', sub: 'Blasts of cold fog when the beat drops.' },
-    { id: 'coolburst', cat: 'Atmosphere & Effects', name: 'Cool Burst LED CO2 Gun', price: 350, match: 'cool burst', sub: 'Handheld LED CO2 bursts on the dance floor.' },
-    { id: 'snow', cat: 'Atmosphere & Effects', name: 'Snow Machine', price: 550, match: 'snow', sub: 'A winter-wonderland finish.' },
-    { id: 'foam', cat: 'Atmosphere & Effects', name: 'LED Foam Party Favors', price: 275, match: 'foam', sub: 'Glow sticks and wands for every guest.' },
-    { id: 'astera', cat: 'Lighting & Visuals', name: 'Astera LED Light Tubes', price: 400, match: 'astera', sub: 'Wireless light tubes that move with the music.' },
-    { id: 'mono', cat: 'Lighting & Visuals', name: 'Standard Monogram Projection', price: 300, match: 'standard monogram', sub: 'Your names or initials in light.' },
-    { id: 'amono', cat: 'Lighting & Visuals', name: 'Animated Monogram Projection', price: 350, match: 'monogram', sub: 'Your monogram, animated on the floor or wall.' },
-    { id: 'classic', cat: 'Photo Booths', name: 'Classic Photo Booth', price: 795, match: 'classic photo booth', booth: true, sub: 'Unlimited prints and a digital gallery.' },
-    { id: 'roamer', cat: 'Photo Booths', name: 'Roamer Photo Booth', price: 595, match: 'roamer', booth: true, sub: 'A roaming booth that comes to your guests.' },
-    { id: 'scrap', cat: 'Photo Booths', name: 'Keepsake Scrapbook', price: 150, match: 'scrapbook', booth: true, sub: 'Guests sign a book of your photo strips.' },
-    { id: 'sax', cat: 'Live Music', name: 'Saxy Rob', price: 1800, match: 'sax', sub: 'Live sax over the DJ set.' },
-    { id: 'ceremony', cat: 'Ceremony & More Time', name: 'Ceremony Package', price: 400, match: 'ceremony', sub: 'Sound, mics and music for your ceremony.' },
-    { id: 'hour', cat: 'Ceremony & More Time', name: 'Additional Hour', price: 500, match: 'additional hour', repeatable: true, sub: 'Keep the party going an extra hour.' }
+    { id: 'hour', cat: 'Event Add-Ons', name: 'Extra Hour', price: 300, bobPrice: 500, unit: 'hour', match: 'extra hour|additional hour', repeatable: true, sub: 'Keep the party going one more hour with your headliner.' },
+    { id: 'half', cat: 'Event Add-Ons', name: 'Extra Half Hour', price: 150, bobPrice: 250, match: 'half hour', repeatable: true, sub: '30 more minutes with your headliner.' },
+    { id: 'ceremony', cat: 'Event Add-Ons', name: 'Ceremony Sound & Music', price: 400, match: 'ceremony', sub: 'Ceremony sound, wireless mics and live-cued music. Works anywhere on the property.' },
+    { id: 'second', cat: 'Event Add-Ons', name: 'Second Sound System', price: 300, match: 'second sound', sub: 'Separate sound for a second space, like dinner in another room.' },
+    { id: 'cocktail', cat: 'Event Add-Ons', name: 'Cocktail Hour: Second Location', price: 300, match: 'cocktail hour', sub: 'Separate sound and setup so cocktail hour can happen in a different space.' },
+    { id: 'speakers', cat: 'Event Add-Ons', name: 'Additional Speakers', price: 75, match: 'additional speaker', sub: 'Full, even sound for a large or split room.' },
+    { id: 'floorlights', cat: 'Lighting & Visuals', name: 'Extra Dance Floor Lights (2nd Pair)', price: 350, match: '2nd pair|second pair|extra dance floor light', sub: 'A second pair of intelligent dance floor lights, for 4 total.' },
+    { id: 'spots', cat: 'Lighting & Visuals', name: 'Moving Spot Lights', price: 350, unit: 'pair', match: 'moving spot', sub: 'Programmable moving lights on totems for beams and patterns across the room.' },
+    { id: 'tubes', cat: 'Lighting & Visuals', name: 'LED Light Tubes', price: 400, match: 'light tubes|astera', sub: 'Wireless LED tubes for a modern, festival-style glow.' },
+    { id: 'mono', cat: 'Lighting & Visuals', name: 'Monogram Projection', price: 300, match: 'monogram', sub: 'Your names and date in lights, on the wall or dance floor.' },
+    { id: 'tv', cat: 'Lighting & Visuals', name: '65" TV Display', price: 300, unit: 'TV', match: 'tv display|65"', sub: 'A 65" screen on a stand for slideshows, videos or visuals.' },
+    { id: 'ledbooth', cat: 'Lighting & Visuals', name: 'LED Video DJ Booth', price: 400, match: 'video dj booth', sub: 'Our LED mirror DJ booth with a built-in 65" screen for your monogram or visuals.' },
+    { id: 'clouds', cat: 'Atmosphere & Effects', name: 'Dancing on the Clouds', price: 350, match: 'clouds', sub: 'A thick, low cloud rolls across the floor for your first dance.' },
+    { id: 'spark', cat: 'Atmosphere & Effects', name: 'Sparkler Fountains', price: 400, unit: 'pair', match: 'sparkler', sub: 'For your grand entrance, first dance or Impact Moment. Built for indoor use.' },
+    { id: 'co2', cat: 'Atmosphere & Effects', name: 'CO2 Jets', price: 400, unit: 'pair', match: 'co2 jet|cryo', sub: 'Lighted, floor-mounted CO2 jets that fire on the drop.' },
+    { id: 'gatling', cat: 'Atmosphere & Effects', name: 'CO2 Gatling Cannon', price: 350, match: 'gatling|cool burst', sub: 'A rapid-fire LED CO2 cannon your headliner fires over the crowd.' },
+    { id: 'snow', cat: 'Atmosphere & Effects', name: 'Snowfall Effect', price: 550, match: 'snow', sub: 'Soft falling snow for your first dance or special moment.' },
+    { id: 'tank', cat: 'Atmosphere & Effects', name: 'Extra CO2 Tank', price: 175, match: 'co2 tank', repeatable: true, sub: 'An extra 50 lb tank for more blasts. Add to a cannon or jets.' },
+    { id: 'foam', cat: 'Atmosphere & Effects', name: 'LED Foam Sticks', price: 275, match: 'foam', sub: 'Light-up foam sticks for the whole crowd at the biggest moment.' },
+    { id: 'wrap', cat: 'Dance Floor & Production', name: 'Custom Dance Floor Wrap', price: 4500, match: 'floor wrap', sub: 'Your monogram or artwork wrapped across the entire dance floor.' },
+    { id: 'classic', cat: 'Photo Booths', name: 'The Classic', price: 795, match: 'classic photo booth|the classic(?! mirror)', booth: true, sub: 'Backdrop, props, unlimited prints and an attendant. Up to 3 hours.' },
+    { id: 'roamer', cat: 'Photo Booths', name: 'The Roamer', price: 595, match: 'roamer', booth: true, sub: 'A booth that moves through your party. Photos sent by text or email.' },
+    { id: 'cmirror', cat: 'Photo Booths', name: 'The Classic Mirror (By Request)', price: 895, match: 'classic mirror', booth: true, sub: 'Our magic mirror booth with unlimited prints. Request when booking.' },
+    { id: 'tower', cat: 'Photo Booths', name: 'The Mirror Tower (By Request)', price: 995, match: 'mirror tower', booth: true, sub: 'Our 6-foot magic mirror booth with unlimited prints. Request when booking.' }
   ],
 
-  // Photo booth add-ons, shown under Total Investment on photo booth pages. price: null shows "Price on request".
-  // TODO: Bob to confirm prices for additional time and the 4x6 upgrade.
+  // Photo booth add-ons, shown under Total Investment on photo booth pages.
   BOOTH_ADDONS: [
-    { id: 'bhour', name: 'Additional Time', price: null, unit: 'hour', match: 'additional (time|hour)', sub: 'Keep the booth running longer.' },
-    { id: 'bscrap', name: 'Keepsake Scrapbook', price: 150, match: 'scrapbook', sub: 'Guests add a strip and sign a book you keep.' },
-    { id: 'b4x6', name: '4x6 Print Upgrade', price: null, match: '4\\s*x\\s*6|print upgrade', classicOnly: true, sub: 'Go from 2x6 strips to larger 4x6 prints, portrait or landscape.' }
+    { id: 'bhour', name: 'Extra Hour', price: 100, unit: 'hour', repeatable: true, match: 'extra hour|additional (time|hour)', sub: 'One more hour of photo booth time.' },
+    { id: 'bhalf', name: 'Extra Half Hour', price: 50, repeatable: true, match: 'half hour', sub: '30 more minutes of photo booth time.' },
+    { id: 'bguest', name: 'Photo Booth Guest Book', price: 150, match: 'guest book|scrapbook', sub: 'Guests add a copy of their strip and a note to an album you keep.' },
+    { id: 'b4x6', name: '4"x6" Single Print Upgrade', price: 125, match: '4\\s*"?\\s*x\\s*6|print upgrade', classicOnly: true, sub: 'Upgrade The Classic to 4"x6" single prints.' }
   ],
 
   // The "Couples Love These" picks, in order. Anything already booked is skipped and the next item fills in.
-  FEATURED: ['clouds', 'spark', 'co2', 'amono', 'astera', 'sax']
+  FEATURED: ['clouds', 'spark', 'co2', 'tubes', 'mono', 'ledbooth']
 };
 
 /* ---- src/gate.js ---- */
@@ -557,15 +568,19 @@ MQ.model = (function () {
     return MQ.config.CATALOG.filter(function (c) {
       if (c.repeatable) return false;
       if (c.booth && hasBoothEvent) return true;
-      return names.some(function (n) { return n.indexOf(c.match) >= 0; });
+      var re = new RegExp(c.match, 'i');
+      return names.some(function (n) { return re.test(n); });
     }).map(function (c) { return c.id; });
   }
 
-  function addOptions(lines, hasBoothEvent, isBoothEvent) {
+  function addOptions(lines, hasBoothEvent, isBoothEvent, djKey) {
     var booked = bookedIds(lines, hasBoothEvent);
     var avail = MQ.config.CATALOG.filter(function (c) {
       if (booked.indexOf(c.id) >= 0) return false;
       return isBoothEvent ? c.booth : true;
+    }).map(function (c) {
+      /* Bob's own rate for extra time when he is the headliner. */
+      return (c.bobPrice && djKey === 'bob') ? Object.assign({}, c, { price: c.bobPrice }) : c;
     });
     var featured = [];
     MQ.config.FEATURED.forEach(function (id) {
@@ -700,7 +715,7 @@ MQ.model = (function () {
       total: total, paid: paid, balance: balance,
       schedule: sched, next: next,
       journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id)),
-      options: addOptions(details.lines || [], hasBoothEvent, isBooth),
+      options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key),
       venue: venueShort(details.venue)
     };
   }
@@ -1520,7 +1535,7 @@ MQ.renderEvent = (function () {
     var isClassic = /classic/i.test(vm.list.package || booked);
     var list = (MQ.config.BOOTH_ADDONS || []).filter(function (a) {
       if (a.classicOnly && !isClassic) return false;
-      return a.unit === 'hour' || !new RegExp(a.match, 'i').test(booked);
+      return a.repeatable || !new RegExp(a.match, 'i').test(booked);
     });
     if (!list.length) { box.remove(); return; }
     var state = { sel: [], busy: false, status: null };
@@ -1683,7 +1698,7 @@ MQ.renderDetails = (function () {
       ].filter(Boolean).join('') + '</div>' +
       '<p class="mq-note">Texts and emails are answered within 24 to 48 hours. Weekends are show days, so replies may come Monday.</p>' +
       '<a class="mq-btn mq-btn-ghost mq-btn-sm" href="/clients/contact.asp">' + icon('mail', 14) + 'Message Us</a>';
-    html += '<div class="mq-dgrid mq-dgrid-wide">' + card('Your Package', 'What&rsquo;s Included', pkg || '<p class="mq-small">Package details will appear here.</p>') +
+    html += '<div class="mq-dgrid mq-dgrid-wide">' + card('Your Night', 'What&rsquo;s Included', pkg || '<p class="mq-small">Your details will appear here.</p>') +
       card('Your Team', vm.isBooth ? 'Your Point Of Contact' : 'Your Headliner', team) + '</div>';
 
     /* Fees + payments */

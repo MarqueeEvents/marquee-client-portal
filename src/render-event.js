@@ -348,7 +348,7 @@ MQ.renderEvent = (function () {
     var isClassic = /classic/i.test(vm.list.package || booked);
     var list = (MQ.config.BOOTH_ADDONS || []).filter(function (a) {
       if (a.classicOnly && !isClassic) return false;
-      return a.unit === 'hour' || !new RegExp(a.match, 'i').test(booked);
+      return a.repeatable || !new RegExp(a.match, 'i').test(booked);
     });
     if (!list.length) { box.remove(); return; }
     var state = { sel: [], busy: false, status: null };

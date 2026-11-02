@@ -66,7 +66,7 @@ MQ.renderDetails = (function () {
       ].filter(Boolean).join('') + '</div>' +
       '<p class="mq-note">Texts and emails are answered within 24 to 48 hours. Weekends are show days, so replies may come Monday.</p>' +
       '<a class="mq-btn mq-btn-ghost mq-btn-sm" href="/clients/contact.asp">' + icon('mail', 14) + 'Message Us</a>';
-    html += '<div class="mq-dgrid mq-dgrid-wide">' + card('Your Package', 'What&rsquo;s Included', pkg || '<p class="mq-small">Package details will appear here.</p>') +
+    html += '<div class="mq-dgrid mq-dgrid-wide">' + card('Your Night', 'What&rsquo;s Included', pkg || '<p class="mq-small">Your details will appear here.</p>') +
       card('Your Team', vm.isBooth ? 'Your Point Of Contact' : 'Your Headliner', team) + '</div>';
 
     /* Fees + payments */

@@ -48,15 +48,19 @@ MQ.model = (function () {
     return MQ.config.CATALOG.filter(function (c) {
       if (c.repeatable) return false;
       if (c.booth && hasBoothEvent) return true;
-      return names.some(function (n) { return n.indexOf(c.match) >= 0; });
+      var re = new RegExp(c.match, 'i');
+      return names.some(function (n) { return re.test(n); });
     }).map(function (c) { return c.id; });
   }
 
-  function addOptions(lines, hasBoothEvent, isBoothEvent) {
+  function addOptions(lines, hasBoothEvent, isBoothEvent, djKey) {
     var booked = bookedIds(lines, hasBoothEvent);
     var avail = MQ.config.CATALOG.filter(function (c) {
       if (booked.indexOf(c.id) >= 0) return false;
       return isBoothEvent ? c.booth : true;
+    }).map(function (c) {
+      /* Bob's own rate for extra time when he is the headliner. */
+      return (c.bobPrice && djKey === 'bob') ? Object.assign({}, c, { price: c.bobPrice }) : c;
     });
     var featured = [];
     MQ.config.FEATURED.forEach(function (id) {
@@ -191,7 +195,7 @@ MQ.model = (function () {
       total: total, paid: paid, balance: balance,
       schedule: sched, next: next,
       journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id)),
-      options: addOptions(details.lines || [], hasBoothEvent, isBooth),
+      options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key),
       venue: venueShort(details.venue)
     };
   }
