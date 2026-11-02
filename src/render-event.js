@@ -222,7 +222,7 @@ MQ.renderEvent = (function () {
         '<span class="intro">Only showing what\'s not already in your lineup. Select what you love and see your new total. Send a request and ' + esc(vm.dj.first) +
         ' reviews it before anything is added to your event.</span></div>';
       if (feat.length) html += '<div><div class="mq-rule hot"><span>Couples Love These</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
-      if (booths.length) html += '<div><div class="mq-rule hot"><span>Add A Photo Booth</span></div><p class="mq-boothpitch">One of our most-loved add-ons. Your booth runs right alongside your DJ, with its own attendant, so guests leave with prints and you get every photo.</p>' +
+      if (booths.length) html += '<div><div class="mq-rule hot"><span>Add A Photo Booth</span></div><p class="mq-boothpitch">One of our most-loved add-ons. Your booth runs right alongside your DJ, with its own attendant, so guests take home their photos and you get every one.</p>' +
         '<div class="mq-opts">' + booths.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
       if (moreCount) {
         html += '<button type="button" class="mq-more" aria-expanded="' + state.open + '" data-mq-more>' + (state.open ? 'Show Less' : 'See All ' + moreCount + ' More Options') + icon('chev', 14) + '</button>';

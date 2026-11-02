@@ -143,8 +143,6 @@ MQ.config = {
     { id: 'wrap', cat: 'Dance Floor & Production', name: 'Custom Dance Floor Wrap', price: 4500, match: 'floor wrap', sub: 'Your monogram or artwork wrapped across the entire dance floor.' },
     { id: 'classic', cat: 'Photo Booths', name: 'The Classic', price: 795, match: 'classic photo booth|the classic(?! mirror)', booth: true, sub: 'Backdrop, props, unlimited prints and an attendant. Up to 3 hours.' },
     { id: 'roamer', cat: 'Photo Booths', name: 'The Roamer', price: 595, match: 'roamer', booth: true, sub: 'A booth that moves through your party. Photos sent by text or email.' },
-    { id: 'cmirror', cat: 'Photo Booths', name: 'The Classic Mirror (By Request)', price: 895, match: 'classic mirror', booth: true, sub: 'Our magic mirror booth with unlimited prints. Request when booking.' },
-    { id: 'tower', cat: 'Photo Booths', name: 'The Mirror Tower (By Request)', price: 995, match: 'mirror tower', booth: true, sub: 'Our 6-foot magic mirror booth with unlimited prints. Request when booking.' }
   ],
 
   // Photo booth add-ons, shown under Total Investment on photo booth pages.

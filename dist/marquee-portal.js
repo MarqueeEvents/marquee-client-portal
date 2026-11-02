@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-11-02T21:09Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-11-02T21:13Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -146,8 +146,6 @@ MQ.config = {
     { id: 'wrap', cat: 'Dance Floor & Production', name: 'Custom Dance Floor Wrap', price: 4500, match: 'floor wrap', sub: 'Your monogram or artwork wrapped across the entire dance floor.' },
     { id: 'classic', cat: 'Photo Booths', name: 'The Classic', price: 795, match: 'classic photo booth|the classic(?! mirror)', booth: true, sub: 'Backdrop, props, unlimited prints and an attendant. Up to 3 hours.' },
     { id: 'roamer', cat: 'Photo Booths', name: 'The Roamer', price: 595, match: 'roamer', booth: true, sub: 'A booth that moves through your party. Photos sent by text or email.' },
-    { id: 'cmirror', cat: 'Photo Booths', name: 'The Classic Mirror (By Request)', price: 895, match: 'classic mirror', booth: true, sub: 'Our magic mirror booth with unlimited prints. Request when booking.' },
-    { id: 'tower', cat: 'Photo Booths', name: 'The Mirror Tower (By Request)', price: 995, match: 'mirror tower', booth: true, sub: 'Our 6-foot magic mirror booth with unlimited prints. Request when booking.' }
   ],
 
   // Photo booth add-ons, shown under Total Investment on photo booth pages.
@@ -1412,7 +1410,7 @@ MQ.renderEvent = (function () {
         '<span class="intro">Only showing what\'s not already in your lineup. Select what you love and see your new total. Send a request and ' + esc(vm.dj.first) +
         ' reviews it before anything is added to your event.</span></div>';
       if (feat.length) html += '<div><div class="mq-rule hot"><span>Couples Love These</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
-      if (booths.length) html += '<div><div class="mq-rule hot"><span>Add A Photo Booth</span></div><p class="mq-boothpitch">One of our most-loved add-ons. Your booth runs right alongside your DJ, with its own attendant, so guests leave with prints and you get every photo.</p>' +
+      if (booths.length) html += '<div><div class="mq-rule hot"><span>Add A Photo Booth</span></div><p class="mq-boothpitch">One of our most-loved add-ons. Your booth runs right alongside your DJ, with its own attendant, so guests take home their photos and you get every one.</p>' +
         '<div class="mq-opts">' + booths.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
       if (moreCount) {
         html += '<button type="button" class="mq-more" aria-expanded="' + state.open + '" data-mq-more>' + (state.open ? 'Show Less' : 'See All ' + moreCount + ' More Options') + icon('chev', 14) + '</button>';
