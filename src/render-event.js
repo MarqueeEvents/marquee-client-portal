@@ -159,7 +159,7 @@ MQ.renderEvent = (function () {
       return '<li><span class="ck">' + icon('check', 13) + '</span><span class="nm">' + esc(U.lineName(l.name)) + '</span><span class="pr">' + U.money(l.price) + '</span></li>';
     }).join('');
     var pend = pending.map(function (c) {
-      return '<li class="pending"><span class="ck">' + icon('clock', 13) + '</span><span class="nm">' + esc(c.name) + '<small>Awaiting Approval</small></span><span class="pr">' + U.money(c.price) + '</span></li>';
+      return '<li class="pending"><span class="ck">' + icon('clock', 13) + '</span><span class="nm">' + esc(c.name) + '<small>Talking It Over</small></span><span class="pr">' + U.money(c.price) + '</span></li>';
     }).join('');
     var pct = vm.total ? Math.round(vm.paid / vm.total * 100) : 0;
     var n = vm.next;
@@ -179,7 +179,7 @@ MQ.renderEvent = (function () {
       '<span class="mq-chip mq-chip-ok" style="font-size:11px;padding:6px 12px">' + icon('check', 12) + count + (count === 1 ? ' item' : ' items') + ' booked</span></div>' +
       '<div class="mq-invest-row"><div class="mq-night"><span class="mq-sub">What\'s In Your Night</span><ul class="mq-lines">' + lines + pend + '</ul>' +
       '<div class="mq-total"><span>Total Investment</span><b>' + U.money(vm.total) + '</b></div>' +
-      (pending.length ? '<span class="mq-small" style="margin-top:8px">Items awaiting approval are not in your total until ' + esc(vm.dj.first) + ' confirms them.</span>' : '') +
+      (pending.length ? '<span class="mq-small" style="margin-top:8px">Items you asked about are not in your total until you and ' + esc(vm.dj.first) + ' agree on them.</span>' : '') +
       (vm.isBooth ? '<div class="mq-boothadd" data-mq-boothadd></div>' : '') +
       '<span class="mq-small" style="margin-top:14px">' + (vm.isBooth ? 'Want to change something? Message the Marquee team and we\'ll take care of it.' : 'Want to change something? Message your headliner and they\'ll take care of it.') + '</span></div>' +
       '<div class="mq-stand"><span class="mq-sub">Where You Stand</span><div><div class="mq-meter"><div style="width:' + pct + '%"></div></div>' +
@@ -192,9 +192,10 @@ MQ.renderEvent = (function () {
 
   function optCard(c, feat, selected) {
     var on = selected.indexOf(c.id) >= 0;
-    return '<div class="mq-opt' + (feat ? ' feat' : '') + (on ? ' sel' : '') + '"><span class="nm">' + esc(c.name) + '</span><span class="ds">' + esc(c.sub || '') + '</span>' +
+    return '<div class="mq-opt' + (feat ? ' feat' : '') + (on ? ' sel' : '') + '">' + (c.moment ? '<span class="mo">' + esc(c.moment) + '</span>' : '') +
+      '<span class="nm">' + esc(c.name) + '</span><span class="ds">' + esc(c.sub || '') + '</span>' +
       '<div class="bt"><span class="pr">' + U.money(c.price) + (c.unit ? ' / ' + esc(c.unit) : '') + '</span>' +
-      '<button type="button" data-mq-pick="' + c.id + '" aria-pressed="' + on + '">' + (on ? 'Selected' : 'Select') + '</button></div></div>';
+      '<button type="button" data-mq-pick="' + c.id + '" aria-pressed="' + on + '">' + (on ? icon('check', 12) + 'On Your List' : 'Ask About This') + '</button></div></div>';
   }
 
   /* Add To Your Night has its own state (selection, dropdown, status), so it re-renders on its own. */
@@ -217,12 +218,16 @@ MQ.renderEvent = (function () {
       container.style.display = '';
       var sel = vm.options.all.filter(function (c) { return state.selected.indexOf(c.id) >= 0; });
       var sum = sel.reduce(function (n, c) { return n + c.price; }, 0);
-      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">Then We Turn It Up</span><h2 class="mq-h2" id="mq-ad">Add To Your Night <span class="mq-serif">make it unforgettable.</span></h2></div>' +
-        '<span class="intro">Only showing what\'s not already in your lineup. Select what you love and see your new total. Send a request and ' + esc(vm.dj.first) +
-        ' reviews it before anything is added to your event.</span></div>';
-      if (feat.length) html += '<div><div class="mq-rule hot"><span>Couples Love These</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
-      if (moreCount) {
-        html += '<button type="button" class="mq-more" aria-expanded="' + state.open + '" data-mq-more>' + (state.open ? 'Show Less' : 'See All ' + moreCount + ' More Options') + icon('chev', 14) + '</button>';
+      var late = vm.options.late;
+      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">' + (late ? 'Almost Showtime' : 'If You Want More') + '</span><h2 class="mq-h2" id="mq-ad">Ideas For Your Night <span class="mq-serif">' + (late ? 'a little more time?' : 'no pressure.') + '</span></h2></div>' +
+        '<span class="intro">' + (late
+          ? 'Your night is close, so the production is locked in. If you want more time on the dance floor, ask here. For anything else, just text ' + esc(vm.dj.first) + '.'
+          : 'A few ideas couples love, matched to moments you\'re already planning. Nothing here is required, and nothing changes until you and ' + esc(vm.dj.first) + ' talk it through.') +
+        '</span></div>';
+      if (feat.length) html += '<div><div class="mq-rule hot"><span>Ideas For Your Moments</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
+      if (late && moreCount) html += '<div class="mq-opts">' + groups.map(function (g) { return g.items.map(function (c) { return optCard(c, false, state.selected); }).join(''); }).join('') + '</div>';
+      else if (moreCount) {
+        html += '<button type="button" class="mq-more" aria-expanded="' + state.open + '" data-mq-more>' + (state.open ? 'Show Less' : 'See Everything We Offer (' + moreCount + ')') + icon('chev', 14) + '</button>';
         if (state.open) html += '<div class="mq-groups">' + groups.map(function (g) {
           return '<div><div class="mq-rule"><span>' + esc(g.label) + '</span></div><div class="mq-opts">' + g.items.map(function (c) { return optCard(c, false, state.selected); }).join('') + '</div></div>';
         }).join('') + '</div>';
@@ -230,23 +235,17 @@ MQ.renderEvent = (function () {
       if (state.status) {
         var test = state.status.mode === 'test', err = state.status.mode === 'error';
         html += '<div class="mq-status' + (test || err ? ' test' : '') + '" role="status"><span class="ic">' + icon(err ? 'alert' : 'check', 16) + '</span><div><b>' +
-          (err ? 'That did not go through.' : test ? 'Test mode: nothing was sent.' : 'Request sent!') + '</b><p>' +
+          (err ? 'That did not go through.' : test ? 'Test mode: nothing was sent.' : 'Sent to ' + vm.dj.first + '!') + '</b><p>' +
           esc(err ? state.status.text + ' Please text ' + vm.dj.first + ' instead.' : test ? 'This is exactly what ' + vm.dj.first + ' will receive once requests are switched on:\n\n' + state.status.text
-            : vm.dj.first + ' will review your request and confirm with you. Your total updates once it is approved.') +
+            : vm.dj.first + ' has your list and will reach out to talk it through. Nothing changes until you both agree.') +
           '</p></div><button type="button" data-mq-dismiss>Got it</button></div>';
       }
       if (sel.length) {
-        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid);
-        var dueNow = plan.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0) -
-          vm.schedule.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0);
-        var talk = vm.dj.sms ? vm.dj.sms + '?&body=' + encodeURIComponent('Hi ' + vm.dj.first + '! We are thinking about adding ' + sel.map(function (c) { return c.name; }).join(', ') + '. Can we talk it through?')
+        var talk = vm.dj.sms ? vm.dj.sms + '?&body=' + encodeURIComponent('Hi ' + vm.dj.first + '! We are thinking about ' + sel.map(function (c) { return c.name; }).join(', ') + '. Can we talk it through?')
           : (vm.dj.mailto || '#');
-        html += '<div class="mq-tally"><div class="c w"><span>Your Selections \u00b7 ' + sel.length + '</span><b>' + esc(sel.map(function (c) { return c.name; }).join(', ')) + '</b></div>' +
-          '<div class="c"><span>Adds</span><b>' + U.money(sum) + '</b></div>' +
-          '<div class="c"><span>New Total If Approved</span><b>' + U.money(vm.total + sum) + '</b></div>' +
-          '<div class="c"><span>Due Once Approved</span><b style="color:var(--mq-pink-soft)">' + U.money(Math.max(0, U.round2(dueNow))) + '</b><i>' +
-          (dueNow > 0.005 ? 'Catch-up to stay on schedule' : 'Spread across your remaining payments') + '</i></div>' +
-          '<div class="act"><button type="button" class="mq-btn mq-btn-pink" data-mq-send' + (state.busy ? ' disabled' : '') + '>' + icon('send', 16) + (state.busy ? 'Sending...' : 'Request to Add') + '</button>' +
+        html += '<div class="mq-tally soft"><div class="c w"><span>Your List \u00b7 ' + sel.length + '</span><b>' + esc(sel.map(function (c) { return c.name; }).join(', ')) + '</b>' +
+          '<i>About ' + U.money(sum) + ' if you go for ' + (sel.length === 1 ? 'it' : 'them') + '. ' + esc(vm.dj.first) + ' confirms the details and your payment plan with you before anything changes.</i></div>' +
+          '<div class="act"><button type="button" class="mq-btn mq-btn-pink" data-mq-send' + (state.busy ? ' disabled' : '') + '>' + icon('send', 16) + (state.busy ? 'Sending...' : 'Send To ' + esc(vm.dj.first)) + '</button>' +
           '<a class="mq-btn mq-btn-ghost" href="' + esc(talk) + '">' + icon('chat', 14) + 'Talk to ' + esc(vm.dj.first) + ' First</a></div></div>';
       }
       container.innerHTML = html;

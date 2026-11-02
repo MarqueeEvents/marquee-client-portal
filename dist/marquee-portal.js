@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-11-02T20:23Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-11-02T21:03Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -123,12 +123,10 @@ MQ.config = {
   // match: a case-insensitive pattern for this item on a DJEP fee line, so already-booked items are hidden.
   // bobPrice: the price when Bob is the headliner.
   CATALOG: [
-    { id: 'hour', cat: 'Event Add-Ons', name: 'Extra Hour', price: 300, bobPrice: 500, unit: 'hour', match: 'extra hour|additional hour', repeatable: true, sub: 'Keep the party going one more hour with your headliner.' },
-    { id: 'half', cat: 'Event Add-Ons', name: 'Extra Half Hour', price: 150, bobPrice: 250, match: 'half hour', repeatable: true, sub: '30 more minutes with your headliner.' },
+    { id: 'hour', cat: 'Event Add-Ons', name: 'Extra Hour', price: 300, bobPrice: 500, unit: 'hour', match: 'extra hour|additional hour', repeatable: true, late: true, sub: 'Keep the party going one more hour with your headliner.' },
+    { id: 'half', cat: 'Event Add-Ons', name: 'Extra Half Hour', price: 150, bobPrice: 250, match: 'half hour', repeatable: true, late: true, sub: '30 more minutes with your headliner.' },
     { id: 'ceremony', cat: 'Event Add-Ons', name: 'Ceremony Sound & Music', price: 400, match: 'ceremony', sub: 'Ceremony sound, wireless mics and live-cued music. Works anywhere on the property.' },
-    { id: 'second', cat: 'Event Add-Ons', name: 'Second Sound System', price: 300, match: 'second sound', sub: 'Separate sound for a second space, like dinner in another room.' },
     { id: 'cocktail', cat: 'Event Add-Ons', name: 'Cocktail Hour: Second Location', price: 300, match: 'cocktail hour', sub: 'Separate sound and setup so cocktail hour can happen in a different space.' },
-    { id: 'speakers', cat: 'Event Add-Ons', name: 'Additional Speakers', price: 75, match: 'additional speaker', sub: 'Full, even sound for a large or split room.' },
     { id: 'floorlights', cat: 'Lighting & Visuals', name: 'Extra Dance Floor Lights (2nd Pair)', price: 350, match: '2nd pair|second pair|extra dance floor light', sub: 'A second pair of intelligent dance floor lights, for 4 total.' },
     { id: 'spots', cat: 'Lighting & Visuals', name: 'Moving Spot Lights', price: 350, unit: 'pair', match: 'moving spot', sub: 'Programmable moving lights on totems for beams and patterns across the room.' },
     { id: 'tubes', cat: 'Lighting & Visuals', name: 'LED Light Tubes', price: 400, match: 'light tubes|astera', sub: 'Wireless LED tubes for a modern, festival-style glow.' },
@@ -136,11 +134,10 @@ MQ.config = {
     { id: 'tv', cat: 'Lighting & Visuals', name: '65" TV Display', price: 300, unit: 'TV', match: 'tv display|65"', sub: 'A 65" screen on a stand for slideshows, videos or visuals.' },
     { id: 'ledbooth', cat: 'Lighting & Visuals', name: 'LED Video DJ Booth', price: 400, match: 'video dj booth', sub: 'Our LED mirror DJ booth with a built-in 65" screen for your monogram or visuals.' },
     { id: 'clouds', cat: 'Atmosphere & Effects', name: 'Dancing on the Clouds', price: 350, match: 'clouds', sub: 'A thick, low cloud rolls across the floor for your first dance.' },
-    { id: 'spark', cat: 'Atmosphere & Effects', name: 'Sparkler Fountains', price: 400, unit: 'pair', match: 'sparkler', sub: 'For your grand entrance, first dance or Impact Moment. Built for indoor use.' },
+    { id: 'spark', cat: 'Atmosphere & Effects', name: 'Sparkler Fountains', price: 400, unit: 'pair', match: 'sparkler', sub: 'Two fountains for your entrance, first dance or Impact Moment. Built for indoor use.' },
     { id: 'co2', cat: 'Atmosphere & Effects', name: 'CO2 Jets', price: 400, unit: 'pair', match: 'co2 jet|cryo', sub: 'Lighted, floor-mounted CO2 jets that fire on the drop.' },
     { id: 'gatling', cat: 'Atmosphere & Effects', name: 'CO2 Gatling Cannon', price: 350, match: 'gatling|cool burst', sub: 'A rapid-fire LED CO2 cannon your headliner fires over the crowd.' },
     { id: 'snow', cat: 'Atmosphere & Effects', name: 'Snowfall Effect', price: 550, match: 'snow', sub: 'Soft falling snow for your first dance or special moment.' },
-    { id: 'tank', cat: 'Atmosphere & Effects', name: 'Extra CO2 Tank', price: 175, match: 'co2 tank', repeatable: true, sub: 'An extra 50 lb tank for more blasts. Add to a cannon or jets.' },
     { id: 'foam', cat: 'Atmosphere & Effects', name: 'LED Foam Sticks', price: 275, match: 'foam', sub: 'Light-up foam sticks for the whole crowd at the biggest moment.' },
     { id: 'sax', cat: 'Live Musicians', name: 'Marquee Fusion: Saxy Rob', price: 1800, match: 'sax', sub: 'Live sax by Saxy Rob, played right over your DJ set. Ask about his availability.' },
     { id: 'wrap', cat: 'Dance Floor & Production', name: 'Custom Dance Floor Wrap', price: 4500, match: 'floor wrap', sub: 'Your monogram or artwork wrapped across the entire dance floor.' },
@@ -159,7 +156,18 @@ MQ.config = {
   ],
 
   // The "Couples Love These" picks, in order. Anything already booked is skipped and the next item fills in.
-  FEATURED: ['clouds', 'spark', 'co2', 'tubes', 'mono', 'ledbooth']
+  // Ideas shown up front, each tied to a moment the couple is already planning. The rest sit behind "See everything".
+  // Logistics (extra speakers, second sound, CO2 tanks) are left out on purpose: the headliner brings those up in planning.
+  FEATURED: [
+    { id: 'clouds', moment: 'For your first dance' },
+    { id: 'spark', moment: 'For your grand entrance' },
+    { id: 'mono', moment: 'When guests walk in' },
+    { id: 'co2', moment: 'For the peak of the night' },
+    { id: 'sax', moment: 'For cocktail hour and beyond' },
+    { id: 'hour', moment: 'When the night is too good to end' }
+  ],
+  // Inside this many days, only quick add-ons (late: true) are offered. Production needs lead time.
+  LATE_DAYS: 30
 };
 
 /* ---- src/gate.js ---- */
@@ -574,28 +582,32 @@ MQ.model = (function () {
     }).map(function (c) { return c.id; });
   }
 
-  function addOptions(lines, hasBoothEvent, isBoothEvent, djKey) {
+  function addOptions(lines, hasBoothEvent, isBoothEvent, djKey, eventDate) {
     var booked = bookedIds(lines, hasBoothEvent);
+    var daysOut = eventDate ? U.daysBetween(U.today(), eventDate) : Infinity;
+    var late = daysOut <= (MQ.config.LATE_DAYS || 30);
     var avail = MQ.config.CATALOG.filter(function (c) {
       if (booked.indexOf(c.id) >= 0) return false;
+      if (late && !c.late) return false;
       return isBoothEvent ? c.booth : true;
     }).map(function (c) {
       /* Bob's own rate for extra time when he is the headliner. */
       return (c.bobPrice && djKey === 'bob') ? Object.assign({}, c, { price: c.bobPrice }) : c;
     });
     var featured = [];
-    MQ.config.FEATURED.forEach(function (id) {
-      var c = avail.filter(function (a) { return a.id === id; })[0];
-      if (c && featured.length < 4) featured.push(c);
+    if (!late) MQ.config.FEATURED.forEach(function (f) {
+      var c = avail.filter(function (a) { return a.id === f.id; })[0];
+      if (c && featured.length < 6) featured.push(Object.assign({}, c, { moment: f.moment }));
     });
-    var rest = avail.filter(function (c) { return featured.indexOf(c) < 0; });
+    var featIds = featured.map(function (c) { return c.id; });
+    var rest = late ? [] : avail.filter(function (c) { return featIds.indexOf(c.id) < 0; });
     var groups = [];
     rest.forEach(function (c) {
       var g = groups.filter(function (x) { return x.label === c.cat; })[0];
       if (!g) { g = { label: c.cat, items: [] }; groups.push(g); }
       g.items.push(c);
     });
-    return { featured: featured, groups: groups, all: avail };
+    return { featured: featured, groups: groups, all: avail.map(function (c) { return featured.filter(function (f) { return f.id === c.id; })[0] || c; }), late: late };
   }
 
   function journey(eventDate, sched, isBooth, signed, designSent) {
@@ -716,7 +728,7 @@ MQ.model = (function () {
       total: total, paid: paid, balance: balance,
       schedule: sched, next: next,
       journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id)),
-      options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key),
+      options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key, eventDate),
       venue: venueShort(details.venue)
     };
   }
@@ -1347,7 +1359,7 @@ MQ.renderEvent = (function () {
       return '<li><span class="ck">' + icon('check', 13) + '</span><span class="nm">' + esc(U.lineName(l.name)) + '</span><span class="pr">' + U.money(l.price) + '</span></li>';
     }).join('');
     var pend = pending.map(function (c) {
-      return '<li class="pending"><span class="ck">' + icon('clock', 13) + '</span><span class="nm">' + esc(c.name) + '<small>Awaiting Approval</small></span><span class="pr">' + U.money(c.price) + '</span></li>';
+      return '<li class="pending"><span class="ck">' + icon('clock', 13) + '</span><span class="nm">' + esc(c.name) + '<small>Talking It Over</small></span><span class="pr">' + U.money(c.price) + '</span></li>';
     }).join('');
     var pct = vm.total ? Math.round(vm.paid / vm.total * 100) : 0;
     var n = vm.next;
@@ -1367,7 +1379,7 @@ MQ.renderEvent = (function () {
       '<span class="mq-chip mq-chip-ok" style="font-size:11px;padding:6px 12px">' + icon('check', 12) + count + (count === 1 ? ' item' : ' items') + ' booked</span></div>' +
       '<div class="mq-invest-row"><div class="mq-night"><span class="mq-sub">What\'s In Your Night</span><ul class="mq-lines">' + lines + pend + '</ul>' +
       '<div class="mq-total"><span>Total Investment</span><b>' + U.money(vm.total) + '</b></div>' +
-      (pending.length ? '<span class="mq-small" style="margin-top:8px">Items awaiting approval are not in your total until ' + esc(vm.dj.first) + ' confirms them.</span>' : '') +
+      (pending.length ? '<span class="mq-small" style="margin-top:8px">Items you asked about are not in your total until you and ' + esc(vm.dj.first) + ' agree on them.</span>' : '') +
       (vm.isBooth ? '<div class="mq-boothadd" data-mq-boothadd></div>' : '') +
       '<span class="mq-small" style="margin-top:14px">' + (vm.isBooth ? 'Want to change something? Message the Marquee team and we\'ll take care of it.' : 'Want to change something? Message your headliner and they\'ll take care of it.') + '</span></div>' +
       '<div class="mq-stand"><span class="mq-sub">Where You Stand</span><div><div class="mq-meter"><div style="width:' + pct + '%"></div></div>' +
@@ -1380,9 +1392,10 @@ MQ.renderEvent = (function () {
 
   function optCard(c, feat, selected) {
     var on = selected.indexOf(c.id) >= 0;
-    return '<div class="mq-opt' + (feat ? ' feat' : '') + (on ? ' sel' : '') + '"><span class="nm">' + esc(c.name) + '</span><span class="ds">' + esc(c.sub || '') + '</span>' +
+    return '<div class="mq-opt' + (feat ? ' feat' : '') + (on ? ' sel' : '') + '">' + (c.moment ? '<span class="mo">' + esc(c.moment) + '</span>' : '') +
+      '<span class="nm">' + esc(c.name) + '</span><span class="ds">' + esc(c.sub || '') + '</span>' +
       '<div class="bt"><span class="pr">' + U.money(c.price) + (c.unit ? ' / ' + esc(c.unit) : '') + '</span>' +
-      '<button type="button" data-mq-pick="' + c.id + '" aria-pressed="' + on + '">' + (on ? 'Selected' : 'Select') + '</button></div></div>';
+      '<button type="button" data-mq-pick="' + c.id + '" aria-pressed="' + on + '">' + (on ? icon('check', 12) + 'On Your List' : 'Ask About This') + '</button></div></div>';
   }
 
   /* Add To Your Night has its own state (selection, dropdown, status), so it re-renders on its own. */
@@ -1405,12 +1418,16 @@ MQ.renderEvent = (function () {
       container.style.display = '';
       var sel = vm.options.all.filter(function (c) { return state.selected.indexOf(c.id) >= 0; });
       var sum = sel.reduce(function (n, c) { return n + c.price; }, 0);
-      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">Then We Turn It Up</span><h2 class="mq-h2" id="mq-ad">Add To Your Night <span class="mq-serif">make it unforgettable.</span></h2></div>' +
-        '<span class="intro">Only showing what\'s not already in your lineup. Select what you love and see your new total. Send a request and ' + esc(vm.dj.first) +
-        ' reviews it before anything is added to your event.</span></div>';
-      if (feat.length) html += '<div><div class="mq-rule hot"><span>Couples Love These</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
-      if (moreCount) {
-        html += '<button type="button" class="mq-more" aria-expanded="' + state.open + '" data-mq-more>' + (state.open ? 'Show Less' : 'See All ' + moreCount + ' More Options') + icon('chev', 14) + '</button>';
+      var late = vm.options.late;
+      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">' + (late ? 'Almost Showtime' : 'If You Want More') + '</span><h2 class="mq-h2" id="mq-ad">Ideas For Your Night <span class="mq-serif">' + (late ? 'a little more time?' : 'no pressure.') + '</span></h2></div>' +
+        '<span class="intro">' + (late
+          ? 'Your night is close, so the production is locked in. If you want more time on the dance floor, ask here. For anything else, just text ' + esc(vm.dj.first) + '.'
+          : 'A few ideas couples love, matched to moments you\'re already planning. Nothing here is required, and nothing changes until you and ' + esc(vm.dj.first) + ' talk it through.') +
+        '</span></div>';
+      if (feat.length) html += '<div><div class="mq-rule hot"><span>Ideas For Your Moments</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
+      if (late && moreCount) html += '<div class="mq-opts">' + groups.map(function (g) { return g.items.map(function (c) { return optCard(c, false, state.selected); }).join(''); }).join('') + '</div>';
+      else if (moreCount) {
+        html += '<button type="button" class="mq-more" aria-expanded="' + state.open + '" data-mq-more>' + (state.open ? 'Show Less' : 'See Everything We Offer (' + moreCount + ')') + icon('chev', 14) + '</button>';
         if (state.open) html += '<div class="mq-groups">' + groups.map(function (g) {
           return '<div><div class="mq-rule"><span>' + esc(g.label) + '</span></div><div class="mq-opts">' + g.items.map(function (c) { return optCard(c, false, state.selected); }).join('') + '</div></div>';
         }).join('') + '</div>';
@@ -1418,23 +1435,17 @@ MQ.renderEvent = (function () {
       if (state.status) {
         var test = state.status.mode === 'test', err = state.status.mode === 'error';
         html += '<div class="mq-status' + (test || err ? ' test' : '') + '" role="status"><span class="ic">' + icon(err ? 'alert' : 'check', 16) + '</span><div><b>' +
-          (err ? 'That did not go through.' : test ? 'Test mode: nothing was sent.' : 'Request sent!') + '</b><p>' +
+          (err ? 'That did not go through.' : test ? 'Test mode: nothing was sent.' : 'Sent to ' + vm.dj.first + '!') + '</b><p>' +
           esc(err ? state.status.text + ' Please text ' + vm.dj.first + ' instead.' : test ? 'This is exactly what ' + vm.dj.first + ' will receive once requests are switched on:\n\n' + state.status.text
-            : vm.dj.first + ' will review your request and confirm with you. Your total updates once it is approved.') +
+            : vm.dj.first + ' has your list and will reach out to talk it through. Nothing changes until you both agree.') +
           '</p></div><button type="button" data-mq-dismiss>Got it</button></div>';
       }
       if (sel.length) {
-        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid);
-        var dueNow = plan.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0) -
-          vm.schedule.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0);
-        var talk = vm.dj.sms ? vm.dj.sms + '?&body=' + encodeURIComponent('Hi ' + vm.dj.first + '! We are thinking about adding ' + sel.map(function (c) { return c.name; }).join(', ') + '. Can we talk it through?')
+        var talk = vm.dj.sms ? vm.dj.sms + '?&body=' + encodeURIComponent('Hi ' + vm.dj.first + '! We are thinking about ' + sel.map(function (c) { return c.name; }).join(', ') + '. Can we talk it through?')
           : (vm.dj.mailto || '#');
-        html += '<div class="mq-tally"><div class="c w"><span>Your Selections \u00b7 ' + sel.length + '</span><b>' + esc(sel.map(function (c) { return c.name; }).join(', ')) + '</b></div>' +
-          '<div class="c"><span>Adds</span><b>' + U.money(sum) + '</b></div>' +
-          '<div class="c"><span>New Total If Approved</span><b>' + U.money(vm.total + sum) + '</b></div>' +
-          '<div class="c"><span>Due Once Approved</span><b style="color:var(--mq-pink-soft)">' + U.money(Math.max(0, U.round2(dueNow))) + '</b><i>' +
-          (dueNow > 0.005 ? 'Catch-up to stay on schedule' : 'Spread across your remaining payments') + '</i></div>' +
-          '<div class="act"><button type="button" class="mq-btn mq-btn-pink" data-mq-send' + (state.busy ? ' disabled' : '') + '>' + icon('send', 16) + (state.busy ? 'Sending...' : 'Request to Add') + '</button>' +
+        html += '<div class="mq-tally soft"><div class="c w"><span>Your List \u00b7 ' + sel.length + '</span><b>' + esc(sel.map(function (c) { return c.name; }).join(', ')) + '</b>' +
+          '<i>About ' + U.money(sum) + ' if you go for ' + (sel.length === 1 ? 'it' : 'them') + '. ' + esc(vm.dj.first) + ' confirms the details and your payment plan with you before anything changes.</i></div>' +
+          '<div class="act"><button type="button" class="mq-btn mq-btn-pink" data-mq-send' + (state.busy ? ' disabled' : '') + '>' + icon('send', 16) + (state.busy ? 'Sending...' : 'Send To ' + esc(vm.dj.first)) + '</button>' +
           '<a class="mq-btn mq-btn-ghost" href="' + esc(talk) + '">' + icon('chat', 14) + 'Talk to ' + esc(vm.dj.first) + ' First</a></div></div>';
       }
       container.innerHTML = html;
