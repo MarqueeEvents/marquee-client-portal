@@ -139,6 +139,7 @@ MQ.config = {
     { id: 'snow', cat: 'Atmosphere & Effects', name: 'Snowfall Effect', price: 550, match: 'snow', sub: 'Soft falling snow for your first dance or special moment.' },
     { id: 'tank', cat: 'Atmosphere & Effects', name: 'Extra CO2 Tank', price: 175, match: 'co2 tank', repeatable: true, sub: 'An extra 50 lb tank for more blasts. Add to a cannon or jets.' },
     { id: 'foam', cat: 'Atmosphere & Effects', name: 'LED Foam Sticks', price: 275, match: 'foam', sub: 'Light-up foam sticks for the whole crowd at the biggest moment.' },
+    { id: 'sax', cat: 'Live Musicians', name: 'Marquee Fusion: Saxy Rob', price: 1800, match: 'sax', sub: 'Live sax by Saxy Rob, played right over your DJ set. Ask about his availability.' },
     { id: 'wrap', cat: 'Dance Floor & Production', name: 'Custom Dance Floor Wrap', price: 4500, match: 'floor wrap', sub: 'Your monogram or artwork wrapped across the entire dance floor.' },
     { id: 'classic', cat: 'Photo Booths', name: 'The Classic', price: 795, match: 'classic photo booth|the classic(?! mirror)', booth: true, sub: 'Backdrop, props, unlimited prints and an attendant. Up to 3 hours.' },
     { id: 'roamer', cat: 'Photo Booths', name: 'The Roamer', price: 595, match: 'roamer', booth: true, sub: 'A booth that moves through your party. Photos sent by text or email.' },
