@@ -53,32 +53,30 @@ MQ.model = (function () {
     }).map(function (c) { return c.id; });
   }
 
-  function addOptions(lines, hasBoothEvent, isBoothEvent, djKey, eventDate) {
+  function addOptions(lines, hasBoothEvent, isBoothEvent, djKey) {
     var booked = bookedIds(lines, hasBoothEvent);
-    var daysOut = eventDate ? U.daysBetween(U.today(), eventDate) : Infinity;
-    var late = daysOut <= (MQ.config.LATE_DAYS || 30);
     var avail = MQ.config.CATALOG.filter(function (c) {
       if (booked.indexOf(c.id) >= 0) return false;
-      if (late && !c.late) return false;
       return isBoothEvent ? c.booth : true;
     }).map(function (c) {
       /* Bob's own rate for extra time when he is the headliner. */
       return (c.bobPrice && djKey === 'bob') ? Object.assign({}, c, { price: c.bobPrice }) : c;
     });
     var featured = [];
-    if (!late) MQ.config.FEATURED.forEach(function (f) {
-      var c = avail.filter(function (a) { return a.id === f.id; })[0];
-      if (c && featured.length < 6) featured.push(Object.assign({}, c, { moment: f.moment }));
+    MQ.config.FEATURED.forEach(function (id) {
+      var c = avail.filter(function (a) { return a.id === id; })[0];
+      if (c) featured.push(c);
     });
-    var featIds = featured.map(function (c) { return c.id; });
-    var rest = late ? [] : avail.filter(function (c) { return featIds.indexOf(c.id) < 0; });
+    /* Photo booths get their own always-visible spot on DJ events (a popular add-on); not shown on booth events or when a booth is already booked. */
+    var booths = isBoothEvent ? [] : avail.filter(function (c) { return c.booth && featured.indexOf(c) < 0; });
+    var rest = avail.filter(function (c) { return featured.indexOf(c) < 0 && booths.indexOf(c) < 0; });
     var groups = [];
     rest.forEach(function (c) {
       var g = groups.filter(function (x) { return x.label === c.cat; })[0];
       if (!g) { g = { label: c.cat, items: [] }; groups.push(g); }
       g.items.push(c);
     });
-    return { featured: featured, groups: groups, all: avail.map(function (c) { return featured.filter(function (f) { return f.id === c.id; })[0] || c; }), late: late };
+    return { featured: featured, booths: booths, groups: groups, all: avail };
   }
 
   function journey(eventDate, sched, isBooth, signed, designSent) {
@@ -199,7 +197,7 @@ MQ.model = (function () {
       total: total, paid: paid, balance: balance,
       schedule: sched, next: next,
       journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id)),
-      options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key, eventDate),
+      options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key),
       venue: venueShort(details.venue)
     };
   }

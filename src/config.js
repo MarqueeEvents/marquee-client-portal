@@ -120,10 +120,12 @@ MQ.config = {
   // match: a case-insensitive pattern for this item on a DJEP fee line, so already-booked items are hidden.
   // bobPrice: the price when Bob is the headliner.
   CATALOG: [
-    { id: 'hour', cat: 'Event Add-Ons', name: 'Extra Hour', price: 300, bobPrice: 500, unit: 'hour', match: 'extra hour|additional hour', repeatable: true, late: true, sub: 'Keep the party going one more hour with your headliner.' },
-    { id: 'half', cat: 'Event Add-Ons', name: 'Extra Half Hour', price: 150, bobPrice: 250, match: 'half hour', repeatable: true, late: true, sub: '30 more minutes with your headliner.' },
+    { id: 'hour', cat: 'Event Add-Ons', name: 'Extra Hour', price: 300, bobPrice: 500, unit: 'hour', match: 'extra hour|additional hour', repeatable: true, sub: 'Keep the party going one more hour with your headliner.' },
+    { id: 'half', cat: 'Event Add-Ons', name: 'Extra Half Hour', price: 150, bobPrice: 250, match: 'half hour', repeatable: true, sub: '30 more minutes with your headliner.' },
     { id: 'ceremony', cat: 'Event Add-Ons', name: 'Ceremony Sound & Music', price: 400, match: 'ceremony', sub: 'Ceremony sound, wireless mics and live-cued music. Works anywhere on the property.' },
+    { id: 'second', cat: 'Event Add-Ons', name: 'Second Sound System', price: 300, match: 'second sound', sub: 'Separate sound for a second space, like dinner in another room.' },
     { id: 'cocktail', cat: 'Event Add-Ons', name: 'Cocktail Hour: Second Location', price: 300, match: 'cocktail hour', sub: 'Separate sound and setup so cocktail hour can happen in a different space.' },
+    { id: 'speakers', cat: 'Event Add-Ons', name: 'Additional Speakers', price: 75, match: 'additional speaker', sub: 'Full, even sound for a large or split room.' },
     { id: 'floorlights', cat: 'Lighting & Visuals', name: 'Extra Dance Floor Lights (2nd Pair)', price: 350, match: '2nd pair|second pair|extra dance floor light', sub: 'A second pair of intelligent dance floor lights, for 4 total.' },
     { id: 'spots', cat: 'Lighting & Visuals', name: 'Moving Spot Lights', price: 350, unit: 'pair', match: 'moving spot', sub: 'Programmable moving lights on totems for beams and patterns across the room.' },
     { id: 'tubes', cat: 'Lighting & Visuals', name: 'LED Light Tubes', price: 400, match: 'light tubes|astera', sub: 'Wireless LED tubes for a modern, festival-style glow.' },
@@ -131,10 +133,11 @@ MQ.config = {
     { id: 'tv', cat: 'Lighting & Visuals', name: '65" TV Display', price: 300, unit: 'TV', match: 'tv display|65"', sub: 'A 65" screen on a stand for slideshows, videos or visuals.' },
     { id: 'ledbooth', cat: 'Lighting & Visuals', name: 'LED Video DJ Booth', price: 400, match: 'video dj booth', sub: 'Our LED mirror DJ booth with a built-in 65" screen for your monogram or visuals.' },
     { id: 'clouds', cat: 'Atmosphere & Effects', name: 'Dancing on the Clouds', price: 350, match: 'clouds', sub: 'A thick, low cloud rolls across the floor for your first dance.' },
-    { id: 'spark', cat: 'Atmosphere & Effects', name: 'Sparkler Fountains', price: 400, unit: 'pair', match: 'sparkler', sub: 'Two fountains for your entrance, first dance or Impact Moment. Built for indoor use.' },
+    { id: 'spark', cat: 'Atmosphere & Effects', name: 'Sparkler Fountains', price: 400, unit: 'pair', match: 'sparkler', sub: 'For your grand entrance, first dance or Impact Moment. Built for indoor use.' },
     { id: 'co2', cat: 'Atmosphere & Effects', name: 'CO2 Jets', price: 400, unit: 'pair', match: 'co2 jet|cryo', sub: 'Lighted, floor-mounted CO2 jets that fire on the drop.' },
     { id: 'gatling', cat: 'Atmosphere & Effects', name: 'CO2 Gatling Cannon', price: 350, match: 'gatling|cool burst', sub: 'A rapid-fire LED CO2 cannon your headliner fires over the crowd.' },
     { id: 'snow', cat: 'Atmosphere & Effects', name: 'Snowfall Effect', price: 550, match: 'snow', sub: 'Soft falling snow for your first dance or special moment.' },
+    { id: 'tank', cat: 'Atmosphere & Effects', name: 'Extra CO2 Tank', price: 175, match: 'co2 tank', repeatable: true, sub: 'An extra 50 lb tank for more blasts. Add to a cannon or jets.' },
     { id: 'foam', cat: 'Atmosphere & Effects', name: 'LED Foam Sticks', price: 275, match: 'foam', sub: 'Light-up foam sticks for the whole crowd at the biggest moment.' },
     { id: 'sax', cat: 'Live Musicians', name: 'Marquee Fusion: Saxy Rob', price: 1800, match: 'sax', sub: 'Live sax by Saxy Rob, played right over your DJ set. Ask about his availability.' },
     { id: 'wrap', cat: 'Dance Floor & Production', name: 'Custom Dance Floor Wrap', price: 4500, match: 'floor wrap', sub: 'Your monogram or artwork wrapped across the entire dance floor.' },
@@ -152,17 +155,6 @@ MQ.config = {
     { id: 'b4x6', name: '4"x6" Single Print Upgrade', price: 125, match: '4\\s*"?\\s*x\\s*6|print upgrade', classicOnly: true, sub: 'Upgrade The Classic to 4"x6" single prints.' }
   ],
 
-  // The "Couples Love These" picks, in order. Anything already booked is skipped and the next item fills in.
-  // Ideas shown up front, each tied to a moment the couple is already planning. The rest sit behind "See everything".
-  // Logistics (extra speakers, second sound, CO2 tanks) are left out on purpose: the headliner brings those up in planning.
-  FEATURED: [
-    { id: 'clouds', moment: 'For your first dance' },
-    { id: 'spark', moment: 'For your grand entrance' },
-    { id: 'mono', moment: 'When guests walk in' },
-    { id: 'co2', moment: 'For the peak of the night' },
-    { id: 'sax', moment: 'For cocktail hour and beyond' },
-    { id: 'hour', moment: 'When the night is too good to end' }
-  ],
-  // Inside this many days, only quick add-ons (late: true) are offered. Production needs lead time.
-  LATE_DAYS: 30
+  // The "Couples Love These" picks: Bob's most requested wedding add-ons, in his order. All of them show; anything already booked is skipped.
+  FEATURED: ['ceremony', 'clouds', 'mono', 'spark', 'co2', 'sax', 'floorlights', 'gatling', 'foam']
 };
