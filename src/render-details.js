@@ -35,12 +35,12 @@ MQ.renderDetails = (function () {
       '<h2>' + esc(vm.isBooth ? (vm.list.package || U.typeName(d.type || vm.list.type)) : U.typeName(d.type || vm.list.type)) + '</h2>' +
       (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') + '</div>' +
       '<div class="mq-dsum-act"><a class="mq-btn mq-btn-pink" href="' + esc(payHref) + '">' + icon('card', 16) + 'Make a Payment</a>' +
-      (vm.isBooth ? '' : U.viboButton('mq-btn mq-btn-ghost', 15)) + '</div></section>';
+      (vm.isBooth || vm.kind === 'school' || vm.kind === 'private' ? '' : U.viboButton('mq-btn mq-btn-ghost', 15)) + '</div></section>';
 
     /* When & Where */
     var when = '<dl class="mq-dl">' + row('Date', U.fmtDateLong(date) + ' (' + U.DAYS[date.getDay()] + ')') +
       row('Setup', d.setup) + row('Start', d.start) + row('End', d.end) + '</dl>' +
-      '<p class="mq-small">Times can shift as your timeline comes together. Your headliner confirms everything at final planning.</p>';
+      '<p class="mq-small">Times can shift as your timeline comes together. Your headliner confirms everything ' + (vm.kind === 'school' || vm.kind === 'private' ? 'on your planning call' : 'at final planning') + '.</p>';
     var where = '<div class="mq-place"><span class="mq-ico">' + icon('pin', 20) + '</span><div><b>' + esc(d.venueLines[0] || 'Venue to be confirmed') + '</b>' +
       (d.venueLines.length > 1 ? '<span>' + esc(d.venueLines.slice(1).join(', ')) + '</span>' : '') + '</div></div>' +
       (mapHref ? '<a class="mq-btn mq-btn-ghost mq-btn-sm" href="' + mapHref + '" target="_blank" rel="noopener">' + icon('arrow', 14) + 'Open in Maps</a>' : '');
@@ -66,7 +66,7 @@ MQ.renderDetails = (function () {
       ].filter(Boolean).join('') + '</div>' +
       '<p class="mq-note">Texts and emails are answered within 24 to 48 hours. Weekends are show days, so replies may come Monday.</p>' +
       '<a class="mq-btn mq-btn-ghost mq-btn-sm" href="/clients/contact.asp">' + icon('mail', 14) + 'Message Us</a>';
-    html += '<div class="mq-dgrid mq-dgrid-wide">' + card('Your Night', 'What&rsquo;s Included', pkg || '<p class="mq-small">Your details will appear here.</p>') +
+    html += '<div class="mq-dgrid mq-dgrid-wide">' + card('Your ' + vm.words.Night, 'What&rsquo;s Included', pkg || '<p class="mq-small">Your details will appear here.</p>') +
       card('Your Team', vm.isBooth ? 'Your Point Of Contact' : 'Your Headliner', team) + '</div>';
 
     /* Fees + payments */
@@ -82,13 +82,13 @@ MQ.renderDetails = (function () {
     }).join('');
     var totals = '<dl class="mq-totals">' +
       (d.subtotal != null && d.subtotal !== d.totalFee ? row('Subtotal', U.money(d.subtotal, true)) : '') +
-      row('Total Fee', U.money(d.totalFee, true)) + row('Retainer', U.money(d.deposit, true)) + row('Paid So Far', U.money(d.payments || 0, true)) +
+      row('Total Fee', U.money(d.totalFee, true)) + row(vm.kind === 'school' || vm.kind === 'private' ? 'Booking Deposit' : 'Retainer', U.money(d.deposit, true)) + row('Paid So Far', U.money(d.payments || 0, true)) +
       '</dl><div class="mq-baldue"><span>Balance Due</span><b>' + U.money(d.balanceDue, true) + '</b></div>';
     var hist = d.history.length
       ? '<ul class="mq-hist">' + d.history.map(function (cells) {
           return '<li><span class="ck">' + icon('check', 12) + '</span><span>' + esc(cells.slice(0, -1).join(' \u00b7 ')) + '</span><b>' + esc(cells[cells.length - 1]) + '</b></li>';
         }).join('') + '</ul>'
-      : '<p class="mq-empty">No payments yet. Your retainer locks in your date.</p>';
+      : '<p class="mq-empty">No payments yet. Your ' + (vm.kind === 'school' || vm.kind === 'private' ? 'booking deposit' : 'retainer') + ' locks in your date.</p>';
     var n = vm.next;
     var nextBox = n
       ? '<div class="mq-next"><span>' + (n.status === 'due' ? 'Due Now \u00b7 ' : 'Next Payment \u00b7 ') + esc(n.label) + '</span><b>' + U.money(n.left) + '</b><span>' +
@@ -110,6 +110,7 @@ MQ.renderDetails = (function () {
     html += '<div class="mq-dgrid">' + card('Documents', 'Your Files', docs) + card('Need A Change?', 'Request Changes', change) + '</div>';
 
     main.innerHTML = html;
+    U.setFooter(vm.kind);
   }
 
   return { render: render };

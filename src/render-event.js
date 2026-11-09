@@ -9,19 +9,22 @@ MQ.renderEvent = (function () {
   function switcher(vm, events) {
     if (events.length < 2) return '';
     var links = events.map(function (e) {
-      var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : 'Wedding Entertainment';
+      var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : U.typeName(e.type);
       return '<a href="?mqevent=' + e.id + '"' + (e.id === vm.id ? ' aria-current="page"' : '') + '>' +
         icon(e.isPhotoBooth ? 'camera' : 'music', 14) + esc(label) + '</a>';
     }).join('');
     return '<nav class="mq-switch" aria-label="Your events">' + links + '<a class="mq-all" href="?mqevent=all">All Events</a></nav>';
   }
 
+  function nonWedding(vm) { return vm.kind === 'school' || vm.kind === 'private'; }
+
   function hero(vm) {
     var sub = vm.isBooth
       ? 'Your photo booth details, payments and add-ons, all in one place.'
+      : nonWedding(vm) ? 'Track your timeline, payments and every detail of ' + vm.words.night + ', all in one place.'
       : 'Track your timeline, payments and every detail of your night, all in one place. Plan your music in Vibo.';
     return '<section class="mq-hero"><span class="mq-eyebrow">Client Portal</span>' +
-      '<h1>Welcome back,<br>' + esc(vm.couple.first) + '.</h1><p class="mq-serif">your night, by design.</p><p>' + sub + '</p></section>';
+      '<h1>Welcome back,<br>' + esc(vm.couple.first) + '.</h1><p class="mq-serif">' + esc(vm.isBooth ? 'your night, by design.' : vm.words.serif) + '</p><p>' + sub + '</p></section>';
   }
 
   function miniBars() {
@@ -44,7 +47,7 @@ MQ.renderEvent = (function () {
       dj.igUrl && '<a href="' + dj.igUrl + '" target="_blank" rel="noopener">' + icon('ig') + '<span>' + esc(dj.handle) + '</span></a>'
     ].filter(Boolean).join('');
     var links = vm.list.links;
-    var vibo = vm.isBooth ? '' : U.viboButton('mq-btn mq-btn-ghost', 15);
+    var vibo = vm.isBooth || nonWedding(vm) ? '' : U.viboButton('mq-btn mq-btn-ghost', 15);
     return '<section class="mq-event" aria-labelledby="mq-ev-title"><div class="mq-event-row">' +
       '<div class="mq-photo"><img src="' + esc(photo) + '" alt="' + esc(vm.isBooth ? 'Marquee photo booth' : dj.name) + '" style="object-position:' + (vm.isBooth ? 'center 35%' : (dj.pos || 'center 20%')) + '">' +
       '<div class="mq-fade"></div><div class="mq-edge"></div><div class="mq-mini" aria-hidden="true">' + miniBars() + '</div></div>' +
@@ -104,8 +107,8 @@ MQ.renderEvent = (function () {
     var cards = j.steps.map(function (s) {
       if (s.isFinal) {
         return '<li class="mq-step mq-drop lvl' + s.lvl + '"><div class="top"><span class="num">' + s.num + ' \u00b7 The Drop</span><span class="tag"><span class="rec"></span>' +
-          (vm.isBooth ? 'Event Night' : 'Wedding Night') + '</span></div><span class="big">Let\'s<br>Dance</span><span class="when">' + esc(s.when) +
-          '</span><span class="gd">Trust the Marquee team. Your vision and the party of your dreams come to life.</span><span class="aw">' + esc(s.away) + '</span></li>';
+          (vm.isBooth ? 'Event Night' : vm.words.dropTag) + '</span></div><span class="big">' + vm.words.drop + '</span><span class="when">' + esc(s.when) +
+          '</span>' + (s.due ? '<span class="when" style="color:var(--mq-pink-soft)">' + esc(s.due) + '</span>' : '') + '<span class="gd">Trust the Marquee team. Your vision and the party of your dreams come to life.</span><span class="aw">' + esc(s.away) + '</span></li>';
       }
       var chip = s.done ? 'mq-chip-ok' : (s.lit || s.status === 'Due Now' || s.status === 'Open' || s.status === 'Book Now') ? 'mq-chip-pink' : 'mq-chip-dim';
       var extra = '';
@@ -120,11 +123,34 @@ MQ.renderEvent = (function () {
       '<h2 class="mq-h2" id="mq-jr">The Marquee Process <span class="mq-serif">epic, by design.</span></h2></div>' +
       '<div class="pct">You\'re <b>' + j.pct + '%</b> of the way to the drop.</div></div>' +
       '<div class="mq-track" aria-hidden="true">' + pins + '<div class="mq-bars">' + bars + '</div><div class="mq-now" style="left:' + j.pct + '%"></div></div>' +
-      '<ol class="mq-steps">' + cards + '</ol></section>';
+      '<ol class="mq-steps' + (j.steps.length === 5 ? ' mq-steps-5' : '') + '">' + cards + '</ol></section>';
+  }
+
+  /* School dances and private events: one optional call, 2 to 3 weeks out. */
+  function eventCall(vm) {
+    var dj = vm.dj, t = U.today(), d = vm.eventDate, c = MQ.config.EVENT_CALL;
+    var from = U.addDays(d, -c.fromDaysBefore), to = U.addDays(d, -c.toDaysBefore);
+    var url = (dj.calendly && dj.calendly.final) || (MQ.config.CALENDLY_DEFAULT || {}).final;
+    var school = vm.kind === 'school';
+    var title = school ? 'Final Details Call' : 'Event Planning Call';
+    var chip = U.daysBetween(t, to) < 0 ? '<span class="mq-chip mq-chip-dim">Window Closed</span>'
+      : U.daysBetween(t, from) <= 0 ? '<span class="mq-chip mq-chip-pink">Open Now</span>'
+      : '<span class="mq-chip mq-chip-dim">Opens ' + U.fmtDate(from) + '</span>';
+    var btn = url ? '<a class="mq-btn mq-btn-pink" href="' + esc(url) + '" target="_blank" rel="noopener">' + icon('cal', 15) + 'Book ' + title + '</a>'
+      : dj.sms ? '<a class="mq-btn mq-btn-pink" href="' + dj.sms + '">' + icon('chat', 15) + 'Text ' + esc(dj.first) + ' To Book</a>' : '';
+    var body = school
+      ? 'A quick call to lock the details: start and end times, load-in, and who your school contact is on the night. Music requests and your do-not-play list can come in anytime before.'
+      : 'Walk through your timeline, announcements, special songs and any vendor timing so the night runs like a show.';
+    return '<section class="mq-sessions" aria-labelledby="mq-bk"><div class="mq-sechead"><div><span class="mq-eyebrow">Book With ' + esc(dj.first) + '</span>' +
+      '<h2 class="mq-h2" id="mq-bk">Your Planning Call</h2></div></div><div class="mq-sess-grid">' +
+      '<div class="mq-card mq-sess"><div class="top"><span class="mq-ico">' + icon('checkbox', 20) + '</span>' + chip + '</div>' +
+      '<h3>' + title + ' <span class="mq-chip mq-chip-dim" style="vertical-align:middle">Optional</span></h3><p>' + body + '</p>' +
+      '<div class="meta"><span><b>Best window:</b> ' + U.fmtDate(from) + ' to ' + U.fmtDate(to) + '</span><span>About 20 minutes</span></div>' + btn + '</div></div></section>';
   }
 
   function sessions(vm) {
     if (vm.isBooth) return '';
+    if (nonWedding(vm)) return eventCall(vm);
     var dj = vm.dj;
     var c = MQ.config, t = U.today(), d = vm.eventDate;
     function link(kind, label) {
@@ -194,9 +220,9 @@ MQ.renderEvent = (function () {
       (made ? '<ul class="mq-sched">' + made + '</ul>' : '<p class="mq-small" style="margin:6px 0 0">No payments yet. Your retainer locks in your date.</p>') + '</div>';
     var count = (vm.details.lines || []).length;
     return '<section class="mq-invest" id="mq-payment" aria-labelledby="mq-iv"><div class="mq-sechead"><div><span class="mq-eyebrow">Your Lineup &amp; Investment</span>' +
-      '<h2 class="mq-h2" id="mq-iv">Your Night, <span style="color:var(--mq-pink)">As Booked.</span></h2></div>' +
+      '<h2 class="mq-h2" id="mq-iv">Your ' + vm.words.Night + ', <span style="color:var(--mq-pink)">As Booked.</span></h2></div>' +
       '<span class="mq-chip mq-chip-ok" style="font-size:11px;padding:6px 12px">' + icon('check', 12) + count + (count === 1 ? ' item' : ' items') + ' booked</span></div>' +
-      '<div class="mq-invest-row"><div class="mq-night"><span class="mq-sub">What\'s In Your Night</span><ul class="mq-lines">' + lines + pend + '</ul>' +
+      '<div class="mq-invest-row"><div class="mq-night"><span class="mq-sub">What\'s In Your ' + vm.words.Night + '</span><ul class="mq-lines">' + lines + pend + '</ul>' +
       '<div class="mq-total"><span>Total Investment</span><b>' + U.money(vm.total) + '</b></div>' +
       (pending.length ? '<span class="mq-small" style="margin-top:8px">Items awaiting approval are not in your total until ' + esc(vm.dj.first) + ' confirms them.</span>' : '') +
       (vm.isBooth ? '<div class="mq-boothadd" data-mq-boothadd></div>' : '') +
@@ -207,7 +233,9 @@ MQ.renderEvent = (function () {
       madeBox +
       '<div><div class="mq-sched-btn">Payment Schedule</div>' +
       '<ul class="mq-sched">' + sched + '</ul></div>' +
-      '<p class="mq-small">25% at booking, 25% at 9 months, 25% at 6 months, balance due 90 days before your event.</p></div></div></section>';
+      '<p class="mq-small">' + (vm.kind === 'school' ? '50% booking deposit, balance due the night of the dance.'
+        : vm.kind === 'private' ? '50% booking deposit, final 50% due 60 days before your event.'
+        : '25% at booking, 25% at 9 months, 25% at 6 months, balance due 90 days before your event.') + '</p></div></div></section>';
   }
 
   function optCard(c, feat, selected) {
@@ -238,11 +266,11 @@ MQ.renderEvent = (function () {
       container.style.display = '';
       var sel = vm.options.all.filter(function (c) { return state.selected.indexOf(c.id) >= 0; });
       var sum = sel.reduce(function (n, c) { return n + c.price; }, 0);
-      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">Then We Turn It Up</span><h2 class="mq-h2" id="mq-ad">Add To Your Night <span class="mq-serif">make it unforgettable.</span></h2></div>' +
+      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">Then We Turn It Up</span><h2 class="mq-h2" id="mq-ad">Add To Your ' + vm.words.Night + ' <span class="mq-serif">make it unforgettable.</span></h2></div>' +
         '<span class="intro">Only showing what\'s not already in your lineup. Select what you love and see your new total. Send a request and ' + esc(vm.dj.first) +
         ' reviews it before anything is added to your event.</span></div>';
-      if (feat.length) html += '<div><div class="mq-rule hot"><span>Couples Love These</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
-      if (booths.length) html += '<div><div class="mq-rule hot"><span>Add A Photo Booth</span></div><p class="mq-boothpitch">One of our most-loved add-ons. Your booth runs right alongside your DJ, with its own attendant, so guests take home their photos and you get every one.</p>' +
+      if (feat.length) html += '<div><div class="mq-rule hot"><span>' + esc(vm.words.featured) + '</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
+      if (booths.length) html += '<div><div class="mq-rule hot"><span>Add A Photo Booth</span></div><p class="mq-boothpitch">One of our most-loved add-ons. Your booth runs right alongside your DJ, with its own attendant, so ' + vm.words.guests + ' take home their photos and you get every one.</p>' +
         '<div class="mq-opts">' + booths.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
       if (moreCount) {
         html += '<button type="button" class="mq-more" aria-expanded="' + state.open + '" data-mq-more>' + (state.open ? 'Show Less' : 'See All ' + moreCount + ' More Options') + icon('chev', 14) + '</button>';
@@ -259,7 +287,7 @@ MQ.renderEvent = (function () {
           '</p></div><button type="button" data-mq-dismiss>Got it</button></div>';
       }
       if (sel.length) {
-        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid);
+        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid, vm.kind);
         var dueNow = plan.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0) -
           vm.schedule.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0);
         var talk = vm.dj.sms ? vm.dj.sms + '?&body=' + encodeURIComponent('Hi ' + vm.dj.first + '! We are thinking about adding ' + sel.map(function (c) { return c.name; }).join(', ') + '. Can we talk it through?')
@@ -459,6 +487,7 @@ MQ.renderEvent = (function () {
     addSection(vm, main.querySelector('[data-mq-add]'), drawInvest);
     if (vm.isBooth) designSection(vm, main.querySelector('[data-mq-design-sec]'));
     startCountdown(main, vm.eventDate);
+    U.setFooter(vm.kind);
     MQ.reels.render(main.querySelector('[data-mq-reels]'));
   }
 

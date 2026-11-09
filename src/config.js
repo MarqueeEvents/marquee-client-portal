@@ -33,9 +33,53 @@ MQ.config = {
     { label: 'Final Balance', pct: 0.25, daysBefore: 90 }
   ],
 
+  // School dances and private events (corporate, fundraiser, parties). Bob, Nov 9.
+  // Schools: 50% to book, balance the night of the dance. Private: 50% to book, 50% due 60 days out.
+  PAYMENT_PLANS: {
+    school: [
+      { label: 'Booking Deposit', pct: 0.5, monthsBefore: null },
+      { label: 'Balance', pct: 0.5, daysBefore: 0 }
+    ],
+    private: [
+      { label: 'Booking Deposit', pct: 0.5, monthsBefore: null },
+      { label: 'Final Payment', pct: 0.5, daysBefore: 60 }
+    ]
+  },
+
   // Planning session windows
   CREATIVE_SESSION: { fromMonthsBefore: 6, toMonthsBefore: 3, optional: true },
   FINAL_PLANNING: { fromDaysBefore: 28, toDaysBefore: 14 },
+  // School dances and private events: one optional call about 2 to 3 weeks out (Bob's Final Planning link for now).
+  EVENT_CALL: { fromDaysBefore: 21, toDaysBefore: 14 },
+  // School dances: music requests and do-not-play list due this many days before the dance.
+  MUSIC_REQUESTS_DAYS_BEFORE: 21,
+
+  // Event kind from the DJEP event type. Anything that is not a wedding, photo booth or school dance is a private event.
+  KIND_TESTS: { booth: /photo\s*booth/i, wedding: /wedding/i, school: /school|prom|homecoming/i },
+
+  // Wording by kind. Weddings keep today's wording exactly (booth uses the wedding words).
+  WORDS: {
+    wedding: { night: 'your night', Night: 'Night', serif: 'your night, by design.', guests: 'guests', featured: 'Couples Love These',
+      drop: "Let's<br>Dance", dropTag: 'Wedding Night', footer: 'Luxury Wedding Entertainment', who: 'couple' },
+    school: { night: 'your dance', Night: 'Dance', serif: 'your dance, by design.', guests: 'students', featured: 'Students Love These',
+      drop: 'Dance<br>Night', dropTag: 'Showtime', footer: 'School Dance Entertainment', who: 'school' },
+    'private': { night: 'your event', Night: 'Event', serif: 'your event, by design.', guests: 'guests', featured: 'Guests Love These',
+      drop: 'Event<br>Night', dropTag: 'Showtime', footer: 'Luxury Event Entertainment', who: 'host' }
+  },
+
+  // Non-wedding add-ons: same catalog, minus wedding-only items, with these names and descriptions swapped in.
+  WEDDING_ONLY: ['ceremony'],
+  NON_WEDDING_SWAPS: {
+    mono: { name: 'Logo Projection', sub: { school: 'Your school logo in lights, on the wall or dance floor.', 'private': 'Your company or event logo in lights, on the wall or dance floor.' } },
+    ledbooth: { sub: 'Our LED mirror DJ booth with a built-in 65" screen for your logo or visuals.' },
+    wrap: { sub: 'Your logo or artwork wrapped across the entire dance floor.' },
+    clouds: { sub: 'A thick, low cloud rolls across the floor for a slow song or big moment.' },
+    spark: { sub: 'For a grand entrance, a big announcement or the last song. Built for indoor use.' },
+    snow: { sub: 'Soft falling snow for a slow song or special moment.' },
+    sax: { sub: 'Live sax by Saxy Rob, played right over the DJ set. Ask about his availability.' }
+  },
+  // Picks for non-weddings: same as the wedding list without the ceremony; logo projection first.
+  FEATURED_NON_WEDDING: ['mono', 'clouds', 'co2', 'spark', 'gatling', 'foam', 'floorlights', 'sax'],
 
   // Behold Instagram feed (from @bob_hickman). Only Reels mentioning @marqueeohio or #marqueeohio show.
   REELS_FEED: 'https://feeds.behold.so/WKarKAnpmHuUeM2c6jkt',

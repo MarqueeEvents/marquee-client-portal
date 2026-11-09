@@ -23,14 +23,14 @@ MQ.model = (function () {
   }
 
   /* 25 / 25 / 25 / balance. Paid amount is applied to installments in order. */
-  function schedule(eventDate, total, paid) {
-    var plan = MQ.config.PAYMENT_PLAN;
+  function schedule(eventDate, total, paid, kind) {
+    var plan = (MQ.config.PAYMENT_PLANS || {})[kind] || MQ.config.PAYMENT_PLAN;
     var t = U.today();
     var running = 0, applied = paid || 0;
     return plan.map(function (p, i) {
       var amount = i === plan.length - 1 ? U.round2(total - running) : U.round2(total * p.pct);
       running = U.round2(running + amount);
-      var due = p.monthsBefore ? U.addMonths(eventDate, -p.monthsBefore) : (p.daysBefore ? U.addDays(eventDate, -p.daysBefore) : null);
+      var due = p.monthsBefore ? U.addMonths(eventDate, -p.monthsBefore) : (p.daysBefore != null ? U.addDays(eventDate, -p.daysBefore) : null);
       var covered = Math.min(amount, Math.max(0, applied));
       applied = U.round2(applied - covered);
       var left = U.round2(amount - covered);
@@ -53,17 +53,24 @@ MQ.model = (function () {
     }).map(function (c) { return c.id; });
   }
 
-  function addOptions(lines, hasBoothEvent, isBoothEvent, djKey) {
+  function addOptions(lines, hasBoothEvent, isBoothEvent, djKey, kind) {
     var booked = bookedIds(lines, hasBoothEvent);
+    var nonWedding = kind === 'school' || kind === 'private';
+    var swaps = MQ.config.NON_WEDDING_SWAPS || {};
     var avail = MQ.config.CATALOG.filter(function (c) {
       if (booked.indexOf(c.id) >= 0) return false;
+      if (nonWedding && (MQ.config.WEDDING_ONLY || []).indexOf(c.id) >= 0) return false;
       return isBoothEvent ? c.booth : true;
     }).map(function (c) {
       /* Bob's own rate for extra time when he is the headliner. */
-      return (c.bobPrice && djKey === 'bob') ? Object.assign({}, c, { price: c.bobPrice }) : c;
+      var o = (c.bobPrice && djKey === 'bob') ? Object.assign({}, c, { price: c.bobPrice }) : c;
+      /* School dances and private events: logo instead of monogram, no wedding moments in the descriptions. */
+      var sw = nonWedding && swaps[c.id];
+      if (sw) o = Object.assign({}, o, { name: sw.name || o.name, sub: typeof sw.sub === 'object' ? (sw.sub[kind] || o.sub) : (sw.sub || o.sub) });
+      return o;
     });
     var featured = [];
-    MQ.config.FEATURED.forEach(function (id) {
+    (nonWedding ? (MQ.config.FEATURED_NON_WEDDING || MQ.config.FEATURED) : MQ.config.FEATURED).forEach(function (id) {
       var c = avail.filter(function (a) { return a.id === id; })[0];
       if (c) featured.push(c);
     });
@@ -79,9 +86,10 @@ MQ.model = (function () {
     return { featured: featured, booths: booths, groups: groups, all: avail };
   }
 
-  function journey(eventDate, sched, isBooth, signed, designSent) {
+  function journey(eventDate, sched, isBooth, signed, designSent, kind) {
     var t = U.today();
     var cfg = MQ.config;
+    if (kind === 'school' || kind === 'private') return progress(eventSteps(eventDate, sched, kind, t), eventDate, t);
     function st(date, endDate) {
       if (!date) return 'done';
       var d = U.daysBetween(t, date);
@@ -138,6 +146,54 @@ MQ.model = (function () {
     steps.push({ num: isBooth ? '06' : '08', title: "Let's Dance", date: eventDate, isFinal: true, lvl: lvl,
       when: U.fmtDateLong(eventDate), away: daysOut === 0 ? 'Tonight' : (daysOut < 0 ? 'What a night' : U.away(daysOut)) });
 
+    return progress(steps, eventDate, t);
+  }
+
+  /* School dance: Booked > Booking Deposit > Music Requests > Final Details Call > Dance Night (balance due).
+   * Private event: Booked > Booking Deposit > Final Payment (60 days out) > Event Planning Call > Event Night. */
+  function eventSteps(eventDate, sched, kind, t) {
+    var cfg = MQ.config, w = U.words(kind), school = kind === 'school';
+    function st(date, endDate) {
+      var d = U.daysBetween(t, date);
+      if (endDate && d <= 0 && U.daysBetween(t, endDate) >= 0) return 'open';
+      return d <= 0 ? 'past' : 'future';
+    }
+    function payStep(num, title, p, note) {
+      var status = p.status === 'paid' ? 'Paid' : (p.status === 'due' ? 'Due Now' : 'Upcoming');
+      return {
+        num: num, title: title, date: p.due, when: p.due ? 'Due ' + U.fmtDate(p.due) : 'At booking',
+        note: note, amount: p.status === 'paid' ? U.money(p.amount) + ' paid' : U.money(p.left) + (p.left < p.amount ? ' remaining' : ''),
+        done: p.status === 'paid', status: status, pay: p.status !== 'paid'
+      };
+    }
+    var dep = sched[0], bal = sched[1];
+    var steps = [{ num: '01', title: 'Booked', date: null, when: 'Date on hold', note: 'Your date is on the Marquee calendar.', done: true, status: 'Done' }];
+    steps.push(payStep('02', 'Booking Deposit', dep, '50% of your total locks in your date.'));
+    var cf = U.addDays(eventDate, -cfg.EVENT_CALL.fromDaysBefore), ct = U.addDays(eventDate, -cfg.EVENT_CALL.toDaysBefore);
+    var cs = st(cf, ct);
+    var call = { date: cf, optional: true, when: U.fmtDate(cf) + ' to ' + U.fmtDate(ct), done: cs === 'past',
+      status: cs === 'open' ? 'Book Now' : (cs === 'past' ? 'Done' : 'Optional'), book: 'final' };
+    if (school) {
+      var md = U.addDays(eventDate, -(cfg.MUSIC_REQUESTS_DAYS_BEFORE || 21));
+      steps.push({ num: '03', title: 'Music Requests', date: md, when: 'Send by ' + U.fmtDate(md),
+        note: 'Send your must-play songs and do-not-play list. Clean edits only, always.', done: U.daysBetween(t, md) < 0,
+        status: U.daysBetween(t, md) < 0 ? 'Done' : (U.daysBetween(t, md) <= 30 ? 'Open' : 'Upcoming') });
+      steps.push(Object.assign(call, { num: '04', title: 'Final Details Call', note: 'Optional. Times, load-in and your school contact for the night.' }));
+    } else {
+      steps.push(payStep('03', 'Final Payment', bal, '50% due 60 days before your event.'));
+      steps.push(Object.assign(call, { num: '04', title: 'Event Planning Call', note: 'Optional. Walk through the timeline and details with your headliner, 2 to 3 weeks out.' }));
+    }
+    var daysOut = U.daysBetween(t, eventDate);
+    var lvl = daysOut <= 0 ? 4 : daysOut <= 14 ? 3 : daysOut <= 60 ? 2 : daysOut <= 180 ? 1 : 0;
+    steps.push({ num: '05', title: w.Night + ' Night', date: eventDate, isFinal: true, lvl: lvl, when: U.fmtDateLong(eventDate),
+      due: school && bal.status !== 'paid' ? 'Balance ' + U.money(bal.left) + ' due the night of the dance' : '',
+      away: daysOut === 0 ? 'Tonight' : (daysOut < 0 ? 'What a night' : U.away(daysOut)) });
+    return steps;
+  }
+
+  /* Away labels, the next step, and the progress marker. */
+  function progress(steps, eventDate, t) {
+    var daysOut = U.daysBetween(t, eventDate);
     steps.forEach(function (s) {
       if (!s.isFinal && !s.away) s.away = s.done ? (s.status === 'Window Closed' ? 'Closed' : 'Complete') : (s.date ? U.away(U.daysBetween(t, s.date)) : 'Now');
     });
@@ -182,22 +238,27 @@ MQ.model = (function () {
     var balance = details.balanceDue != null ? details.balanceDue : total;
     var paid = U.round2(total - balance);
     var isBooth = listItem.isPhotoBooth;
+    var kind = U.kindOf(listItem.type || details.type);
     var hasBoothEvent = allEvents.some(function (e) { return e.isPhotoBooth; });
-    var sched = schedule(eventDate, total, paid);
+    var sched = schedule(eventDate, total, paid, kind);
     var next = sched.filter(function (p) { return p.status !== 'paid'; })[0] || null;
     var couple = U.coupleFromName(listItem.name || details.name, listItem.type || details.type, listItem.package);
+    /* School dances and private events greet the school, company or host by the full name. */
+    if (kind === 'school' || kind === 'private') couple = { couple: couple.couple, first: couple.couple };
     return {
       id: listItem.id,
       list: listItem,
       details: details,
       isBooth: isBooth,
+      kind: kind,
+      words: U.words(kind),
       dj: team(listItem.employeeId, isBooth),
       eventDate: eventDate,
       couple: couple,
       total: total, paid: paid, balance: balance,
       schedule: sched, next: next,
-      journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id)),
-      options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key),
+      journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id), kind),
+      options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key, kind),
       venue: venueShort(details.venue)
     };
   }

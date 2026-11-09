@@ -59,6 +59,24 @@ MQ.util = (function () {
     return t;
   }
 
+  /* Event kind: 'wedding', 'booth', 'school' or 'private' (corporate, fundraiser, parties and anything else). */
+  function kindOf(type) {
+    var t = String(type || '').replace(/^marquee test\s+/i, ''), k = MQ.config.KIND_TESTS;
+    if (k.booth.test(t)) return 'booth';
+    if (k.wedding.test(t)) return 'wedding';
+    if (k.school.test(t)) return 'school';
+    return t ? 'private' : 'wedding';
+  }
+  function words(kind) { var w = MQ.config.WORDS; return w[kind] || w.wedding; }
+
+  /* Footer tagline follows the event kind. */
+  function setFooter(kind) {
+    var s = document.querySelector('.mq-footer span');
+    if (s && kind !== 'booth') s.textContent = 'Marquee Events \u00b7 ' + words(kind).footer;
+    var f = document.querySelector('.mq-footer .mq-serif');
+    if (f && kind !== 'booth') f.textContent = words(kind).serif;
+  }
+
   /* "Open Vibo" button: a real link when VIBO_URL is set, otherwise the same look with no link. */
   function viboButton(cls, size) {
     var url = MQ.config.VIBO_URL, inner = icon('music', size || 15) + 'Open Vibo';
@@ -151,7 +169,7 @@ MQ.util = (function () {
   }
 
   return {
-    esc: esc, viboButton: viboButton, lineName: lineName, typeName: typeName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
+    esc: esc, kindOf: kindOf, words: words, setFooter: setFooter, viboButton: viboButton, lineName: lineName, typeName: typeName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
     fmtDate: fmtDate, fmtDateLong: fmtDateLong, away: away, money: money, round2: round2, coupleFromName: coupleFromName,
     icon: icon, wave: wave, store: store, MONTHS: MONTHS, DAYS: DAYS
   };

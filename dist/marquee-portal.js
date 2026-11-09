@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-11-09T16:55Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-11-09T18:28Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -36,9 +36,53 @@ MQ.config = {
     { label: 'Final Balance', pct: 0.25, daysBefore: 90 }
   ],
 
+  // School dances and private events (corporate, fundraiser, parties). Bob, Nov 9.
+  // Schools: 50% to book, balance the night of the dance. Private: 50% to book, 50% due 60 days out.
+  PAYMENT_PLANS: {
+    school: [
+      { label: 'Booking Deposit', pct: 0.5, monthsBefore: null },
+      { label: 'Balance', pct: 0.5, daysBefore: 0 }
+    ],
+    private: [
+      { label: 'Booking Deposit', pct: 0.5, monthsBefore: null },
+      { label: 'Final Payment', pct: 0.5, daysBefore: 60 }
+    ]
+  },
+
   // Planning session windows
   CREATIVE_SESSION: { fromMonthsBefore: 6, toMonthsBefore: 3, optional: true },
   FINAL_PLANNING: { fromDaysBefore: 28, toDaysBefore: 14 },
+  // School dances and private events: one optional call about 2 to 3 weeks out (Bob's Final Planning link for now).
+  EVENT_CALL: { fromDaysBefore: 21, toDaysBefore: 14 },
+  // School dances: music requests and do-not-play list due this many days before the dance.
+  MUSIC_REQUESTS_DAYS_BEFORE: 21,
+
+  // Event kind from the DJEP event type. Anything that is not a wedding, photo booth or school dance is a private event.
+  KIND_TESTS: { booth: /photo\s*booth/i, wedding: /wedding/i, school: /school|prom|homecoming/i },
+
+  // Wording by kind. Weddings keep today's wording exactly (booth uses the wedding words).
+  WORDS: {
+    wedding: { night: 'your night', Night: 'Night', serif: 'your night, by design.', guests: 'guests', featured: 'Couples Love These',
+      drop: "Let's<br>Dance", dropTag: 'Wedding Night', footer: 'Luxury Wedding Entertainment', who: 'couple' },
+    school: { night: 'your dance', Night: 'Dance', serif: 'your dance, by design.', guests: 'students', featured: 'Students Love These',
+      drop: 'Dance<br>Night', dropTag: 'Showtime', footer: 'School Dance Entertainment', who: 'school' },
+    'private': { night: 'your event', Night: 'Event', serif: 'your event, by design.', guests: 'guests', featured: 'Guests Love These',
+      drop: 'Event<br>Night', dropTag: 'Showtime', footer: 'Luxury Event Entertainment', who: 'host' }
+  },
+
+  // Non-wedding add-ons: same catalog, minus wedding-only items, with these names and descriptions swapped in.
+  WEDDING_ONLY: ['ceremony'],
+  NON_WEDDING_SWAPS: {
+    mono: { name: 'Logo Projection', sub: { school: 'Your school logo in lights, on the wall or dance floor.', 'private': 'Your company or event logo in lights, on the wall or dance floor.' } },
+    ledbooth: { sub: 'Our LED mirror DJ booth with a built-in 65" screen for your logo or visuals.' },
+    wrap: { sub: 'Your logo or artwork wrapped across the entire dance floor.' },
+    clouds: { sub: 'A thick, low cloud rolls across the floor for a slow song or big moment.' },
+    spark: { sub: 'For a grand entrance, a big announcement or the last song. Built for indoor use.' },
+    snow: { sub: 'Soft falling snow for a slow song or special moment.' },
+    sax: { sub: 'Live sax by Saxy Rob, played right over the DJ set. Ask about his availability.' }
+  },
+  // Picks for non-weddings: same as the wedding list without the ceremony; logo projection first.
+  FEATURED_NON_WEDDING: ['mono', 'clouds', 'co2', 'spark', 'gatling', 'foam', 'floorlights', 'sax'],
 
   // Behold Instagram feed (from @bob_hickman). Only Reels mentioning @marqueeohio or #marqueeohio show.
   REELS_FEED: 'https://feeds.behold.so/WKarKAnpmHuUeM2c6jkt',
@@ -265,6 +309,24 @@ MQ.util = (function () {
     return t;
   }
 
+  /* Event kind: 'wedding', 'booth', 'school' or 'private' (corporate, fundraiser, parties and anything else). */
+  function kindOf(type) {
+    var t = String(type || '').replace(/^marquee test\s+/i, ''), k = MQ.config.KIND_TESTS;
+    if (k.booth.test(t)) return 'booth';
+    if (k.wedding.test(t)) return 'wedding';
+    if (k.school.test(t)) return 'school';
+    return t ? 'private' : 'wedding';
+  }
+  function words(kind) { var w = MQ.config.WORDS; return w[kind] || w.wedding; }
+
+  /* Footer tagline follows the event kind. */
+  function setFooter(kind) {
+    var s = document.querySelector('.mq-footer span');
+    if (s && kind !== 'booth') s.textContent = 'Marquee Events \u00b7 ' + words(kind).footer;
+    var f = document.querySelector('.mq-footer .mq-serif');
+    if (f && kind !== 'booth') f.textContent = words(kind).serif;
+  }
+
   /* "Open Vibo" button: a real link when VIBO_URL is set, otherwise the same look with no link. */
   function viboButton(cls, size) {
     var url = MQ.config.VIBO_URL, inner = icon('music', size || 15) + 'Open Vibo';
@@ -357,7 +419,7 @@ MQ.util = (function () {
   }
 
   return {
-    esc: esc, viboButton: viboButton, lineName: lineName, typeName: typeName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
+    esc: esc, kindOf: kindOf, words: words, setFooter: setFooter, viboButton: viboButton, lineName: lineName, typeName: typeName, parseDate: parseDate, today: today, addMonths: addMonths, addDays: addDays, daysBetween: daysBetween,
     fmtDate: fmtDate, fmtDateLong: fmtDateLong, away: away, money: money, round2: round2, coupleFromName: coupleFromName,
     icon: icon, wave: wave, store: store, MONTHS: MONTHS, DAYS: DAYS
   };
@@ -544,14 +606,14 @@ MQ.model = (function () {
   }
 
   /* 25 / 25 / 25 / balance. Paid amount is applied to installments in order. */
-  function schedule(eventDate, total, paid) {
-    var plan = MQ.config.PAYMENT_PLAN;
+  function schedule(eventDate, total, paid, kind) {
+    var plan = (MQ.config.PAYMENT_PLANS || {})[kind] || MQ.config.PAYMENT_PLAN;
     var t = U.today();
     var running = 0, applied = paid || 0;
     return plan.map(function (p, i) {
       var amount = i === plan.length - 1 ? U.round2(total - running) : U.round2(total * p.pct);
       running = U.round2(running + amount);
-      var due = p.monthsBefore ? U.addMonths(eventDate, -p.monthsBefore) : (p.daysBefore ? U.addDays(eventDate, -p.daysBefore) : null);
+      var due = p.monthsBefore ? U.addMonths(eventDate, -p.monthsBefore) : (p.daysBefore != null ? U.addDays(eventDate, -p.daysBefore) : null);
       var covered = Math.min(amount, Math.max(0, applied));
       applied = U.round2(applied - covered);
       var left = U.round2(amount - covered);
@@ -574,17 +636,24 @@ MQ.model = (function () {
     }).map(function (c) { return c.id; });
   }
 
-  function addOptions(lines, hasBoothEvent, isBoothEvent, djKey) {
+  function addOptions(lines, hasBoothEvent, isBoothEvent, djKey, kind) {
     var booked = bookedIds(lines, hasBoothEvent);
+    var nonWedding = kind === 'school' || kind === 'private';
+    var swaps = MQ.config.NON_WEDDING_SWAPS || {};
     var avail = MQ.config.CATALOG.filter(function (c) {
       if (booked.indexOf(c.id) >= 0) return false;
+      if (nonWedding && (MQ.config.WEDDING_ONLY || []).indexOf(c.id) >= 0) return false;
       return isBoothEvent ? c.booth : true;
     }).map(function (c) {
       /* Bob's own rate for extra time when he is the headliner. */
-      return (c.bobPrice && djKey === 'bob') ? Object.assign({}, c, { price: c.bobPrice }) : c;
+      var o = (c.bobPrice && djKey === 'bob') ? Object.assign({}, c, { price: c.bobPrice }) : c;
+      /* School dances and private events: logo instead of monogram, no wedding moments in the descriptions. */
+      var sw = nonWedding && swaps[c.id];
+      if (sw) o = Object.assign({}, o, { name: sw.name || o.name, sub: typeof sw.sub === 'object' ? (sw.sub[kind] || o.sub) : (sw.sub || o.sub) });
+      return o;
     });
     var featured = [];
-    MQ.config.FEATURED.forEach(function (id) {
+    (nonWedding ? (MQ.config.FEATURED_NON_WEDDING || MQ.config.FEATURED) : MQ.config.FEATURED).forEach(function (id) {
       var c = avail.filter(function (a) { return a.id === id; })[0];
       if (c) featured.push(c);
     });
@@ -600,9 +669,10 @@ MQ.model = (function () {
     return { featured: featured, booths: booths, groups: groups, all: avail };
   }
 
-  function journey(eventDate, sched, isBooth, signed, designSent) {
+  function journey(eventDate, sched, isBooth, signed, designSent, kind) {
     var t = U.today();
     var cfg = MQ.config;
+    if (kind === 'school' || kind === 'private') return progress(eventSteps(eventDate, sched, kind, t), eventDate, t);
     function st(date, endDate) {
       if (!date) return 'done';
       var d = U.daysBetween(t, date);
@@ -659,6 +729,54 @@ MQ.model = (function () {
     steps.push({ num: isBooth ? '06' : '08', title: "Let's Dance", date: eventDate, isFinal: true, lvl: lvl,
       when: U.fmtDateLong(eventDate), away: daysOut === 0 ? 'Tonight' : (daysOut < 0 ? 'What a night' : U.away(daysOut)) });
 
+    return progress(steps, eventDate, t);
+  }
+
+  /* School dance: Booked > Booking Deposit > Music Requests > Final Details Call > Dance Night (balance due).
+   * Private event: Booked > Booking Deposit > Final Payment (60 days out) > Event Planning Call > Event Night. */
+  function eventSteps(eventDate, sched, kind, t) {
+    var cfg = MQ.config, w = U.words(kind), school = kind === 'school';
+    function st(date, endDate) {
+      var d = U.daysBetween(t, date);
+      if (endDate && d <= 0 && U.daysBetween(t, endDate) >= 0) return 'open';
+      return d <= 0 ? 'past' : 'future';
+    }
+    function payStep(num, title, p, note) {
+      var status = p.status === 'paid' ? 'Paid' : (p.status === 'due' ? 'Due Now' : 'Upcoming');
+      return {
+        num: num, title: title, date: p.due, when: p.due ? 'Due ' + U.fmtDate(p.due) : 'At booking',
+        note: note, amount: p.status === 'paid' ? U.money(p.amount) + ' paid' : U.money(p.left) + (p.left < p.amount ? ' remaining' : ''),
+        done: p.status === 'paid', status: status, pay: p.status !== 'paid'
+      };
+    }
+    var dep = sched[0], bal = sched[1];
+    var steps = [{ num: '01', title: 'Booked', date: null, when: 'Date on hold', note: 'Your date is on the Marquee calendar.', done: true, status: 'Done' }];
+    steps.push(payStep('02', 'Booking Deposit', dep, '50% of your total locks in your date.'));
+    var cf = U.addDays(eventDate, -cfg.EVENT_CALL.fromDaysBefore), ct = U.addDays(eventDate, -cfg.EVENT_CALL.toDaysBefore);
+    var cs = st(cf, ct);
+    var call = { date: cf, optional: true, when: U.fmtDate(cf) + ' to ' + U.fmtDate(ct), done: cs === 'past',
+      status: cs === 'open' ? 'Book Now' : (cs === 'past' ? 'Done' : 'Optional'), book: 'final' };
+    if (school) {
+      var md = U.addDays(eventDate, -(cfg.MUSIC_REQUESTS_DAYS_BEFORE || 21));
+      steps.push({ num: '03', title: 'Music Requests', date: md, when: 'Send by ' + U.fmtDate(md),
+        note: 'Send your must-play songs and do-not-play list. Clean edits only, always.', done: U.daysBetween(t, md) < 0,
+        status: U.daysBetween(t, md) < 0 ? 'Done' : (U.daysBetween(t, md) <= 30 ? 'Open' : 'Upcoming') });
+      steps.push(Object.assign(call, { num: '04', title: 'Final Details Call', note: 'Optional. Times, load-in and your school contact for the night.' }));
+    } else {
+      steps.push(payStep('03', 'Final Payment', bal, '50% due 60 days before your event.'));
+      steps.push(Object.assign(call, { num: '04', title: 'Event Planning Call', note: 'Optional. Walk through the timeline and details with your headliner, 2 to 3 weeks out.' }));
+    }
+    var daysOut = U.daysBetween(t, eventDate);
+    var lvl = daysOut <= 0 ? 4 : daysOut <= 14 ? 3 : daysOut <= 60 ? 2 : daysOut <= 180 ? 1 : 0;
+    steps.push({ num: '05', title: w.Night + ' Night', date: eventDate, isFinal: true, lvl: lvl, when: U.fmtDateLong(eventDate),
+      due: school && bal.status !== 'paid' ? 'Balance ' + U.money(bal.left) + ' due the night of the dance' : '',
+      away: daysOut === 0 ? 'Tonight' : (daysOut < 0 ? 'What a night' : U.away(daysOut)) });
+    return steps;
+  }
+
+  /* Away labels, the next step, and the progress marker. */
+  function progress(steps, eventDate, t) {
+    var daysOut = U.daysBetween(t, eventDate);
     steps.forEach(function (s) {
       if (!s.isFinal && !s.away) s.away = s.done ? (s.status === 'Window Closed' ? 'Closed' : 'Complete') : (s.date ? U.away(U.daysBetween(t, s.date)) : 'Now');
     });
@@ -703,22 +821,27 @@ MQ.model = (function () {
     var balance = details.balanceDue != null ? details.balanceDue : total;
     var paid = U.round2(total - balance);
     var isBooth = listItem.isPhotoBooth;
+    var kind = U.kindOf(listItem.type || details.type);
     var hasBoothEvent = allEvents.some(function (e) { return e.isPhotoBooth; });
-    var sched = schedule(eventDate, total, paid);
+    var sched = schedule(eventDate, total, paid, kind);
     var next = sched.filter(function (p) { return p.status !== 'paid'; })[0] || null;
     var couple = U.coupleFromName(listItem.name || details.name, listItem.type || details.type, listItem.package);
+    /* School dances and private events greet the school, company or host by the full name. */
+    if (kind === 'school' || kind === 'private') couple = { couple: couple.couple, first: couple.couple };
     return {
       id: listItem.id,
       list: listItem,
       details: details,
       isBooth: isBooth,
+      kind: kind,
+      words: U.words(kind),
       dj: team(listItem.employeeId, isBooth),
       eventDate: eventDate,
       couple: couple,
       total: total, paid: paid, balance: balance,
       schedule: sched, next: next,
-      journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id)),
-      options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key),
+      journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id), kind),
+      options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key, kind),
       venue: venueShort(details.venue)
     };
   }
@@ -1166,7 +1289,7 @@ MQ.renderChooser = (function () {
       var d = U.parseDate(e.date);
       var dj = MQ.model.team(e.employeeId);
       var img = e.isPhotoBooth ? MQ.ASSET_BASE + 'events/photo-booth-scrapbook.jpg' : dj.cardPhoto;
-      var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : 'Wedding Entertainment';
+      var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : U.typeName(e.type);
       return '<a class="mq-evcard" href="?mqevent=' + e.id + '"><div class="img"><img src="' + esc(img) + '" alt="" style="object-position:center ' + (e.isPhotoBooth ? '62%' : (dj.cardPos || 'center 6%').replace('center ', '')) + '"></div>' +
         '<div class="bd"><span class="mq-eyebrow">' + U.icon(e.isPhotoBooth ? 'camera' : 'music', 13) + ' ' + esc(e.isPhotoBooth ? 'Photo Booth' : 'DJ & MC') + '</span>' +
         '<h3>' + esc(label) + '</h3><span class="meta">' + esc(U.fmtDateLong(d)) + (e.isPhotoBooth ? '' : ' \u00b7 with ' + esc(dj.first)) + '</span>' +
@@ -1199,19 +1322,22 @@ MQ.renderEvent = (function () {
   function switcher(vm, events) {
     if (events.length < 2) return '';
     var links = events.map(function (e) {
-      var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : 'Wedding Entertainment';
+      var label = e.isPhotoBooth ? (e.package || 'Photo Booth') : U.typeName(e.type);
       return '<a href="?mqevent=' + e.id + '"' + (e.id === vm.id ? ' aria-current="page"' : '') + '>' +
         icon(e.isPhotoBooth ? 'camera' : 'music', 14) + esc(label) + '</a>';
     }).join('');
     return '<nav class="mq-switch" aria-label="Your events">' + links + '<a class="mq-all" href="?mqevent=all">All Events</a></nav>';
   }
 
+  function nonWedding(vm) { return vm.kind === 'school' || vm.kind === 'private'; }
+
   function hero(vm) {
     var sub = vm.isBooth
       ? 'Your photo booth details, payments and add-ons, all in one place.'
+      : nonWedding(vm) ? 'Track your timeline, payments and every detail of ' + vm.words.night + ', all in one place.'
       : 'Track your timeline, payments and every detail of your night, all in one place. Plan your music in Vibo.';
     return '<section class="mq-hero"><span class="mq-eyebrow">Client Portal</span>' +
-      '<h1>Welcome back,<br>' + esc(vm.couple.first) + '.</h1><p class="mq-serif">your night, by design.</p><p>' + sub + '</p></section>';
+      '<h1>Welcome back,<br>' + esc(vm.couple.first) + '.</h1><p class="mq-serif">' + esc(vm.isBooth ? 'your night, by design.' : vm.words.serif) + '</p><p>' + sub + '</p></section>';
   }
 
   function miniBars() {
@@ -1234,7 +1360,7 @@ MQ.renderEvent = (function () {
       dj.igUrl && '<a href="' + dj.igUrl + '" target="_blank" rel="noopener">' + icon('ig') + '<span>' + esc(dj.handle) + '</span></a>'
     ].filter(Boolean).join('');
     var links = vm.list.links;
-    var vibo = vm.isBooth ? '' : U.viboButton('mq-btn mq-btn-ghost', 15);
+    var vibo = vm.isBooth || nonWedding(vm) ? '' : U.viboButton('mq-btn mq-btn-ghost', 15);
     return '<section class="mq-event" aria-labelledby="mq-ev-title"><div class="mq-event-row">' +
       '<div class="mq-photo"><img src="' + esc(photo) + '" alt="' + esc(vm.isBooth ? 'Marquee photo booth' : dj.name) + '" style="object-position:' + (vm.isBooth ? 'center 35%' : (dj.pos || 'center 20%')) + '">' +
       '<div class="mq-fade"></div><div class="mq-edge"></div><div class="mq-mini" aria-hidden="true">' + miniBars() + '</div></div>' +
@@ -1294,8 +1420,8 @@ MQ.renderEvent = (function () {
     var cards = j.steps.map(function (s) {
       if (s.isFinal) {
         return '<li class="mq-step mq-drop lvl' + s.lvl + '"><div class="top"><span class="num">' + s.num + ' \u00b7 The Drop</span><span class="tag"><span class="rec"></span>' +
-          (vm.isBooth ? 'Event Night' : 'Wedding Night') + '</span></div><span class="big">Let\'s<br>Dance</span><span class="when">' + esc(s.when) +
-          '</span><span class="gd">Trust the Marquee team. Your vision and the party of your dreams come to life.</span><span class="aw">' + esc(s.away) + '</span></li>';
+          (vm.isBooth ? 'Event Night' : vm.words.dropTag) + '</span></div><span class="big">' + vm.words.drop + '</span><span class="when">' + esc(s.when) +
+          '</span>' + (s.due ? '<span class="when" style="color:var(--mq-pink-soft)">' + esc(s.due) + '</span>' : '') + '<span class="gd">Trust the Marquee team. Your vision and the party of your dreams come to life.</span><span class="aw">' + esc(s.away) + '</span></li>';
       }
       var chip = s.done ? 'mq-chip-ok' : (s.lit || s.status === 'Due Now' || s.status === 'Open' || s.status === 'Book Now') ? 'mq-chip-pink' : 'mq-chip-dim';
       var extra = '';
@@ -1310,11 +1436,34 @@ MQ.renderEvent = (function () {
       '<h2 class="mq-h2" id="mq-jr">The Marquee Process <span class="mq-serif">epic, by design.</span></h2></div>' +
       '<div class="pct">You\'re <b>' + j.pct + '%</b> of the way to the drop.</div></div>' +
       '<div class="mq-track" aria-hidden="true">' + pins + '<div class="mq-bars">' + bars + '</div><div class="mq-now" style="left:' + j.pct + '%"></div></div>' +
-      '<ol class="mq-steps">' + cards + '</ol></section>';
+      '<ol class="mq-steps' + (j.steps.length === 5 ? ' mq-steps-5' : '') + '">' + cards + '</ol></section>';
+  }
+
+  /* School dances and private events: one optional call, 2 to 3 weeks out. */
+  function eventCall(vm) {
+    var dj = vm.dj, t = U.today(), d = vm.eventDate, c = MQ.config.EVENT_CALL;
+    var from = U.addDays(d, -c.fromDaysBefore), to = U.addDays(d, -c.toDaysBefore);
+    var url = (dj.calendly && dj.calendly.final) || (MQ.config.CALENDLY_DEFAULT || {}).final;
+    var school = vm.kind === 'school';
+    var title = school ? 'Final Details Call' : 'Event Planning Call';
+    var chip = U.daysBetween(t, to) < 0 ? '<span class="mq-chip mq-chip-dim">Window Closed</span>'
+      : U.daysBetween(t, from) <= 0 ? '<span class="mq-chip mq-chip-pink">Open Now</span>'
+      : '<span class="mq-chip mq-chip-dim">Opens ' + U.fmtDate(from) + '</span>';
+    var btn = url ? '<a class="mq-btn mq-btn-pink" href="' + esc(url) + '" target="_blank" rel="noopener">' + icon('cal', 15) + 'Book ' + title + '</a>'
+      : dj.sms ? '<a class="mq-btn mq-btn-pink" href="' + dj.sms + '">' + icon('chat', 15) + 'Text ' + esc(dj.first) + ' To Book</a>' : '';
+    var body = school
+      ? 'A quick call to lock the details: start and end times, load-in, and who your school contact is on the night. Music requests and your do-not-play list can come in anytime before.'
+      : 'Walk through your timeline, announcements, special songs and any vendor timing so the night runs like a show.';
+    return '<section class="mq-sessions" aria-labelledby="mq-bk"><div class="mq-sechead"><div><span class="mq-eyebrow">Book With ' + esc(dj.first) + '</span>' +
+      '<h2 class="mq-h2" id="mq-bk">Your Planning Call</h2></div></div><div class="mq-sess-grid">' +
+      '<div class="mq-card mq-sess"><div class="top"><span class="mq-ico">' + icon('checkbox', 20) + '</span>' + chip + '</div>' +
+      '<h3>' + title + ' <span class="mq-chip mq-chip-dim" style="vertical-align:middle">Optional</span></h3><p>' + body + '</p>' +
+      '<div class="meta"><span><b>Best window:</b> ' + U.fmtDate(from) + ' to ' + U.fmtDate(to) + '</span><span>About 20 minutes</span></div>' + btn + '</div></div></section>';
   }
 
   function sessions(vm) {
     if (vm.isBooth) return '';
+    if (nonWedding(vm)) return eventCall(vm);
     var dj = vm.dj;
     var c = MQ.config, t = U.today(), d = vm.eventDate;
     function link(kind, label) {
@@ -1384,9 +1533,9 @@ MQ.renderEvent = (function () {
       (made ? '<ul class="mq-sched">' + made + '</ul>' : '<p class="mq-small" style="margin:6px 0 0">No payments yet. Your retainer locks in your date.</p>') + '</div>';
     var count = (vm.details.lines || []).length;
     return '<section class="mq-invest" id="mq-payment" aria-labelledby="mq-iv"><div class="mq-sechead"><div><span class="mq-eyebrow">Your Lineup &amp; Investment</span>' +
-      '<h2 class="mq-h2" id="mq-iv">Your Night, <span style="color:var(--mq-pink)">As Booked.</span></h2></div>' +
+      '<h2 class="mq-h2" id="mq-iv">Your ' + vm.words.Night + ', <span style="color:var(--mq-pink)">As Booked.</span></h2></div>' +
       '<span class="mq-chip mq-chip-ok" style="font-size:11px;padding:6px 12px">' + icon('check', 12) + count + (count === 1 ? ' item' : ' items') + ' booked</span></div>' +
-      '<div class="mq-invest-row"><div class="mq-night"><span class="mq-sub">What\'s In Your Night</span><ul class="mq-lines">' + lines + pend + '</ul>' +
+      '<div class="mq-invest-row"><div class="mq-night"><span class="mq-sub">What\'s In Your ' + vm.words.Night + '</span><ul class="mq-lines">' + lines + pend + '</ul>' +
       '<div class="mq-total"><span>Total Investment</span><b>' + U.money(vm.total) + '</b></div>' +
       (pending.length ? '<span class="mq-small" style="margin-top:8px">Items awaiting approval are not in your total until ' + esc(vm.dj.first) + ' confirms them.</span>' : '') +
       (vm.isBooth ? '<div class="mq-boothadd" data-mq-boothadd></div>' : '') +
@@ -1397,7 +1546,9 @@ MQ.renderEvent = (function () {
       madeBox +
       '<div><div class="mq-sched-btn">Payment Schedule</div>' +
       '<ul class="mq-sched">' + sched + '</ul></div>' +
-      '<p class="mq-small">25% at booking, 25% at 9 months, 25% at 6 months, balance due 90 days before your event.</p></div></div></section>';
+      '<p class="mq-small">' + (vm.kind === 'school' ? '50% booking deposit, balance due the night of the dance.'
+        : vm.kind === 'private' ? '50% booking deposit, final 50% due 60 days before your event.'
+        : '25% at booking, 25% at 9 months, 25% at 6 months, balance due 90 days before your event.') + '</p></div></div></section>';
   }
 
   function optCard(c, feat, selected) {
@@ -1428,11 +1579,11 @@ MQ.renderEvent = (function () {
       container.style.display = '';
       var sel = vm.options.all.filter(function (c) { return state.selected.indexOf(c.id) >= 0; });
       var sum = sel.reduce(function (n, c) { return n + c.price; }, 0);
-      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">Then We Turn It Up</span><h2 class="mq-h2" id="mq-ad">Add To Your Night <span class="mq-serif">make it unforgettable.</span></h2></div>' +
+      var html = '<div class="mq-sechead"><div><span class="mq-eyebrow">Then We Turn It Up</span><h2 class="mq-h2" id="mq-ad">Add To Your ' + vm.words.Night + ' <span class="mq-serif">make it unforgettable.</span></h2></div>' +
         '<span class="intro">Only showing what\'s not already in your lineup. Select what you love and see your new total. Send a request and ' + esc(vm.dj.first) +
         ' reviews it before anything is added to your event.</span></div>';
-      if (feat.length) html += '<div><div class="mq-rule hot"><span>Couples Love These</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
-      if (booths.length) html += '<div><div class="mq-rule hot"><span>Add A Photo Booth</span></div><p class="mq-boothpitch">One of our most-loved add-ons. Your booth runs right alongside your DJ, with its own attendant, so guests take home their photos and you get every one.</p>' +
+      if (feat.length) html += '<div><div class="mq-rule hot"><span>' + esc(vm.words.featured) + '</span></div><div class="mq-opts">' + feat.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
+      if (booths.length) html += '<div><div class="mq-rule hot"><span>Add A Photo Booth</span></div><p class="mq-boothpitch">One of our most-loved add-ons. Your booth runs right alongside your DJ, with its own attendant, so ' + vm.words.guests + ' take home their photos and you get every one.</p>' +
         '<div class="mq-opts">' + booths.map(function (c) { return optCard(c, true, state.selected); }).join('') + '</div></div>';
       if (moreCount) {
         html += '<button type="button" class="mq-more" aria-expanded="' + state.open + '" data-mq-more>' + (state.open ? 'Show Less' : 'See All ' + moreCount + ' More Options') + icon('chev', 14) + '</button>';
@@ -1449,7 +1600,7 @@ MQ.renderEvent = (function () {
           '</p></div><button type="button" data-mq-dismiss>Got it</button></div>';
       }
       if (sel.length) {
-        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid);
+        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid, vm.kind);
         var dueNow = plan.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0) -
           vm.schedule.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0);
         var talk = vm.dj.sms ? vm.dj.sms + '?&body=' + encodeURIComponent('Hi ' + vm.dj.first + '! We are thinking about adding ' + sel.map(function (c) { return c.name; }).join(', ') + '. Can we talk it through?')
@@ -1649,6 +1800,7 @@ MQ.renderEvent = (function () {
     addSection(vm, main.querySelector('[data-mq-add]'), drawInvest);
     if (vm.isBooth) designSection(vm, main.querySelector('[data-mq-design-sec]'));
     startCountdown(main, vm.eventDate);
+    U.setFooter(vm.kind);
     MQ.reels.render(main.querySelector('[data-mq-reels]'));
   }
 
@@ -1693,12 +1845,12 @@ MQ.renderDetails = (function () {
       '<h2>' + esc(vm.isBooth ? (vm.list.package || U.typeName(d.type || vm.list.type)) : U.typeName(d.type || vm.list.type)) + '</h2>' +
       (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') + '</div>' +
       '<div class="mq-dsum-act"><a class="mq-btn mq-btn-pink" href="' + esc(payHref) + '">' + icon('card', 16) + 'Make a Payment</a>' +
-      (vm.isBooth ? '' : U.viboButton('mq-btn mq-btn-ghost', 15)) + '</div></section>';
+      (vm.isBooth || vm.kind === 'school' || vm.kind === 'private' ? '' : U.viboButton('mq-btn mq-btn-ghost', 15)) + '</div></section>';
 
     /* When & Where */
     var when = '<dl class="mq-dl">' + row('Date', U.fmtDateLong(date) + ' (' + U.DAYS[date.getDay()] + ')') +
       row('Setup', d.setup) + row('Start', d.start) + row('End', d.end) + '</dl>' +
-      '<p class="mq-small">Times can shift as your timeline comes together. Your headliner confirms everything at final planning.</p>';
+      '<p class="mq-small">Times can shift as your timeline comes together. Your headliner confirms everything ' + (vm.kind === 'school' || vm.kind === 'private' ? 'on your planning call' : 'at final planning') + '.</p>';
     var where = '<div class="mq-place"><span class="mq-ico">' + icon('pin', 20) + '</span><div><b>' + esc(d.venueLines[0] || 'Venue to be confirmed') + '</b>' +
       (d.venueLines.length > 1 ? '<span>' + esc(d.venueLines.slice(1).join(', ')) + '</span>' : '') + '</div></div>' +
       (mapHref ? '<a class="mq-btn mq-btn-ghost mq-btn-sm" href="' + mapHref + '" target="_blank" rel="noopener">' + icon('arrow', 14) + 'Open in Maps</a>' : '');
@@ -1724,7 +1876,7 @@ MQ.renderDetails = (function () {
       ].filter(Boolean).join('') + '</div>' +
       '<p class="mq-note">Texts and emails are answered within 24 to 48 hours. Weekends are show days, so replies may come Monday.</p>' +
       '<a class="mq-btn mq-btn-ghost mq-btn-sm" href="/clients/contact.asp">' + icon('mail', 14) + 'Message Us</a>';
-    html += '<div class="mq-dgrid mq-dgrid-wide">' + card('Your Night', 'What&rsquo;s Included', pkg || '<p class="mq-small">Your details will appear here.</p>') +
+    html += '<div class="mq-dgrid mq-dgrid-wide">' + card('Your ' + vm.words.Night, 'What&rsquo;s Included', pkg || '<p class="mq-small">Your details will appear here.</p>') +
       card('Your Team', vm.isBooth ? 'Your Point Of Contact' : 'Your Headliner', team) + '</div>';
 
     /* Fees + payments */
@@ -1740,13 +1892,13 @@ MQ.renderDetails = (function () {
     }).join('');
     var totals = '<dl class="mq-totals">' +
       (d.subtotal != null && d.subtotal !== d.totalFee ? row('Subtotal', U.money(d.subtotal, true)) : '') +
-      row('Total Fee', U.money(d.totalFee, true)) + row('Retainer', U.money(d.deposit, true)) + row('Paid So Far', U.money(d.payments || 0, true)) +
+      row('Total Fee', U.money(d.totalFee, true)) + row(vm.kind === 'school' || vm.kind === 'private' ? 'Booking Deposit' : 'Retainer', U.money(d.deposit, true)) + row('Paid So Far', U.money(d.payments || 0, true)) +
       '</dl><div class="mq-baldue"><span>Balance Due</span><b>' + U.money(d.balanceDue, true) + '</b></div>';
     var hist = d.history.length
       ? '<ul class="mq-hist">' + d.history.map(function (cells) {
           return '<li><span class="ck">' + icon('check', 12) + '</span><span>' + esc(cells.slice(0, -1).join(' \u00b7 ')) + '</span><b>' + esc(cells[cells.length - 1]) + '</b></li>';
         }).join('') + '</ul>'
-      : '<p class="mq-empty">No payments yet. Your retainer locks in your date.</p>';
+      : '<p class="mq-empty">No payments yet. Your ' + (vm.kind === 'school' || vm.kind === 'private' ? 'booking deposit' : 'retainer') + ' locks in your date.</p>';
     var n = vm.next;
     var nextBox = n
       ? '<div class="mq-next"><span>' + (n.status === 'due' ? 'Due Now \u00b7 ' : 'Next Payment \u00b7 ') + esc(n.label) + '</span><b>' + U.money(n.left) + '</b><span>' +
@@ -1768,6 +1920,7 @@ MQ.renderDetails = (function () {
     html += '<div class="mq-dgrid">' + card('Documents', 'Your Files', docs) + card('Need A Change?', 'Request Changes', change) + '</div>';
 
     main.innerHTML = html;
+    U.setFooter(vm.kind);
   }
 
   return { render: render };

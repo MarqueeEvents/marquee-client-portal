@@ -7,17 +7,26 @@ const EVENTS = [
   { id: '435927', type: 'Private Photo Booth Rental', nameType: 'Classic Photo Booth', pkg: 'The Classic Photo Booth', lines: [['The Classic Photo Booth', 795], ['Photo Booth Scrapbook', 150]], total: 945, deposit: 236.25, staff: 'Photo Booth Attendant', service: 'The Classic Photo Booth', desc: ['Unlimited Prints', 'Digital Gallery', 'Custom Print Design'] },
   { id: '435926', type: 'Wedding', nameType: 'Ceremony & Reception', pkg: 'Marquee Luxury', lines: [['Bob Wedding Talent Fee', 3500], ['Bob Additional Hour', 500], ['Ceremony Package w/o Rehearsal', 395], ['Dancing on the Clouds', 350], ['Animated Monogram Projection', 350]], total: 5095, deposit: 1273.75, staff: 'DJ Bob', service: 'Marquee Talent Fee', desc: ['Bob Wedding DJ Talent Fee', 'Up to 5 Hour Reception', 'Full Room Uplighting', '1pr. Intelligent Dancefloor Lighting'] }
 ];
-const single = process.env.SINGLE === '1';
-const NAME = 'Teddi Price & Kevin Garrity';
+/* SCENARIO=school or SCENARIO=private: sample non-wedding events (made-up names and prices). */
+const SCEN = {
+  school: { name: 'Lincoln High School', date: '4/10/2027', long: 'Saturday, April 10, 2027', venue: 'Lincoln High School Gym<br>New Philadelphia, OH', emp: '43269',
+    ev: { id: '501001', type: 'School Dance', nameType: 'Prom', pkg: 'Hourly Package', lines: [['Bradon School Dance Talent Fee', 1200], ['Extra Hour', 300], ['LED Light Tubes', 400]], total: 1900, deposit: 950, staff: 'DJ Bradon', service: 'School Dance Entertainment', desc: ['Up to 4 Hours', 'Clean Edits Only', 'Full Room Uplighting', 'Intelligent Dance Floor Lighting'] } },
+  private: { name: 'Summit Bank', date: '12/12/2026', long: 'Saturday, December 12, 2026', venue: 'The Hilton Akron/Fairlawn<br>Akron, OH', emp: '43300',
+    ev: { id: '501002', type: 'Corporate Event', nameType: 'Holiday Party', pkg: 'Hourly Package', lines: [['Dan Event Talent Fee', 1800], ['Additional Speakers', 75], ['65" TV Display', 300]], total: 2175, deposit: 1087.5, staff: 'DJ Dan', service: 'Event Entertainment', desc: ['Up to 4 Hours', 'Wireless Microphones', 'Full Room Uplighting', 'Intelligent Dance Floor Lighting'] } }
+}[process.env.SCENARIO];
+if (SCEN) { EVENTS.length = 0; EVENTS.push(SCEN.ev); }
+const single = process.env.SINGLE === '1' || !!SCEN;
+const NAME = SCEN ? SCEN.name : 'Teddi Price & Kevin Garrity';
+const DATE = SCEN ? SCEN.date : '12/30/2028', LONG = SCEN ? SCEN.long : 'Saturday, December 30, 2028', VENUE = SCEN ? SCEN.venue : 'Bella Amore<br>New Philadelphia, OH';
 function shell(body) {
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Client Portal</title>
 <link rel="stylesheet" href="/styles/portal.css"></head><body><div id="djep-page"><div id="djep-header">OLD HEADER</div><div id="djep-navbar"><a href="home.asp">Home</a> <a href="javascript:void(0)">Logout</a></div>
 <div id="djep-content">${body}</div><div id="footer">old footer</div></div>
 ${['config', 'gate', 'util', 'djep-reader', 'model', 'requests', 'reels', 'skin', 'shell', 'render-chooser', 'render-event', 'render-details', 'main'].map(f => `<script src="/src/${f}.js"></script>`).join('\n')}
-<script>${process.env.TODAY ? `MQ.util.overrideToday='${process.env.TODAY}';` : ''}</script></body></html>`;
+<script>${SCEN ? 'MQ.config.LIVE_FOR_EVERYONE=true;' : ''}${process.env.TODAY ? `MQ.util.overrideToday='${process.env.TODAY}';` : ''}</script></body></html>`;
 }
 function eventBlock(e, emp) {
-  return `<div class="djep-singleeventdiv"><div class="hidden_event_information" style="display:none"><span class="primary_employee_id">${emp || '43180'}</span><span class="event_date_${e.id}">12/30/2028</span><span class="event_name_${e.id}">${NAME} ${e.nameType}</span><span class="event_status_${e.id}">Booked</span></div>
+  return `<div class="djep-singleeventdiv"><div class="hidden_event_information" style="display:none"><span class="primary_employee_id">${emp || (SCEN && SCEN.emp) || '43180'}</span><span class="event_date_${e.id}">${DATE}</span><span class="event_name_${e.id}">${NAME} ${e.nameType}</span><span class="event_status_${e.id}">Booked</span></div>
 Event Type: ${e.type}<br>Package: ${e.pkg}<br><a class="djep-planeventbutton" href="planmyevent.asp?eventid=${e.id}">Plan</a><a class="djep-eventdetailsbutton" href="eventdetails.asp?eventid=${e.id}">Details</a><a class="djep-paymentbutton" href="makeapayment.asp?action=choose_payment_gateway&eventid=${e.id}">Pay</a></div>`;
 }
 function details(e) {
@@ -25,12 +34,12 @@ function details(e) {
   const paid = process.env.PAID ? Number(process.env.PAID) : 0;
   const pkg = e.lines[0], add = e.lines.slice(1);
   return `<h2 class="djep-h2">Event Details<a class="djep-planeventbutton djep-changebutton" href="planmyevent.asp?eventid=${e.id}">Plan My<br>Event</a></h2>
-<div class="djep-eventdatetimesbox">${tb('EVENT DATE / TIMES')}<table><tr><td>Event Date:</td><td>Saturday, December 30, 2028</td></tr><tr><td>Setup Time:</td><td></td></tr><tr><td>Start Time:</td><td>3:00 PM</td></tr><tr><td>End Time:</td><td>10:00 PM</td></tr></table></div>
+<div class="djep-eventdatetimesbox">${tb('EVENT DATE / TIMES')}<table><tr><td>Event Date:</td><td>${LONG}</td></tr><tr><td>Setup Time:</td><td></td></tr><tr><td>Start Time:</td><td>3:00 PM</td></tr><tr><td>End Time:</td><td>10:00 PM</td></tr></table></div>
 <div class="djep-eventdescriptionbox">${tb('EVENT DESCRIPTION')}<table><tr><td>Event Name:</td><td>${NAME} ${e.nameType}</td></tr><tr><td>Event Type:</td><td>${e.type}</td></tr><tr><td>Booking Status:</td><td>Booked</td></tr><tr><td>Event ID:</td><td>${e.id}</td></tr></table></div>
 <div class="djep-servicedetailsbox">${tb('SERVICE DETAILS')}<table><tr><td><fieldset class="djep-servicedetailsfieldset"><legend class="djep-servicedetailslegend">Service</legend>${e.service}</fieldset></td></tr>
 <tr><td><fieldset class="djep-servicedetailsfieldset"><legend class="djep-servicedetailslegend">Description</legend>${e.desc.join('<br>')}</fieldset></td></tr>
 <tr><td><fieldset class="djep-servicedetailsfieldset"><legend class="djep-servicedetailslegend">Addons</legend>${add.map(l => l[0]).join(', ')}</fieldset></td></tr></table></div>
-<div class="djep-venueinfobox">${tb('VENUE INFORMATION')}Bella Amore<br>New Philadelphia, OH<br></div>
+<div class="djep-venueinfobox">${tb('VENUE INFORMATION')}${VENUE}<br></div>
 <div class="djep-staffingbox">${tb('STAFFING')}${e.staff}<br>Attire: Formal</div>
 <div class="djep-paymentsfinancesbox"><p class="djep-titlebar">PAYMENTS AND FINANCES</p><div class="djep_innerboxtext">Below you will find your event fees, a breakdown of the fees and your payment history.</div></div>
 <div class="djep-feedetailsbox">${tb('FEE DETAILS')}<table><tr><td><u>Description</u></td><td><u>Price</u></td></tr><tr><td><b>Package</b></td><td></td></tr><tr><td>${pkg[0]}</td><td>$${pkg[1].toFixed(2)}</td></tr>${add.length ? '<tr><td><b>Addons</b></td><td></td></tr>' + add.map(l => `<tr><td>${l[0]}</td><td>$${l[1].toFixed(2)}</td></tr>`).join('') : ''}</table></div>
@@ -44,7 +53,7 @@ http.createServer((req, res) => {
   const u = new URL(req.url, 'http://x');
   const id = u.searchParams.get('eventid');
   const ev = EVENTS.find(e => e.id === id);
-  const evs = single ? [EVENTS[1]] : EVENTS;
+  const evs = SCEN ? EVENTS : single ? [EVENTS[1]] : EVENTS;
   if (/\/clients\/(home|events)\.asp$/.test(u.pathname)) return res.end(shell(`<div class="djep-eventlistbox">${evs.map(e => eventBlock(e, u.searchParams.get('emp'))).join('')}</div><div class="djep-latestemailsbox"><p class="djep-titlebarsmall">Latest Emails</p><div>No Emails Found</div></div>`));
   if (u.pathname === '/clients/eventdetails.asp' && ev) return res.end(shell(details(ev)));
   if (u.pathname === '/clients/requestchanges.asp') return res.end(shell(`<form method="post" action="requestchanges.asp?eventid=${id}"><input type="hidden" name="eventid" value="${id}"><textarea name="request_change_comments"></textarea><input type="submit" name="submit_other" value="Submit"></form>`));
