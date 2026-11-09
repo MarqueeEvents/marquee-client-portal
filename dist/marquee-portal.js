@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-11-09T16:24Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-11-09T16:48Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -1363,6 +1363,19 @@ MQ.renderEvent = (function () {
       return '<li><span><b>' + esc(p.label) + '</b><i>' + (p.due ? U.fmtDate(p.due) : 'At booking') + '</i></span><span>' + U.money(p.amount) +
         '<span class="st" style="color:' + col + '">' + lbl + '</span></span></li>';
     }).join('');
+    /* Payments already made (DJEP payment history): date, method, amount. */
+    var made = (vm.details.history || []).map(function (cells) {
+      var date = '', amt = cells[cells.length - 1], rest = [];
+      cells.slice(0, -1).forEach(function (c) {
+        if (!date && /\b\d{1,2}\/\d{1,2}\/\d{4}\b/.test(c)) date = c; else rest.push(c);
+      });
+      var d = U.parseDate(date);
+      return '<li><span><b>' + esc(d ? U.fmtDate(d) : (date || 'Payment')) + '</b><i>' + esc(rest.join(' \u00b7 ') || 'Payment received') + '</i></span><span>' +
+        esc(/^-?\$?[\d,]+(\.\d+)?$/.test(String(amt).trim()) ? U.money(parseFloat(String(amt).replace(/[$,]/g, '')), true) : amt) +
+        '<span class="st" style="color:var(--mq-ok)">Received</span></span></li>';
+    }).join('');
+    var madeBox = '<div><div class="mq-sched-btn">Payments Made</div>' +
+      (made ? '<ul class="mq-sched">' + made + '</ul>' : '<p class="mq-small" style="margin:6px 0 0">No payments yet. Your retainer locks in your date.</p>') + '</div>';
     var count = (vm.details.lines || []).length;
     return '<section class="mq-invest" id="mq-payment" aria-labelledby="mq-iv"><div class="mq-sechead"><div><span class="mq-eyebrow">Your Lineup &amp; Investment</span>' +
       '<h2 class="mq-h2" id="mq-iv">Your Night, <span style="color:var(--mq-pink)">As Booked.</span></h2></div>' +
@@ -1375,6 +1388,7 @@ MQ.renderEvent = (function () {
       '<div class="mq-stand"><span class="mq-sub">Where You Stand</span><div><div class="mq-meter"><div style="width:' + pct + '%"></div></div>' +
       '<div class="mq-meter-lbl"><span><b>' + U.money(vm.paid) + '</b> paid</span><span><b>' + U.money(vm.balance) + '</b> remaining</span></div></div>' +
       nextBox + (n ? '<a class="mq-btn mq-btn-pink" href="' + esc(vm.list.links.payment || '#') + '">' + icon('card', 16) + 'Make a Payment</a>' : '') +
+      madeBox +
       '<div><div class="mq-sched-btn">Payment Schedule</div>' +
       '<ul class="mq-sched">' + sched + '</ul></div>' +
       '<p class="mq-small">25% at booking, 25% at 9 months, 25% at 6 months, balance due 90 days before your event.</p></div></div></section>';
