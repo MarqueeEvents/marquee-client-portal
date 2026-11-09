@@ -169,9 +169,15 @@ MQ.renderEvent = (function () {
       : '<div class="mq-next paid"><span>All Set</span><b>Paid in full</b><span>Thank you! Nothing more is due.</span></div>';
     var sched = vm.schedule.map(function (p) {
       var col = p.status === 'paid' ? 'var(--mq-ok)' : p.status === 'due' ? 'var(--mq-pink-soft)' : 'var(--mq-muted)';
-      var lbl = p.status === 'paid' ? 'Paid' : p.status === 'due' ? 'Due' : 'Upcoming';
-      return '<li><span><b>' + esc(p.label) + '</b><i>' + (p.due ? U.fmtDate(p.due) : 'At booking') + '</i></span><span>' + U.money(p.amount) +
-        '<span class="st" style="color:' + col + '">' + lbl + '</span></span></li>';
+      var part = p.status !== 'paid' && p.paid > 0.005;
+      var lbl = p.status === 'paid' ? 'Paid' : part ? (p.status === 'due' ? 'Partial' : 'Partly Paid') : p.status === 'due' ? 'Due' : 'Upcoming';
+      /* Partly paid installment: show amount due, paid so far and what is left. */
+      var split = part
+        ? '<div class="mq-split"><span><small>Amount Due</small>' + U.money(p.amount) + '</span><span><small>Paid</small><em style="color:var(--mq-ok)">' + U.money(p.paid) + '</em></span>' +
+          '<span><small>Remaining</small><em style="color:var(--mq-pink-soft)">' + U.money(p.left) + '</em></span></div>'
+        : '';
+      return '<li' + (part ? ' class="part"' : '') + '><span><b>' + esc(p.label) + '</b><i>' + (p.due ? U.fmtDate(p.due) : 'At booking') + '</i></span><span>' + U.money(part ? p.left : p.amount) +
+        '<span class="st" style="color:' + col + '">' + lbl + '</span></span>' + split + '</li>';
     }).join('');
     /* Payments already made (DJEP payment history): date, method, amount. */
     var made = (vm.details.history || []).map(function (cells) {

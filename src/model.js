@@ -38,7 +38,7 @@ MQ.model = (function () {
       if (left <= 0.005) status = 'paid';
       else if (!due || U.daysBetween(t, due) <= 0) status = 'due';
       else status = 'upcoming';
-      return { label: p.label, amount: amount, left: left, due: due, status: status };
+      return { label: p.label, amount: amount, paid: U.round2(covered), left: left, due: due, status: status };
     });
   }
 
