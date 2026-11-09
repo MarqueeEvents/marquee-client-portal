@@ -21,7 +21,7 @@ MQ.renderEvent = (function () {
   function hero(vm) {
     var sub = vm.isBooth
       ? 'Your photo booth details, payments and add-ons, all in one place.'
-      : nonWedding(vm) ? 'Track your timeline, payments and every detail of ' + vm.words.night + ', all in one place.'
+      : nonWedding(vm) ? 'Track your timeline, payments and every detail of ' + vm.words.night + ', all in one place. Plan your music in Vibo.'
       : 'Track your timeline, payments and every detail of your night, all in one place. Plan your music in Vibo.';
     return '<section class="mq-hero"><span class="mq-eyebrow">Client Portal</span>' +
       '<h1>Welcome back,<br>' + esc(vm.couple.first) + '.</h1><p class="mq-serif">' + esc(vm.isBooth ? 'your night, by design.' : vm.words.serif) + '</p><p>' + sub + '</p></section>';
@@ -47,7 +47,7 @@ MQ.renderEvent = (function () {
       dj.igUrl && '<a href="' + dj.igUrl + '" target="_blank" rel="noopener">' + icon('ig') + '<span>' + esc(dj.handle) + '</span></a>'
     ].filter(Boolean).join('');
     var links = vm.list.links;
-    var vibo = vm.isBooth || nonWedding(vm) ? '' : U.viboButton('mq-btn mq-btn-ghost', 15);
+    var vibo = vm.isBooth ? '' : U.viboButton('mq-btn mq-btn-ghost', 15);
     return '<section class="mq-event" aria-labelledby="mq-ev-title"><div class="mq-event-row">' +
       '<div class="mq-photo"><img src="' + esc(photo) + '" alt="' + esc(vm.isBooth ? 'Marquee photo booth' : dj.name) + '" style="object-position:' + (vm.isBooth ? 'center 35%' : (dj.pos || 'center 20%')) + '">' +
       '<div class="mq-fade"></div><div class="mq-edge"></div><div class="mq-mini" aria-hidden="true">' + miniBars() + '</div></div>' +
@@ -139,8 +139,8 @@ MQ.renderEvent = (function () {
     var btn = url ? '<a class="mq-btn mq-btn-pink" href="' + esc(url) + '" target="_blank" rel="noopener">' + icon('cal', 15) + 'Book ' + title + '</a>'
       : dj.sms ? '<a class="mq-btn mq-btn-pink" href="' + dj.sms + '">' + icon('chat', 15) + 'Text ' + esc(dj.first) + ' To Book</a>' : '';
     var body = school
-      ? 'A quick call to lock the details: start and end times, load-in, and who your school contact is on the night. Music requests and your do-not-play list can come in anytime before.'
-      : 'Walk through your timeline, announcements, special songs and any vendor timing so the night runs like a show.';
+      ? 'A quick call to lock the details: start and end times, load-in, and who your school contact is on the night. Your music requests and do-not-play list live in Vibo.'
+      : 'Walk through your timeline, announcements and any vendor timing so the night runs like a show. Your music lives in Vibo.';
     return '<section class="mq-sessions" aria-labelledby="mq-bk"><div class="mq-sechead"><div><span class="mq-eyebrow">Book With ' + esc(dj.first) + '</span>' +
       '<h2 class="mq-h2" id="mq-bk">Your Planning Call</h2></div></div><div class="mq-sess-grid">' +
       '<div class="mq-card mq-sess"><div class="top"><span class="mq-ico">' + icon('checkbox', 20) + '</span>' + chip + '</div>' +

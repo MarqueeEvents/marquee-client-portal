@@ -57,6 +57,8 @@ http.createServer((req, res) => {
   if (/\/clients\/(home|events)\.asp$/.test(u.pathname)) return res.end(shell(`<div class="djep-eventlistbox">${evs.map(e => eventBlock(e, u.searchParams.get('emp'))).join('')}</div><div class="djep-latestemailsbox"><p class="djep-titlebarsmall">Latest Emails</p><div>No Emails Found</div></div>`));
   if (u.pathname === '/clients/eventdetails.asp' && ev) return res.end(shell(details(ev)));
   if (u.pathname === '/clients/requestchanges.asp') return res.end(shell(`<form method="post" action="requestchanges.asp?eventid=${id}"><input type="hidden" name="eventid" value="${id}"><textarea name="request_change_comments"></textarea><input type="submit" name="submit_other" value="Submit"></form>`));
+  if (u.pathname === '/clients/planmyevent.asp') return res.end(shell(`<h2 class="djep-h2">Plan My Event</h2><div class="djep-planningformsbox">Planning forms</div>`));
+  if (u.pathname === '/clients/contact.asp') return res.end(shell(`<h2 class="djep-h2">Contact Us</h2><div class="djep-ourcontactinfobox"><table><tr><td id="djep-contacttelephone"></td><td>330.432.0798</td></tr></table></div>`));
   if (u.pathname === '/clients/makeapayment.asp') return res.end(shell(`<div class="djep-titlebar">Make a Payment</div><div class="djep-paymentbox">Choose a payment method<br><input type="submit" value="Pay with Card"></div>`));
   const f = path.join(ROOT, u.pathname);
   if (f.startsWith(ROOT) && fs.existsSync(f) && fs.statSync(f).isFile()) { res.setHeader('content-type', types[path.extname(f)] || 'text/plain'); return fs.createReadStream(f).pipe(res); }

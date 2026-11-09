@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-11-09T19:14Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-11-09T19:43Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -758,10 +758,10 @@ MQ.model = (function () {
       status: cs === 'open' ? 'Book Now' : (cs === 'past' ? 'Done' : 'Optional'), book: 'final' };
     if (school) {
       var md = U.addDays(eventDate, -(cfg.MUSIC_REQUESTS_DAYS_BEFORE || 21));
-      steps.push({ num: '03', title: 'Music Requests', date: md, when: 'Send by ' + U.fmtDate(md),
-        note: 'Send your must-play songs and do-not-play list. Clean edits only, always.', done: U.daysBetween(t, md) < 0,
+      steps.push({ num: '03', title: 'Music in Vibo', date: md, when: 'Ready by ' + U.fmtDate(md),
+        note: 'Build your must-play and do-not-play lists in Vibo. Clean edits only, always.', done: U.daysBetween(t, md) < 0,
         status: U.daysBetween(t, md) < 0 ? 'Done' : (U.daysBetween(t, md) <= 30 ? 'Open' : 'Upcoming') });
-      steps.push(Object.assign(call, { num: '04', title: 'Final Details Call', note: 'Optional. Times, load-in and your school contact for the night.' }));
+      steps.push(Object.assign(call, { num: '04', title: 'Final Details Call', note: 'Optional. Times, load-in and your school contact for the night. Music stays in Vibo.' }));
     } else {
       steps.push(payStep('03', 'Final Payment', bal, '50% due 60 days before your event.'));
       steps.push(Object.assign(call, { num: '04', title: 'Event Planning Call', note: 'Optional. Walk through the timeline and details with your headliner, 2 to 3 weeks out.' }));
@@ -1041,6 +1041,36 @@ MQ.skin = (function () {
       intro: 'Marquee couples plan their music and timeline in the Vibo app.', enhance: planner }
   ];
 
+  /* Planner intro by event kind. Weddings keep the line above. */
+  var PLANNER_INTRO = {
+    school: 'Plan your music in the Vibo app: must-plays, do-not-plays and requests. Clean edits only.',
+    'private': 'Plan your music, announcements and timeline in the Vibo app.'
+  };
+
+  /* Which kind of client is this? Event pages use their event; account pages use the client's events.
+   * Anyone with a wedding or photo booth keeps the wedding wording. */
+  function resolveKind() {
+    var id = eventId();
+    if (id) return MQ.reader.loadEventDetails(id).then(function (d) { return U.kindOf(d.type); });
+    return MQ.reader.fetchPage('/clients/home.asp').then(function (doc) {
+      var kinds = MQ.reader.readEventList(doc).filter(function (e) { return e.id && !/cancel/i.test(e.status || ''); })
+        .map(function (e) { return U.kindOf(e.type); });
+      if (!kinds.length || kinds.some(function (k) { return k === 'wedding' || k === 'booth'; })) return 'wedding';
+      return kinds[0];
+    });
+  }
+
+  function applyKind(main, page, kind) {
+    if (kind !== 'school' && kind !== 'private') return;
+    var serif = main.querySelector('.mq-skin-head .mq-serif');
+    if (serif && (page.serif || 'your night, by design.') === 'your night, by design.') serif.textContent = U.words(kind).serif;
+    if (page.key === 'planner') {
+      var intro = main.querySelector('.mq-skin-head .mq-hero p:not(.mq-serif)');
+      if (intro) intro.textContent = PLANNER_INTRO[kind];
+    }
+    U.setFooter(kind);
+  }
+
   function eventId() { return new URLSearchParams(location.search).get('eventid'); }
 
   function oldTitle(content) {
@@ -1077,6 +1107,7 @@ MQ.skin = (function () {
     if (page.enhance) {
       try { page.enhance(content, extra); } catch (e) { console.error('[Marquee portal] skin', e); }
     }
+    resolveKind().then(function (kind) { applyKind(main, page, kind); }).catch(function () {});
   }
 
   /* Make a Payment: balance summary on top, gateway buttons as cards. */
@@ -1133,7 +1164,7 @@ MQ.skin = (function () {
       var date = U.parseDate(d.date);
       if (!date || d.totalFee == null) return;
       var total = d.totalFee, bal = d.balanceDue != null ? d.balanceDue : total;
-      var sched = MQ.model.schedule(date, total, U.round2(total - bal));
+      var sched = MQ.model.schedule(date, total, U.round2(total - bal), U.kindOf(d.type));
       var next = sched.filter(function (p) { return p.status !== 'paid'; })[0];
       var pct = total ? Math.round((total - bal) / total * 100) : 0;
       extra.innerHTML = '<section class="mq-card mq-paysum"><div class="c"><span class="mq-sub">' + esc(U.coupleFromName(d.name, d.type).couple) + '</span>' +
@@ -1334,7 +1365,7 @@ MQ.renderEvent = (function () {
   function hero(vm) {
     var sub = vm.isBooth
       ? 'Your photo booth details, payments and add-ons, all in one place.'
-      : nonWedding(vm) ? 'Track your timeline, payments and every detail of ' + vm.words.night + ', all in one place.'
+      : nonWedding(vm) ? 'Track your timeline, payments and every detail of ' + vm.words.night + ', all in one place. Plan your music in Vibo.'
       : 'Track your timeline, payments and every detail of your night, all in one place. Plan your music in Vibo.';
     return '<section class="mq-hero"><span class="mq-eyebrow">Client Portal</span>' +
       '<h1>Welcome back,<br>' + esc(vm.couple.first) + '.</h1><p class="mq-serif">' + esc(vm.isBooth ? 'your night, by design.' : vm.words.serif) + '</p><p>' + sub + '</p></section>';
@@ -1360,7 +1391,7 @@ MQ.renderEvent = (function () {
       dj.igUrl && '<a href="' + dj.igUrl + '" target="_blank" rel="noopener">' + icon('ig') + '<span>' + esc(dj.handle) + '</span></a>'
     ].filter(Boolean).join('');
     var links = vm.list.links;
-    var vibo = vm.isBooth || nonWedding(vm) ? '' : U.viboButton('mq-btn mq-btn-ghost', 15);
+    var vibo = vm.isBooth ? '' : U.viboButton('mq-btn mq-btn-ghost', 15);
     return '<section class="mq-event" aria-labelledby="mq-ev-title"><div class="mq-event-row">' +
       '<div class="mq-photo"><img src="' + esc(photo) + '" alt="' + esc(vm.isBooth ? 'Marquee photo booth' : dj.name) + '" style="object-position:' + (vm.isBooth ? 'center 35%' : (dj.pos || 'center 20%')) + '">' +
       '<div class="mq-fade"></div><div class="mq-edge"></div><div class="mq-mini" aria-hidden="true">' + miniBars() + '</div></div>' +
@@ -1452,8 +1483,8 @@ MQ.renderEvent = (function () {
     var btn = url ? '<a class="mq-btn mq-btn-pink" href="' + esc(url) + '" target="_blank" rel="noopener">' + icon('cal', 15) + 'Book ' + title + '</a>'
       : dj.sms ? '<a class="mq-btn mq-btn-pink" href="' + dj.sms + '">' + icon('chat', 15) + 'Text ' + esc(dj.first) + ' To Book</a>' : '';
     var body = school
-      ? 'A quick call to lock the details: start and end times, load-in, and who your school contact is on the night. Music requests and your do-not-play list can come in anytime before.'
-      : 'Walk through your timeline, announcements, special songs and any vendor timing so the night runs like a show.';
+      ? 'A quick call to lock the details: start and end times, load-in, and who your school contact is on the night. Your music requests and do-not-play list live in Vibo.'
+      : 'Walk through your timeline, announcements and any vendor timing so the night runs like a show. Your music lives in Vibo.';
     return '<section class="mq-sessions" aria-labelledby="mq-bk"><div class="mq-sechead"><div><span class="mq-eyebrow">Book With ' + esc(dj.first) + '</span>' +
       '<h2 class="mq-h2" id="mq-bk">Your Planning Call</h2></div></div><div class="mq-sess-grid">' +
       '<div class="mq-card mq-sess"><div class="top"><span class="mq-ico">' + icon('checkbox', 20) + '</span>' + chip + '</div>' +
@@ -1845,7 +1876,7 @@ MQ.renderDetails = (function () {
       '<h2>' + esc(vm.isBooth ? (vm.list.package || U.typeName(d.type || vm.list.type)) : U.typeName(d.type || vm.list.type)) + '</h2>' +
       (vm.venue ? '<div class="mq-venue">' + icon('pin', 15) + '<span>' + esc(vm.venue) + '</span></div>' : '') + '</div>' +
       '<div class="mq-dsum-act"><a class="mq-btn mq-btn-pink" href="' + esc(payHref) + '">' + icon('card', 16) + 'Make a Payment</a>' +
-      (vm.isBooth || vm.kind === 'school' || vm.kind === 'private' ? '' : U.viboButton('mq-btn mq-btn-ghost', 15)) + '</div></section>';
+      (vm.isBooth ? '' : U.viboButton('mq-btn mq-btn-ghost', 15)) + '</div></section>';
 
     /* When & Where */
     var when = '<dl class="mq-dl">' + row('Date', U.fmtDateLong(date) + ' (' + U.DAYS[date.getDay()] + ')') +

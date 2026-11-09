@@ -18,6 +18,36 @@ MQ.skin = (function () {
       intro: 'Marquee couples plan their music and timeline in the Vibo app.', enhance: planner }
   ];
 
+  /* Planner intro by event kind. Weddings keep the line above. */
+  var PLANNER_INTRO = {
+    school: 'Plan your music in the Vibo app: must-plays, do-not-plays and requests. Clean edits only.',
+    'private': 'Plan your music, announcements and timeline in the Vibo app.'
+  };
+
+  /* Which kind of client is this? Event pages use their event; account pages use the client's events.
+   * Anyone with a wedding or photo booth keeps the wedding wording. */
+  function resolveKind() {
+    var id = eventId();
+    if (id) return MQ.reader.loadEventDetails(id).then(function (d) { return U.kindOf(d.type); });
+    return MQ.reader.fetchPage('/clients/home.asp').then(function (doc) {
+      var kinds = MQ.reader.readEventList(doc).filter(function (e) { return e.id && !/cancel/i.test(e.status || ''); })
+        .map(function (e) { return U.kindOf(e.type); });
+      if (!kinds.length || kinds.some(function (k) { return k === 'wedding' || k === 'booth'; })) return 'wedding';
+      return kinds[0];
+    });
+  }
+
+  function applyKind(main, page, kind) {
+    if (kind !== 'school' && kind !== 'private') return;
+    var serif = main.querySelector('.mq-skin-head .mq-serif');
+    if (serif && (page.serif || 'your night, by design.') === 'your night, by design.') serif.textContent = U.words(kind).serif;
+    if (page.key === 'planner') {
+      var intro = main.querySelector('.mq-skin-head .mq-hero p:not(.mq-serif)');
+      if (intro) intro.textContent = PLANNER_INTRO[kind];
+    }
+    U.setFooter(kind);
+  }
+
   function eventId() { return new URLSearchParams(location.search).get('eventid'); }
 
   function oldTitle(content) {
@@ -54,6 +84,7 @@ MQ.skin = (function () {
     if (page.enhance) {
       try { page.enhance(content, extra); } catch (e) { console.error('[Marquee portal] skin', e); }
     }
+    resolveKind().then(function (kind) { applyKind(main, page, kind); }).catch(function () {});
   }
 
   /* Make a Payment: balance summary on top, gateway buttons as cards. */
@@ -110,7 +141,7 @@ MQ.skin = (function () {
       var date = U.parseDate(d.date);
       if (!date || d.totalFee == null) return;
       var total = d.totalFee, bal = d.balanceDue != null ? d.balanceDue : total;
-      var sched = MQ.model.schedule(date, total, U.round2(total - bal));
+      var sched = MQ.model.schedule(date, total, U.round2(total - bal), U.kindOf(d.type));
       var next = sched.filter(function (p) { return p.status !== 'paid'; })[0];
       var pct = total ? Math.round((total - bal) / total * 100) : 0;
       extra.innerHTML = '<section class="mq-card mq-paysum"><div class="c"><span class="mq-sub">' + esc(U.coupleFromName(d.name, d.type).couple) + '</span>' +

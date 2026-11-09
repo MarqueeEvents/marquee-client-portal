@@ -175,10 +175,10 @@ MQ.model = (function () {
       status: cs === 'open' ? 'Book Now' : (cs === 'past' ? 'Done' : 'Optional'), book: 'final' };
     if (school) {
       var md = U.addDays(eventDate, -(cfg.MUSIC_REQUESTS_DAYS_BEFORE || 21));
-      steps.push({ num: '03', title: 'Music Requests', date: md, when: 'Send by ' + U.fmtDate(md),
-        note: 'Send your must-play songs and do-not-play list. Clean edits only, always.', done: U.daysBetween(t, md) < 0,
+      steps.push({ num: '03', title: 'Music in Vibo', date: md, when: 'Ready by ' + U.fmtDate(md),
+        note: 'Build your must-play and do-not-play lists in Vibo. Clean edits only, always.', done: U.daysBetween(t, md) < 0,
         status: U.daysBetween(t, md) < 0 ? 'Done' : (U.daysBetween(t, md) <= 30 ? 'Open' : 'Upcoming') });
-      steps.push(Object.assign(call, { num: '04', title: 'Final Details Call', note: 'Optional. Times, load-in and your school contact for the night.' }));
+      steps.push(Object.assign(call, { num: '04', title: 'Final Details Call', note: 'Optional. Times, load-in and your school contact for the night. Music stays in Vibo.' }));
     } else {
       steps.push(payStep('03', 'Final Payment', bal, '50% due 60 days before your event.'));
       steps.push(Object.assign(call, { num: '04', title: 'Event Planning Call', note: 'Optional. Walk through the timeline and details with your headliner, 2 to 3 weeks out.' }));
