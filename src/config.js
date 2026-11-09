@@ -55,7 +55,7 @@ MQ.config = {
   MUSIC_REQUESTS_DAYS_BEFORE: 21,
 
   // Event kind from the DJEP event type. Anything that is not a wedding, photo booth or school dance is a private event.
-  KIND_TESTS: { booth: /photo\s*booth/i, wedding: /wedding/i, school: /school|prom|homecoming/i },
+  KIND_TESTS: { booth: /photo\s*booth/i, wedding: /wedding(?! anniversary)|ceremony/i, school: /school|prom|homecoming/i },
 
   // Wording by kind. Weddings keep today's wording exactly (booth uses the wedding words).
   WORDS: {

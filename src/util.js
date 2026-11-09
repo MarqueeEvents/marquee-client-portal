@@ -55,7 +55,7 @@ MQ.util = (function () {
   function typeName(type) {
     var t = String(type || '').replace(/^marquee test\s+/i, '').trim();
     if (/photo\s*booth/i.test(t)) return 'Photo Booth';
-    if (/wedding/i.test(t)) return 'Wedding Entertainment';
+    if (/wedding(?! anniversary)/i.test(t)) return 'Wedding Entertainment';
     return t;
   }
 

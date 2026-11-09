@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-11-09T18:28Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-11-09T19:14Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -58,7 +58,7 @@ MQ.config = {
   MUSIC_REQUESTS_DAYS_BEFORE: 21,
 
   // Event kind from the DJEP event type. Anything that is not a wedding, photo booth or school dance is a private event.
-  KIND_TESTS: { booth: /photo\s*booth/i, wedding: /wedding/i, school: /school|prom|homecoming/i },
+  KIND_TESTS: { booth: /photo\s*booth/i, wedding: /wedding(?! anniversary)|ceremony/i, school: /school|prom|homecoming/i },
 
   // Wording by kind. Weddings keep today's wording exactly (booth uses the wedding words).
   WORDS: {
@@ -305,7 +305,7 @@ MQ.util = (function () {
   function typeName(type) {
     var t = String(type || '').replace(/^marquee test\s+/i, '').trim();
     if (/photo\s*booth/i.test(t)) return 'Photo Booth';
-    if (/wedding/i.test(t)) return 'Wedding Entertainment';
+    if (/wedding(?! anniversary)/i.test(t)) return 'Wedding Entertainment';
     return t;
   }
 
