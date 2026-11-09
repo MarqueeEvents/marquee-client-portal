@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-11-02T21:15Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-11-09T16:24Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -14,7 +14,7 @@ MQ.ASSET_BASE = (function () {
 
 MQ.config = {
   // SAFETY SWITCH. false = new design only for TEST_CLIENTS below. true = everyone.
-  LIVE_FOR_EVERYONE: false,
+  LIVE_FOR_EVERYONE: true,
 
   // Test clients (matched against event names on the page). Add more as needed.
   // Full names only, so a real couple who shares a first name never sees the test design.

@@ -11,7 +11,7 @@ MQ.ASSET_BASE = (function () {
 
 MQ.config = {
   // SAFETY SWITCH. false = new design only for TEST_CLIENTS below. true = everyone.
-  LIVE_FOR_EVERYONE: false,
+  LIVE_FOR_EVERYONE: true,
 
   // Test clients (matched against event names on the page). Add more as needed.
   // Full names only, so a real couple who shares a first name never sees the test design.
