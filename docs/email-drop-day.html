@@ -19,8 +19,8 @@
     .px { padding-left: 24px !important; padding-right: 24px !important; }
   }
   /* Gmail iPhone dark mode: keep white text white */
-  u + .body .gmail-screen { background:#000; mix-blend-mode:screen; }
-  u + .body .gmail-difference { background:#000; mix-blend-mode:difference; }
+  .gmail-screen { background:#000; mix-blend-mode:screen; }
+  .gmail-difference { background:#000; mix-blend-mode:difference; }
 </style>
 </head>
 <body background="{{IMG}}bg-black.png" bgcolor="#09080a" class="body" style="margin:0;padding:0;background-color:#09080a;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;">
@@ -32,8 +32,8 @@
 <!-- Masthead -->
 <tr><td background="{{IMG}}bg-black.png" bgcolor="#09080a" style="background-color:#09080a;padding:0 4px 18px;border-bottom:1px solid #3a3239;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;">
 <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tr>
-<td style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#c9c6cc;"><div class="gmail-screen"><div class="gmail-difference">Marquee Events</div></div></td>
-<td align="center" style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#ffffff;"><div class="gmail-screen"><div class="gmail-difference">Vol. 08</div></div></td>
+<td style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#c9c6cc;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">Marquee Events</div></div></td>
+<td align="center" style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#ffffff;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">Vol. 08</div></div></td>
 <td align="right" style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#ff2e88;">Live Now</td>
 </tr></table>
 </td></tr>
@@ -44,11 +44,11 @@
 <tr><td background="{{IMG}}bg-pink.png" bgcolor="#ff2e88" height="4" style="height:4px;line-height:4px;font-size:0;background:#ff2e88;background-image:url('{{IMG}}bg-pink.png');background-repeat:repeat;"> </td></tr>
 <!-- Headline -->
 <tr><td background="{{IMG}}bg-black.png" bgcolor="#09080a" class="px" style="background-color:#09080a;padding:36px 8px 0;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;">
-<div class="h1" style="font-family:'Inter Tight','Inter','Helvetica Neue',Arial,sans-serif;font-size:56px;line-height:50px;font-weight:900;text-transform:uppercase;color:#F4F5F7;letter-spacing:-0.03em;"><div class="gmail-screen"><div class="gmail-difference">It’s here…</div></div></div>
+<div class="h1" style="font-family:'Inter Tight','Inter','Helvetica Neue',Arial,sans-serif;font-size:56px;line-height:50px;font-weight:900;text-transform:uppercase;color:#F4F5F7;letter-spacing:-0.03em;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">It’s here…</div></div></div>
 <div class="h2" style="padding-top:14px;font-family:'Inter Tight','Inter','Helvetica Neue',Arial,sans-serif;font-size:32px;line-height:31px;font-weight:900;text-transform:uppercase;color:#ff2e88;letter-spacing:-0.03em;text-shadow:0 0 40px rgba(255,46,136,.40);background-color:#09080a;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;">The best part, it’s yours.</div>
 </td></tr>
 <!-- Body -->
-<tr><td background="{{IMG}}bg-black.png" bgcolor="#09080a" class="px" style="background-color:#09080a;padding:26px 8px 0;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:26px;color:#c9c6cc;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;"><div class="gmail-screen"><div class="gmail-difference">
+<tr><td background="{{IMG}}bg-black.png" bgcolor="#09080a" class="px" style="background-color:#09080a;padding:26px 8px 0;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:26px;color:#c9c6cc;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">
 <p style="margin:0 0 16px;">Hey {Names},</p>
 <p style="margin:0;">The new Marquee is officially live. And the piece we’re most excited about was built just for you: <b style="color:#ffffff;">your brand new client portal.</b></p>
 </div></div></td></tr>
@@ -59,10 +59,10 @@
 <!-- Features -->
 <tr><td background="{{IMG}}bg-black.png" bgcolor="#09080a" class="px" style="background-color:#09080a;padding:22px 8px 0;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;">
 <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
-<tr><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:900;color:#ff2e88;" valign="top" width="48">01</td><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:22px;color:#c9c6cc;"><div class="gmail-screen"><div class="gmail-difference"><b style="color:#ffffff;font-size:16px;">Your countdown</b><br/>Every step from today to the dance floor, in order.</div></div></td></tr>
-<tr><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:900;color:#ff2e88;" valign="top" width="48">02</td><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:22px;color:#c9c6cc;"><div class="gmail-screen"><div class="gmail-difference"><b style="color:#ffffff;font-size:16px;">Payments, simplified</b><br/>What’s due, when it’s due, and one tap to pay.</div></div></td></tr>
-<tr><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:900;color:#ff2e88;" valign="top" width="48">03</td><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:22px;color:#c9c6cc;"><div class="gmail-screen"><div class="gmail-difference"><b style="color:#ffffff;font-size:16px;">Your headliner</b><br/>Call, text or email your DJ right from your event.</div></div></td></tr>
-<tr><td style="padding:14px 0;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:900;color:#ff2e88;" valign="top" width="48">04</td><td style="padding:14px 0;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:22px;color:#c9c6cc;"><div class="gmail-screen"><div class="gmail-difference"><b style="color:#ffffff;font-size:16px;">Add to your night</b><br/>Browse add-ons, see your new total, and send a request.</div></div></td></tr>
+<tr><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:900;color:#ff2e88;" valign="top" width="48">01</td><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:22px;color:#c9c6cc;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;"><b style="color:#ffffff;font-size:16px;">Your countdown</b><br/>Every step from today to the dance floor, in order.</div></div></td></tr>
+<tr><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:900;color:#ff2e88;" valign="top" width="48">02</td><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:22px;color:#c9c6cc;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;"><b style="color:#ffffff;font-size:16px;">Payments, simplified</b><br/>What’s due, when it’s due, and one tap to pay.</div></div></td></tr>
+<tr><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:900;color:#ff2e88;" valign="top" width="48">03</td><td style="padding:14px 0;border-bottom:1px solid #262127;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:22px;color:#c9c6cc;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;"><b style="color:#ffffff;font-size:16px;">Your headliner</b><br/>Call, text or email your DJ right from your event.</div></div></td></tr>
+<tr><td style="padding:14px 0;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:900;color:#ff2e88;" valign="top" width="48">04</td><td style="padding:14px 0;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:22px;color:#c9c6cc;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;"><b style="color:#ffffff;font-size:16px;">Add to your night</b><br/>Browse add-ons, see your new total, and send a request.</div></div></td></tr>
 </table>
 </td></tr>
 <!-- Login details (GMass merge fields: Date, Username) -->
@@ -72,16 +72,16 @@
 <tr><td style="padding:8px 24px 0;">
 <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
 <tr>
-<td style="padding:8px 0;border-bottom:1px solid #3A3239;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A3A3AF;"><div class="gmail-screen"><div class="gmail-difference">Your date</div></div></td>
-<td align="right" style="padding:8px 0;border-bottom:1px solid #3A3239;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;"><div class="gmail-screen"><div class="gmail-difference">{Date}</div></div></td>
+<td style="padding:8px 0;border-bottom:1px solid #3A3239;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A3A3AF;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">Your date</div></div></td>
+<td align="right" style="padding:8px 0;border-bottom:1px solid #3A3239;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">{Date}</div></div></td>
 </tr>
 <tr>
-<td style="padding:8px 0;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A3A3AF;"><div class="gmail-screen"><div class="gmail-difference">Username</div></div></td>
-<td align="right" style="padding:8px 0;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;"><div class="gmail-screen"><div class="gmail-difference">{Username}</div></div></td>
+<td style="padding:8px 0;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A3A3AF;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">Username</div></div></td>
+<td align="right" style="padding:8px 0;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">{Username}</div></div></td>
 </tr>
 </table>
 </td></tr>
-<tr><td style="padding:10px 24px 22px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:20px;color:#c9c6cc;"><div class="gmail-screen"><div class="gmail-difference">Use the password you set up with us. Forgot it? Tap <b style="color:#ffffff;">Forgot your password?</b> on the login page and it lands in your inbox in a minute.</div></div></td></tr>
+<tr><td style="padding:10px 24px 22px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:20px;color:#c9c6cc;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">Use the password you set up with us. Forgot it? Tap <b style="color:#ffffff;">Forgot your password?</b> on the login page and it lands in your inbox in a minute.</div></div></td></tr>
 </table>
 </td></tr>
 <!-- CTA -->
@@ -91,30 +91,30 @@
 <a href="https://marqueeeventplanner.com/clientlogon.asp" style="text-decoration:none;display:inline-block;padding:18px 40px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:#0a0809;" target="_blank">Open my client portal →</a>
 </td>
 </tr></table>
-<div style="padding-top:14px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:20px;color:#c9c6cc;"><div class="gmail-screen"><div class="gmail-difference">Still stuck? Just reply and we’ll help.</div></div></div>
+<div style="padding-top:14px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:20px;color:#c9c6cc;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">Still stuck? Just reply and we’ll help.</div></div></div>
 </td></tr>
 <!-- Also live -->
 <tr><td background="{{IMG}}bg-black.png" bgcolor="#09080a" class="px" style="background-color:#09080a;padding:34px 8px 0;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;">
 <table background="{{IMG}}bg-pinknight.png" bgcolor="#1a0d14" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#1a0d14;border:1px solid #ff2e88;background-image:url('{{IMG}}bg-pinknight.png');background-repeat:repeat;" width="100%">
 <tr><td style="padding:24px 26px 26px;">
 <div style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#ff2e88;">Also live today</div>
-<div style="padding-top:12px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:26px;color:#ffffff;font-weight:700;"><div class="gmail-screen"><div class="gmail-difference">The new website · Wedding guide · Design studio</div></div></div>
-<div style="padding-top:10px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:22px;color:#c9c6cc;"><div class="gmail-screen"><div class="gmail-difference">Find it all in the link on our Instagram, <a href="https://www.instagram.com/marqueeohio/" style="text-decoration:none;color:#ff2e88;font-weight:700;" target="_blank">@marqueeohio</a>.</div></div></div>
+<div style="padding-top:12px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:26px;color:#ffffff;font-weight:700;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">The new website · Wedding guide · Design studio</div></div></div>
+<div style="padding-top:10px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:22px;color:#c9c6cc;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">Find it all in the link on our Instagram, <a href="https://www.instagram.com/marqueeohio/" style="text-decoration:none;color:#ff2e88;font-weight:700;" target="_blank">@marqueeohio</a>.</div></div></div>
 </td></tr>
 </table>
 </td></tr>
 <!-- Sign off -->
 <tr><td background="{{IMG}}bg-black.png" bgcolor="#09080a" class="px" style="background-color:#09080a;padding:34px 8px 0;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;">
-<div style="font-family:'Lora',Georgia,'Times New Roman',serif;font-style:italic;font-size:21px;line-height:28px;color:#ffffff;"><div class="gmail-screen"><div class="gmail-difference">Thank you for being the reason we build things like this.</div></div></div>
+<div style="font-family:'Lora',Georgia,'Times New Roman',serif;font-style:italic;font-size:21px;line-height:28px;color:#ffffff;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">Thank you for being the reason we build things like this.</div></div></div>
 <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-top:20px;"><tr>
 <td style="padding-right:18px;" valign="middle"><img alt="Bob Hickman" src="{{IMG}}bob-logo.png" style="display:block;width:130px;height:auto;border:0;" width="130"/></td>
-<td style="border-left:1px solid #3a3239;padding-left:18px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:20px;color:#c9c6cc;" valign="middle"><div class="gmail-screen"><div class="gmail-difference"><b style="color:#ffffff;font-size:15px;">Bob Hickman</b><br/>Founder, DJ &amp; MC<br/>Marquee Events</div></div></td>
+<td style="border-left:1px solid #3a3239;padding-left:18px;font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:20px;color:#c9c6cc;" valign="middle"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;"><b style="color:#ffffff;font-size:15px;">Bob Hickman</b><br/>Founder, DJ &amp; MC<br/>Marquee Events</div></div></td>
 </tr></table>
 </td></tr>
 <!-- Footer -->
 <tr><td background="{{IMG}}bg-black.png" align="center" bgcolor="#09080a" style="background-color:#09080a;padding:34px 20px 0;background-image:url('{{IMG}}bg-black.png');background-repeat:repeat;">
 <img alt="Marquee Events" src="{{IMG}}marquee-logo.png" style="display:block;width:150px;height:auto;border:0;margin:0 auto 14px;" width="150"/>
-<div style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:11px;line-height:18px;letter-spacing:1px;color:#7b747d;"><div class="gmail-screen"><div class="gmail-difference">MARQUEE EVENTS · NEW PHILADELPHIA, OHIO<br/>You’re getting this because you have a wedding booked with Marquee Events.</div></div></div>
+<div style="font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:11px;line-height:18px;letter-spacing:1px;color:#7b747d;"><div class="gmail-screen" style="background-color:#000000;mix-blend-mode:screen;"><div class="gmail-difference" style="background-color:#000000;mix-blend-mode:difference;">MARQUEE EVENTS · NEW PHILADELPHIA, OHIO<br/>You’re getting this because you have a wedding booked with Marquee Events.</div></div></div>
 </td></tr>
 </table>
 </td></tr>
