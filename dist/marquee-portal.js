@@ -1,4 +1,4 @@
-/* Marquee Client Portal bundle. Built 2026-11-23T21:10Z. Source: src/ */
+/* Marquee Client Portal bundle. Built 2026-11-23T21:15Z. Source: src/ */
 
 /* ---- src/config.js ---- */
 /* Marquee Client Portal configuration.
@@ -1679,15 +1679,23 @@ MQ.renderEvent = (function () {
       }
       if (sel.length) {
         var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid, vm.kind, vm.payments);
-        var dueNow = plan.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0) -
-          vm.schedule.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0);
+        /* How the add-on lands on the payments still to come (same split Bob uses: across the remaining payments). */
+        var bumps = plan.map(function (p, i) {
+          return { p: p, add: U.round2(p.left - ((vm.schedule[i] || {}).left || 0)) };
+        }).filter(function (b) { return b.add > 0.005; });
+        var dueNow = bumps.filter(function (b) { return b.p.status === 'due'; }).reduce(function (n, b) { return n + b.add; }, 0);
+        var same = bumps.length && bumps.every(function (b) { return Math.abs(b.add - bumps[0].add) < 0.02; });
+        var payHead = !bumps.length ? U.money(0) : bumps.length === 1 ? '+' + U.money(bumps[0].add) : same ? '+' + U.money(bumps[0].add) + '<small> each</small>' : '+' + U.money(sum);
+        var payLine = !bumps.length ? 'Nothing more is due'
+          : bumps.length === 1 ? 'Added to your ' + (bumps[0].p.label === 'Final Balance' || bumps[0].p.label === 'Balance' || bumps[0].p.label === 'Final Payment' ? 'final payment' : bumps[0].p.label + ' payment') + (bumps[0].p.due ? ', due ' + U.fmtDate(bumps[0].p.due) : '')
+          : 'Split across your next ' + bumps.length + ' payments: ' + bumps.map(function (b) { return (b.p.due ? U.fmtDate(b.p.due) : b.p.label) + (same ? '' : ' +' + U.money(b.add)); }).join(', ');
+        if (dueNow > 0.005) payLine += '. ' + U.money(dueNow) + ' of that is due now.';
         var talk = vm.dj.sms ? vm.dj.sms + '?&body=' + encodeURIComponent('Hi ' + vm.dj.first + '! We are thinking about adding ' + sel.map(function (c) { return c.name; }).join(', ') + '. Can we talk it through?')
           : (vm.dj.mailto || '#');
         html += '<div class="mq-tally"><div class="c w"><span>Your Selections \u00b7 ' + sel.length + '</span><b>' + esc(sel.map(function (c) { return c.name; }).join(', ')) + '</b></div>' +
           '<div class="c"><span>Adds</span><b>' + U.money(sum) + '</b></div>' +
           '<div class="c"><span>New Total If Approved</span><b>' + U.money(vm.total + sum) + '</b></div>' +
-          '<div class="c"><span>Due Once Approved</span><b style="color:var(--mq-pink-soft)">' + U.money(Math.max(0, U.round2(dueNow))) + '</b><i>' +
-          (dueNow > 0.005 ? 'Catch-up to stay on schedule' : 'Spread across your remaining payments') + '</i></div>' +
+          '<div class="c"><span>Your Payments</span><b style="color:var(--mq-pink-soft)">' + payHead + '</b><i>' + esc(payLine) + '</i></div>' +
           '<div class="act"><button type="button" class="mq-btn mq-btn-pink" data-mq-send' + (state.busy ? ' disabled' : '') + '>' + icon('send', 16) + (state.busy ? 'Sending...' : 'Request to Add') + '</button>' +
           '<a class="mq-btn mq-btn-ghost" href="' + esc(talk) + '">' + icon('chat', 14) + 'Talk to ' + esc(vm.dj.first) + ' First</a></div></div>';
       }
