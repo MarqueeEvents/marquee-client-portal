@@ -22,23 +22,69 @@ MQ.model = (function () {
     });
   }
 
-  /* 25 / 25 / 25 / balance. Paid amount is applied to installments in order. */
-  function schedule(eventDate, total, paid, kind) {
+  /* Payment amounts from DJEP's payment history rows, oldest first. Null when the rows can't be read
+   * cleanly (no amounts, refunds), so the schedule falls back to applying the paid total in order. */
+  function paymentsFrom(history) {
+    if (!history || !history.length) return null;
+    var rows = history.map(function (cells, i) {
+      var amt = parseFloat(String(cells[cells.length - 1]).replace(/[$,\s]/g, ''));
+      var date = null;
+      cells.forEach(function (c) { var m = /\b\d{1,2}\/\d{1,2}\/\d{4}\b/.exec(c); if (!date && m) date = U.parseDate(m[0]); });
+      return { amt: amt, date: date, i: i };
+    });
+    if (rows.some(function (r) { return !(r.amt > 0); })) return null;
+    rows.sort(function (a, b) { return (a.date && b.date ? a.date - b.date : 0) || a.i - b.i; });
+    return rows.map(function (r) { return r.amt; });
+  }
+
+  /* 25 / 25 / 25 / balance (or the school / private plan).
+   * Installments a client has already paid are locked at what they actually paid. Whatever is left
+   * (including add-ons booked later) is split evenly across the installments still to come.
+   * So an add-on spread over the remaining payments never makes an earlier payment look short.
+   * The first payment is always the retainer / booking deposit. After that, payments add up toward the
+   * current installment and lock it once they reach 90% of it; less than that shows as a partial payment. */
+  function schedule(eventDate, total, paid, kind, payments) {
     var plan = (MQ.config.PAYMENT_PLANS || {})[kind] || MQ.config.PAYMENT_PLAN;
     var t = U.today();
-    var running = 0, applied = paid || 0;
+    var n = plan.length;
+    var dueOf = function (p) { return p.monthsBefore ? U.addMonths(eventDate, -p.monthsBefore) : (p.daysBefore != null ? U.addDays(eventDate, -p.daysBefore) : null); };
+    var statusOf = function (left, due) { return left <= 0.005 ? 'paid' : (!due || U.daysBetween(t, due) <= 0) ? 'due' : 'upcoming'; };
+    var weight = function (from) { return plan.slice(from).reduce(function (a, p) { return a + p.pct; }, 0) || 1; };
+
+    /* Lock the installments covered by real payments. */
+    var locked = [], lockedSum = 0, acc = 0;
+    if (payments && Math.abs(U.round2(payments.reduce(function (a, b) { return a + b; }, 0)) - (paid || 0)) < 0.02) {
+      payments.forEach(function (amt) {
+        if (locked.length >= n - 1) { acc = U.round2(acc + amt); return; }
+        acc = U.round2(acc + amt);
+        var target = U.round2((total - lockedSum) * plan[locked.length].pct / weight(locked.length));
+        if (locked.length === 0 || acc >= target * 0.9 - 0.005) { locked.push(acc); lockedSum = U.round2(lockedSum + acc); acc = 0; }
+      });
+    } else {
+      /* No usable history: apply the paid total to installments in order (original behavior). */
+      var running = 0, applied = paid || 0;
+      return plan.map(function (p, i) {
+        var amount = i === n - 1 ? U.round2(total - running) : U.round2(total * p.pct);
+        running = U.round2(running + amount);
+        var due = dueOf(p);
+        var covered = Math.min(amount, Math.max(0, applied));
+        applied = U.round2(applied - covered);
+        var left = U.round2(amount - covered);
+        return { label: p.label, amount: amount, paid: U.round2(covered), left: left, due: due, status: statusOf(left, due) };
+      });
+    }
+
+    /* Spread what is left over the remaining installments; a partial payment counts toward the next one. */
+    var rest = Math.max(0, U.round2(total - lockedSum)), assigned = 0, extra = acc;
     return plan.map(function (p, i) {
-      var amount = i === plan.length - 1 ? U.round2(total - running) : U.round2(total * p.pct);
-      running = U.round2(running + amount);
-      var due = p.monthsBefore ? U.addMonths(eventDate, -p.monthsBefore) : (p.daysBefore != null ? U.addDays(eventDate, -p.daysBefore) : null);
-      var covered = Math.min(amount, Math.max(0, applied));
-      applied = U.round2(applied - covered);
+      var due = dueOf(p);
+      if (i < locked.length) return { label: p.label, amount: locked[i], paid: locked[i], left: 0, due: due, status: 'paid' };
+      var amount = i === n - 1 ? U.round2(rest - assigned) : U.round2(rest * p.pct / weight(locked.length));
+      assigned = U.round2(assigned + amount);
+      var covered = Math.min(amount, Math.max(0, extra));
+      extra = U.round2(extra - covered);
       var left = U.round2(amount - covered);
-      var status;
-      if (left <= 0.005) status = 'paid';
-      else if (!due || U.daysBetween(t, due) <= 0) status = 'due';
-      else status = 'upcoming';
-      return { label: p.label, amount: amount, paid: U.round2(covered), left: left, due: due, status: status };
+      return { label: p.label, amount: amount, paid: U.round2(covered), left: left, due: due, status: statusOf(left, due) };
     });
   }
 
@@ -240,7 +286,8 @@ MQ.model = (function () {
     var isBooth = listItem.isPhotoBooth;
     var kind = U.kindOf(listItem.type || details.type);
     var hasBoothEvent = allEvents.some(function (e) { return e.isPhotoBooth; });
-    var sched = schedule(eventDate, total, paid, kind);
+    var payments = paymentsFrom(details.history);
+    var sched = schedule(eventDate, total, paid, kind, payments);
     var next = sched.filter(function (p) { return p.status !== 'paid'; })[0] || null;
     var couple = U.coupleFromName(listItem.name || details.name, listItem.type || details.type, listItem.package);
     /* School dances and private events greet the school, company or host by the full name. */
@@ -255,7 +302,7 @@ MQ.model = (function () {
       dj: team(listItem.employeeId, isBooth),
       eventDate: eventDate,
       couple: couple,
-      total: total, paid: paid, balance: balance,
+      total: total, paid: paid, balance: balance, payments: payments,
       schedule: sched, next: next,
       journey: journey(eventDate, sched, isBooth, signedDate(details.history), isBooth && U.store('mq-design-' + listItem.id), kind),
       options: addOptions(details.lines || [], hasBoothEvent, isBooth, (MQ.config.TEAM[listItem.employeeId] || {}).key, kind),
@@ -270,5 +317,5 @@ MQ.model = (function () {
     return parts.slice(0, 2).join(' \u00b7 ');
   }
 
-  return { build: build, schedule: schedule, team: team, addOptions: addOptions, journey: journey };
+  return { build: build, schedule: schedule, paymentsFrom: paymentsFrom, team: team, addOptions: addOptions, journey: journey };
 })();

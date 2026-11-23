@@ -287,7 +287,7 @@ MQ.renderEvent = (function () {
           '</p></div><button type="button" data-mq-dismiss>Got it</button></div>';
       }
       if (sel.length) {
-        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid, vm.kind);
+        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid, vm.kind, vm.payments);
         var dueNow = plan.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0) -
           vm.schedule.filter(function (p) { return p.status === 'due'; }).reduce(function (n, p) { return n + p.left; }, 0);
         var talk = vm.dj.sms ? vm.dj.sms + '?&body=' + encodeURIComponent('Hi ' + vm.dj.first + '! We are thinking about adding ' + sel.map(function (c) { return c.name; }).join(', ') + '. Can we talk it through?')

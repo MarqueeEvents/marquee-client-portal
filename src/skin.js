@@ -141,7 +141,7 @@ MQ.skin = (function () {
       var date = U.parseDate(d.date);
       if (!date || d.totalFee == null) return;
       var total = d.totalFee, bal = d.balanceDue != null ? d.balanceDue : total;
-      var sched = MQ.model.schedule(date, total, U.round2(total - bal), U.kindOf(d.type));
+      var sched = MQ.model.schedule(date, total, U.round2(total - bal), U.kindOf(d.type), MQ.model.paymentsFrom(d.history));
       var next = sched.filter(function (p) { return p.status !== 'paid'; })[0];
       var pct = total ? Math.round((total - bal) / total * 100) : 0;
       extra.innerHTML = '<section class="mq-card mq-paysum"><div class="c"><span class="mq-sub">' + esc(U.coupleFromName(d.name, d.type).couple) + '</span>' +
