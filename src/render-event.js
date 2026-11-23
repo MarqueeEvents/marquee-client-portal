@@ -287,7 +287,7 @@ MQ.renderEvent = (function () {
           '</p></div><button type="button" data-mq-dismiss>Got it</button></div>';
       }
       if (sel.length) {
-        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid, vm.kind, vm.payments);
+        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid, vm.kind, vm.payments, vm.total);
         /* How the add-on lands on the payments still to come (same split Bob uses: across the remaining payments). */
         var bumps = plan.map(function (p, i) {
           return { p: p, add: U.round2(p.left - ((vm.schedule[i] || {}).left || 0)) };

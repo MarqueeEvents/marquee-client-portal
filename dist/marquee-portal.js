@@ -626,7 +626,10 @@ MQ.model = (function () {
    * So an add-on spread over the remaining payments never makes an earlier payment look short.
    * The first payment is always the retainer / booking deposit. After that, payments add up toward the
    * current installment and lock it once they reach 90% of it; less than that shows as a partial payment. */
-  function schedule(eventDate, total, paid, kind, payments) {
+  function schedule(eventDate, total, paid, kind, payments, lockTotal) {
+    /* lockTotal: the event's current total. Pass it when previewing a new total (add-ons) so the
+     * payments already made stay locked exactly as they are today. */
+    var base = lockTotal != null ? lockTotal : total;
     var plan = (MQ.config.PAYMENT_PLANS || {})[kind] || MQ.config.PAYMENT_PLAN;
     var t = U.today();
     var n = plan.length;
@@ -640,7 +643,7 @@ MQ.model = (function () {
       payments.forEach(function (amt) {
         if (locked.length >= n - 1) { acc = U.round2(acc + amt); return; }
         acc = U.round2(acc + amt);
-        var target = U.round2((total - lockedSum) * plan[locked.length].pct / weight(locked.length));
+        var target = U.round2((base - lockedSum) * plan[locked.length].pct / weight(locked.length));
         if (locked.length === 0 || acc >= target * 0.9 - 0.005) { locked.push(acc); lockedSum = U.round2(lockedSum + acc); acc = 0; }
       });
     } else {
@@ -1678,7 +1681,7 @@ MQ.renderEvent = (function () {
           '</p></div><button type="button" data-mq-dismiss>Got it</button></div>';
       }
       if (sel.length) {
-        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid, vm.kind, vm.payments);
+        var plan = MQ.model.schedule(vm.eventDate, vm.total + sum, vm.paid, vm.kind, vm.payments, vm.total);
         /* How the add-on lands on the payments still to come (same split Bob uses: across the remaining payments). */
         var bumps = plan.map(function (p, i) {
           return { p: p, add: U.round2(p.left - ((vm.schedule[i] || {}).left || 0)) };
