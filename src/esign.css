@@ -54,3 +54,15 @@ body:has(form[action="esign.asp"]) .newpages p[align=center]{margin:0;position:r
 body:has(form[action="esign.asp"]) #submitbutton{display:block;width:100%;background:var(--es-pink)!important;color:transparent!important;border:0!important;border-radius:12px!important;padding:17px!important;font:800 13px var(--es-sans)!important;cursor:pointer;box-shadow:0 0 34px rgba(255,46,136,.45);-webkit-appearance:none;appearance:none}
 body:has(form[action="esign.asp"]) #submitbutton:hover{background:var(--es-pink-hot)!important}
 body:has(form[action="esign.asp"]) .newpages p[align=center]::after{content:"SIGN & SUBMIT";position:absolute;left:0;right:0;top:0;height:50px;display:flex;align-items:center;justify-content:center;font:800 13px var(--es-sans);letter-spacing:.2em;color:#fff;pointer-events:none}
+/* Narrow screens (phones that report their real width): stack everything in one column. */
+@media (max-width:860px){
+body:has(form[action="esign.asp"]) #logo_p{padding:16px}
+body:has(form[action="esign.asp"]) #logo_p img.custom_logo_image{height:30px!important}
+body:has(form[action="esign.asp"]) #logo_p::after{content:"SECURE";letter-spacing:.2em}
+body:has(form[action="esign.asp"]) form[name=djep_form]{padding:30px 16px 24px}
+body:has(form[action="esign.asp"]) .newpages{grid-template-columns:1fr;row-gap:18px}
+body:has(form[action="esign.asp"]) .newpages::before{font-size:44px}
+body:has(form[action="esign.asp"]) .newpages::after{font-size:24px;margin-bottom:8px}
+body:has(form[action="esign.asp"]) .newpages>.divtable:first-child>.divcell{padding:10px!important;max-height:560px}
+body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name]){position:static;padding:20px!important}
+}
