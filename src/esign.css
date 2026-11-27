@@ -17,7 +17,7 @@ body:has(form[action="esign.asp"]) #logo_p::after{content:"SECURE DOCUMENT SIGNI
 body:has(form[action="esign.asp"]) form[name=djep_form]{display:block;max-width:1180px;margin:0 auto;padding:46px 40px 30px;box-sizing:border-box}
 body:has(form[action="esign.asp"]) form[name=djep_form]::before{content:"YOUR MARQUEE DOCUMENT";display:flex;align-items:center;font:700 11px var(--es-sans);letter-spacing:.3em;color:var(--es-pink);padding-left:44px;background:linear-gradient(var(--es-pink),var(--es-pink)) left center/32px 2px no-repeat}
 body:has(form[action="esign.asp"]) form[name=djep_form]::after{content:"MARQUEE EVENTS \00b7 NEW PHILADELPHIA, OHIO";display:block;text-align:center;margin-top:44px;padding-top:28px;border-top:1px solid var(--es-line);font:700 10px var(--es-sans);letter-spacing:.3em;color:var(--es-muted)}
-body:has(form[action="esign.asp"]) .newpages{max-width:none!important;margin:0!important;padding:0!important;background:none!important;display:grid!important;grid-template-columns:minmax(0,1fr) 380px;column-gap:26px;align-items:start}
+body:has(form[action="esign.asp"]) .newpages{max-width:none!important;margin:0!important;padding:0!important;background:none!important;display:grid!important;grid-template-columns:minmax(0,1fr);row-gap:26px;align-items:start}
 body:has(form[action="esign.asp"]) .newpages>input{display:none}
 body:has(form[action="esign.asp"]) .newpages::before{content:"REVIEW & SIGN.";grid-column:1/-1;order:1;font:900 64px/.92 var(--es-display);letter-spacing:-.01em;color:var(--es-fg);margin-top:16px}
 body:has(form[action="esign.asp"]) .newpages::after{content:"your night, by design.";grid-column:1/-1;order:2;font:italic 400 30px var(--es-serif);color:var(--es-pink);margin:8px 0 34px}
@@ -31,8 +31,8 @@ body:has(form[action="esign.asp"]) .newpages>.divtable:first-child>.divcell{back
 body:has(form[action="esign.asp"]) .newpages>.divtable:first-child>.divcell>div{border-radius:6px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 body:has(form[action="esign.asp"]) .newpages>.divtable:first-child::after{content:"\2193\00a0\00a0Scroll to read the full document";display:block;text-align:center;padding:14px;color:var(--es-muted);font-size:12px;border-top:1px solid var(--es-line)}
 
-/* Signing panel (second .divtable) */
-body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name]){order:4;position:sticky;top:110px;background:var(--es-pn)!important;border:1px solid var(--es-pink)!important;border-radius:18px!important;padding:26px!important;box-shadow:0 0 40px rgba(255,46,136,.12);margin:0!important}
+/* Signing panel (second .divtable): full width under the contract on every screen */
+body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name]){order:4;background:var(--es-pn)!important;border:1px solid var(--es-pink)!important;border-radius:18px!important;padding:32px 36px!important;box-shadow:0 0 40px rgba(255,46,136,.12);margin:0!important}
 body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divheader{background:transparent!important;border:0!important;padding:0!important;text-align:left!important;font-size:0!important;line-height:0!important;color:transparent!important}
 body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divheader::before{content:"ELECTRONIC SIGNATURE";display:block;padding-left:44px;font:700 11px/1.4 var(--es-sans);letter-spacing:.3em;color:var(--es-pink);background:linear-gradient(#FF2E88,#FF2E88) left center/32px 2px no-repeat}
 body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divheader::after{content:"SIGN HERE";display:block;margin-top:12px;font:900 28px/.95 var(--es-display);color:var(--es-fg)}
@@ -40,6 +40,10 @@ body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full
 body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divcell::before{content:"one signature away.";display:block;font:italic 400 20px var(--es-serif);color:var(--es-pink);margin:4px 0 4px}
 body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divcell::after{content:"Questions before you sign? Text Bob at 330-400-3003 or email bob@marqueeohio.com.";display:block;margin-top:18px;padding-top:16px;border-top:1px solid var(--es-line);font-size:13px;line-height:20px;color:var(--es-body)}
 body:has(form[action="esign.asp"]) .metro-table,body:has(form[action="esign.asp"]) .newpages .col-xs-12,body:has(form[action="esign.asp"]) .newpages .col-md-6{width:100%!important;float:none!important;padding:0!important;margin:0!important;display:block}
+body:has(form[action="esign.asp"]) .newpages .metro-table{display:grid!important;grid-template-columns:1fr 1fr;column-gap:20px}
+body:has(form[action="esign.asp"]) .newpages .metro-table>*{grid-column:1/-1}
+body:has(form[action="esign.asp"]) .newpages .metro-table>.col-md-6{grid-column:auto}
+body:has(form[action="esign.asp"]) .newpages .metro-table>.cf{display:none}
 body:has(form[action="esign.asp"]) .newpages .margin-all-3{margin:0!important}
 body:has(form[action="esign.asp"]) .newpages .metro-label{float:none!important;width:auto!important;display:block;font:700 10px var(--es-sans)!important;letter-spacing:.22em;color:var(--es-muted)!important;text-transform:uppercase;margin:14px 0 7px;padding:0!important}
 body:has(form[action="esign.asp"]) .newpages input[type=text]{width:100%!important;max-width:none!important;box-sizing:border-box;background:#08080A!important;border:1px solid var(--es-line)!important;border-radius:12px!important;padding:13px 14px!important;height:auto!important;color:var(--es-fg)!important;font:400 15px var(--es-sans)!important;outline:none}
@@ -88,6 +92,7 @@ body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full
 body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divheader::after{font-size:64px;margin-top:18px}
 body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divcell::before{font-size:40px;margin:8px 0 10px}
 body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divcell::after{font-size:28px;line-height:42px;margin-top:30px;padding-top:26px}
+body:has(form[action="esign.asp"]) .newpages .metro-table{grid-template-columns:1fr}
 body:has(form[action="esign.asp"]) .newpages .metro-label{font-size:20px!important;margin:28px 0 12px}
 body:has(form[action="esign.asp"]) .newpages input[type=text]{font-size:34px!important;padding:24px 26px!important;border-radius:20px!important}
 body:has(form[action="esign.asp"]) .newpages .padding-all-10{margin:34px 0!important}
