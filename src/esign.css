@@ -66,3 +66,34 @@ body:has(form[action="esign.asp"]) .newpages::after{font-size:24px;margin-bottom
 body:has(form[action="esign.asp"]) .newpages>.divtable:first-child>.divcell{padding:10px!important;max-height:560px}
 body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name]){position:static;padding:20px!important}
 }
+/* Phones and tablets. DJEP's page has no phone setting, so phones lay it out about 980px wide and shrink it.
+   Here the contract gets the full width, signing moves underneath, and the signing panel's text is sized up
+   so it reads normally after the shrink. */
+@media (hover:none) and (pointer:coarse){
+body:has(form[action="esign.asp"]) #logo_p{padding:30px 36px}
+body:has(form[action="esign.asp"]) #logo_p img.custom_logo_image{height:64px!important}
+body:has(form[action="esign.asp"]) #logo_p::after{font-size:20px}
+body:has(form[action="esign.asp"]) form[name=djep_form]{padding:50px 30px 30px}
+body:has(form[action="esign.asp"]) form[name=djep_form]::before{font-size:22px;padding-left:70px;background-size:56px 3px}
+body:has(form[action="esign.asp"]) form[name=djep_form]::after{font-size:18px}
+body:has(form[action="esign.asp"]) .newpages{grid-template-columns:1fr;row-gap:30px}
+body:has(form[action="esign.asp"]) .newpages::before{font-size:104px;margin-top:20px}
+body:has(form[action="esign.asp"]) .newpages::after{font-size:50px;margin-bottom:0}
+body:has(form[action="esign.asp"]) .newpages>.divtable:first-child>.divheader{font-size:28px!important;padding:26px 28px!important}
+body:has(form[action="esign.asp"]) .newpages>.divtable:first-child>.divheader .metro-button-small{font-size:20px!important;padding:16px 20px!important;margin-top:-10px!important}
+body:has(form[action="esign.asp"]) .newpages>.divtable:first-child>.divcell{padding:12px!important;max-height:1500px}
+body:has(form[action="esign.asp"]) .newpages>.divtable:first-child::after{font-size:22px;padding:22px}
+body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name]){position:static;padding:44px!important;border-radius:28px!important}
+body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divheader::before{font-size:22px;padding-left:70px;background-size:56px 3px}
+body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divheader::after{font-size:64px;margin-top:18px}
+body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divcell::before{font-size:40px;margin:8px 0 10px}
+body:has(form[action="esign.asp"]) .newpages>.divtable:has(input[name=esign_full_name])>.divcell::after{font-size:28px;line-height:42px;margin-top:30px;padding-top:26px}
+body:has(form[action="esign.asp"]) .newpages .metro-label{font-size:20px!important;margin:28px 0 12px}
+body:has(form[action="esign.asp"]) .newpages input[type=text]{font-size:34px!important;padding:24px 26px!important;border-radius:20px!important}
+body:has(form[action="esign.asp"]) .newpages .padding-all-10{margin:34px 0!important}
+body:has(form[action="esign.asp"]) .newpages label{gap:22px}
+body:has(form[action="esign.asp"]) .newpages label i{font-size:28px;line-height:42px}
+body:has(form[action="esign.asp"]) .newpages input[type=checkbox]{width:44px!important;height:44px!important}
+body:has(form[action="esign.asp"]) #submitbutton{padding:34px!important;font-size:26px!important;border-radius:20px!important;height:100px}
+body:has(form[action="esign.asp"]) .newpages p[align=center]::after{height:100px;font-size:26px}
+}
