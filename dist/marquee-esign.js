@@ -1,4 +1,4 @@
-/* Marquee e-sign skin. Built 2026-11-27T17:08Z. Source: src/esign.js */
+/* Marquee e-sign skin. Built 2026-11-27T17:09Z. Source: src/esign.js */
 /* Marquee e-signature page skin (DJEP esign.asp).
  * Loaded from DJEP > Website Tools > Styling Options > Custom Scripting, which DJEP also prints on
  * its public request / availability pages, so this does nothing unless it is on esign.asp.
@@ -129,6 +129,8 @@
     if (!form || tables.length < 1) return;
     var html = document.documentElement;
 
+    /* DJEP's page has no viewport tag, so phones show it zoomed out. */
+    if (!document.querySelector('meta[name=viewport]')) { var vp = el('meta'); vp.name = 'viewport'; vp.content = 'width=device-width, initial-scale=1'; document.head.appendChild(vp); }
     var fonts = el('link'); fonts.rel = 'stylesheet';
     fonts.href = 'https://fonts.googleapis.com/css2?family=Inter+Tight:wght@800;900&family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@1,400;1,500&display=swap';
     document.head.appendChild(fonts);
