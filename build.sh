@@ -6,5 +6,8 @@ mkdir -p dist
 FILES="config gate util djep-reader model requests reels skin shell render-chooser render-event render-details main"
 { echo "/* Marquee Client Portal bundle. Built $(date -u +%Y-%m-%dT%H:%MZ). Source: src/ */"; for f in $FILES; do echo; echo "/* ---- src/$f.js ---- */"; cat src/$f.js; done; } > dist/marquee-portal.js
 node --check dist/marquee-portal.js
+# E-signature page skin (separate file, loaded from Website Tools > Styling Options > Custom Scripting)
+{ echo "/* Marquee e-sign skin. Built $(date -u +%Y-%m-%dT%H:%MZ). Source: src/esign.js */"; cat src/esign.js; } > dist/marquee-esign.js
+node --check dist/marquee-esign.js
 if LC_ALL=C grep -q "[^ -~	]" src/*.js; then echo "ERROR: non-ASCII characters in src/ (use \\u escapes)"; exit 1; fi
 echo "built dist/marquee-portal.js ($(wc -c < dist/marquee-portal.js) bytes)"
